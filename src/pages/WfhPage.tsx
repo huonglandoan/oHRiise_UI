@@ -204,6 +204,7 @@ export default function WfhPage({ open }: { open: () => void }) {
 
       {/* TOP SUB-TABS NAVIGATION */}
       <div
+        className="page-sub-tabs"
         style={{
           display: "flex",
           gap: "28px",

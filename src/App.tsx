@@ -336,7 +336,15 @@ function RequestModal({ type, close }: { type: "wfh" | "leave" | "expense"; clos
   );
 }
 
-function MobileNav({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
+function MobileNav({
+  page,
+  setPage,
+  onMore,
+}: {
+  page: Page;
+  setPage: (p: Page) => void;
+  onMore: () => void;
+}) {
   return (
     <nav className="mobile-nav">
       {coreNav.slice(0, 4).map((n) => (
@@ -349,9 +357,9 @@ function MobileNav({ page, setPage }: { page: Page; setPage: (p: Page) => void }
           <span>{n.label}</span>
         </button>
       ))}
-      <button className={page === "profile" ? "active" : ""} onClick={() => setPage("profile")}>
-        <Icon name="user" />
-        <span>Cá nhân</span>
+      <button onClick={onMore}>
+        <Icon name="more" />
+        <span>Thêm</span>
       </button>
     </nav>
   );
@@ -378,36 +386,65 @@ export default function App() {
     );
   }
 
+  // Auto-close mobile menu when navigating
+  const handleMobileNav = (p: Page) => {
+    setPage(p);
+    setMobileMenu(false);
+  };
+
   return (
     <div className="app-shell">
+      {/* Desktop sidebar — hidden on mobile via CSS */}
       <Sidebar page={page} setPage={setPage} currentProfile={currentProfile} />
 
-      {mobileMenu && (
-        <div className="mobile-drawer" onClick={() => setMobileMenu(false)}>
-          <div className="drawer-card" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setMobileMenu(false)}>
+      {/* Mobile sidebar overlay */}
+      <div
+        className={`mobile-drawer-overlay${mobileMenu ? " open" : ""}`}
+        onClick={() => setMobileMenu(false)}
+      >
+        <aside
+          className={`mobile-drawer-sidebar${mobileMenu ? " open" : ""}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="mobile-drawer-head">
+            <div className="brand">
+              <div className="logo-crop">
+                <img src={logo} alt="oHRiise" />
+              </div>
+              <div>
+                <b>oHRiise</b>
+                <span>People rise together</span>
+              </div>
+            </div>
+            <button className="icon-btn" onClick={() => setMobileMenu(false)} aria-label="Đóng menu">
               <Icon name="close" />
             </button>
-            <div className="role-switch">
-              <span>Tập quyền Động:</span>
-              <select value={profileKey} onChange={(e) => setProfileKey(e.target.value)}>
-                {Object.values(DYNAMIC_PROFILES).map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} ({p.customRoleName})
-                  </option>
-                ))}
-              </select>
-            </div>
+          </div>
+
+          <div className="mobile-drawer-role">
+            <span>Tập quyền Động:</span>
+            <select value={profileKey} onChange={(e) => setProfileKey(e.target.value)}>
+              {Object.values(DYNAMIC_PROFILES).map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name} ({p.customRoleName})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <Sidebar page={page} setPage={handleMobileNav} currentProfile={currentProfile} />
+
+          <div className="mobile-drawer-footer">
             <button
               className="primary"
-              style={{ width: "100%", marginTop: 12 }}
+              style={{ width: "100%" }}
               onClick={() => setAuthenticated(false)}
             >
               <Icon name="logout" /> Đăng xuất
             </button>
           </div>
-        </div>
-      )}
+        </aside>
+      </div>
 
       <div className="main-content">
         <Header
@@ -470,7 +507,7 @@ export default function App() {
         </main>
       </div>
 
-      <MobileNav page={page} setPage={setPage} />
+      <MobileNav page={page} setPage={setPage} onMore={() => setMobileMenu(true)} />
       {request && <RequestModal type={request} close={() => setRequest(null)} />}
       <AiAssistantDrawer />
     </div>

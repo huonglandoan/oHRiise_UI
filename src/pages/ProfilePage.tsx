@@ -49,6 +49,9 @@ export default function ProfilePage() {
     },
   ]);
 
+  // Subtabs state
+  const [activeTab, setActiveTab] = useState<"all" | "personal" | "job" | "contract">("all");
+
   // Edit Profile Modal State
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editForm, setEditForm] = useState({ ...profileData });
@@ -96,463 +99,275 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="page inner-page" style={{ gap: "28px" }}>
-      {/* HERO AVATAR & HEADER - EXTRA LARGE AVATAR & FONTS */}
-      <section
-        className="panel"
-        style={{
-          background: "white",
-          borderRadius: "28px",
-          padding: "36px",
-          border: "1px solid var(--border-soft)",
-          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.04)",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "24px",
-          }}
-        >
+    <div className="page inner-page" style={{ gap: "24px" }}>
+      {/* HERO AVATAR & HEADER - RESPONSIVE HERO CARD */}
+      <section className="panel profile-hero-card">
+        <div className="profile-hero-inner">
           {/* Avatar & Basic Info */}
-          <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
-            {/* Extra Large Avatar (110px x 110px) */}
-            <div style={{ position: "relative" }}>
-              <div
-                style={{
-                  width: "110px",
-                  height: "110px",
-                  borderRadius: "28px",
-                  background: "linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)",
-                  color: "white",
-                  fontSize: "42px",
-                  fontWeight: 900,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  boxShadow: "0 12px 28px -6px rgba(59, 130, 246, 0.4)",
-                  letterSpacing: "-1px",
-                }}
-              >
+          <div className="profile-hero-user">
+            <div className="profile-avatar-wrap">
+              <div className="profile-avatar-large">
                 MA
               </div>
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: "-4px",
-                  right: "-4px",
-                  width: "32px",
-                  height: "32px",
-                  borderRadius: "50%",
-                  background: "#166534",
-                  color: "white",
-                  border: "3px solid white",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+              <div className="profile-avatar-check">
                 <Icon name="check" size={18} />
               </div>
             </div>
 
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
-                <span
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 800,
-                    color: "var(--brand)",
-                    background: "#eff6ff",
-                    padding: "4px 12px",
-                    borderRadius: "8px",
-                    letterSpacing: "0.5px",
-                  }}
-                >
+            <div className="profile-hero-meta">
+              <div className="profile-badge-row">
+                <span className="profile-code-badge">
                   MÃ NV: {profileData.code}
                 </span>
                 <Status tone="green">Đang làm việc</Status>
                 <Status tone="blue">Chính thức (Full-time)</Status>
               </div>
 
-              <h1 style={{ fontSize: "36px", fontWeight: 900, color: "var(--text-main)", margin: "4px 0" }}>
+              <h1 className="profile-name">
                 {profileData.name}
               </h1>
 
-              <p style={{ fontSize: "18px", color: "var(--text-sub)", fontWeight: 700, margin: 0 }}>
+              <p className="profile-title">
                 {profileData.title} · {profileData.department}
               </p>
             </div>
           </div>
 
           {/* Action Button: Edit Profile */}
-          <div>
+          <div className="profile-hero-actions">
             <button
-              className="primary"
+              className="primary profile-edit-btn"
               onClick={handleOpenEditModal}
-              style={{
-                padding: "16px 28px",
-                fontSize: "16px",
-                fontWeight: 800,
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                borderRadius: "14px",
-              }}
             >
-              <Icon name="edit" size={20} /> Cập nhật thông tin hồ sơ
+              <Icon name="edit" size={20} />
+              <span>Cập nhật thông tin hồ sơ</span>
             </button>
           </div>
         </div>
       </section>
 
+      {/* TOP SUB-TABS NAVIGATION FOR PROFILE SECTIONS */}
+      <div className="page-sub-tabs profile-sub-tabs">
+        <button
+          className={activeTab === "all" ? "active" : ""}
+          onClick={() => setActiveTab("all")}
+        >
+          <Icon name="user" size={18} />
+          <span>Tất cả thông tin</span>
+        </button>
+        <button
+          className={activeTab === "personal" ? "active" : ""}
+          onClick={() => setActiveTab("personal")}
+        >
+          <Icon name="user" size={18} />
+          <span>Cá nhân & Liên hệ</span>
+        </button>
+        <button
+          className={activeTab === "job" ? "active" : ""}
+          onClick={() => setActiveTab("job")}
+        >
+          <Icon name="briefcase" size={18} />
+          <span>Công việc & Tổ chức</span>
+        </button>
+        <button
+          className={activeTab === "contract" ? "active" : ""}
+          onClick={() => setActiveTab("contract")}
+        >
+          <Icon name="file-text" size={18} />
+          <span>Hợp đồng & Chứng chỉ</span>
+        </button>
+      </div>
+
       {/* SECTION 1: THÔNG TIN CÁ NHÂN & LIÊN HỆ */}
-      <section
-        className="panel"
-        style={{
-          background: "white",
-          borderRadius: "24px",
-          padding: "32px",
-          border: "1px solid var(--border-soft)",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            borderBottom: "2px solid var(--border-soft)",
-            paddingBottom: "18px",
-            marginBottom: "24px",
-          }}
-        >
-          <div>
-            <p style={{ fontSize: "13px", fontWeight: 800, color: "var(--text-sub)", letterSpacing: "0.8px" }}>
-              HỒ SƠ LÝ LỊCH
-            </p>
-            <h2 style={{ fontSize: "24px", fontWeight: 900, color: "var(--text-main)", margin: "2px 0" }}>
-              Thông tin cá nhân & Liên hệ
-            </h2>
-          </div>
-          <button
-            className="secondary"
-            onClick={handleOpenEditModal}
-            style={{
-              padding: "8px 16px",
-              fontSize: "14px",
-              fontWeight: 700,
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-            }}
-          >
-            <Icon name="edit" size={16} /> Chỉnh sửa
-          </button>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "20px",
-          }}
-        >
-          {[
-            ["Họ và tên khai sinh", profileData.name],
-            ["Ngày sinh", profileData.dob],
-            ["Giới tính", profileData.gender],
-            ["Số CCCD / CMND", profileData.cccd],
-            ["Email công ty", profileData.companyEmail],
-            ["Email cá nhân", profileData.personalEmail],
-            ["Số điện thoại di động", profileData.phone],
-            ["Địa chỉ thường trú", profileData.address],
-            ["Liên hệ khẩn cấp", profileData.emergencyContact],
-            ["Ngân hàng nhận lương", profileData.bankName],
-            ["Số tài khoản (STK)", profileData.bankAccountNo],
-            ["Tên chủ tài khoản", profileData.bankAccountName],
-          ].map(([lbl, val]) => (
-            <div
-              key={lbl}
-              style={{
-                background: "#f8fafc",
-                borderRadius: "16px",
-                padding: "16px 20px",
-                border: "1px solid var(--border-soft)",
-              }}
-            >
-              <span style={{ fontSize: "14px", color: "var(--text-sub)", fontWeight: 700, display: "block", marginBottom: "4px" }}>
-                {lbl}
-              </span>
-              <b style={{ fontSize: "17px", fontWeight: 800, color: "var(--text-main)" }}>
-                {val}
-              </b>
-            </div>
-          ))}
-        </div>
-
-        {/* Highlighted Bank Account Card for Salary Payment */}
-        <div
-          style={{
-            marginTop: "24px",
-            background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
-            borderRadius: "20px",
-            padding: "24px 28px",
-            color: "white",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: "20px",
-            boxShadow: "0 10px 25px -5px rgba(15, 23, 42, 0.25)",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "18px" }}>
-            <div
-              style={{
-                width: "56px",
-                height: "56px",
-                borderRadius: "16px",
-                background: "rgba(59, 130, 246, 0.2)",
-                color: "#60a5fa",
-                border: "1px solid rgba(96, 165, 250, 0.3)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Icon name="wallet" size={28} />
-            </div>
+      {(activeTab === "all" || activeTab === "personal") && (
+        <section className="panel profile-section-panel">
+          <div className="profile-section-header">
             <div>
-              <p style={{ fontSize: "13px", fontWeight: 800, color: "#94a3b8", letterSpacing: "1px", margin: 0, textTransform: "uppercase" }}>
-                Tài khoản ngân hàng nhận lương hàng tháng
+              <p className="profile-section-tag">
+                HỒ SƠ LÝ LỊCH
               </p>
-              <h3 style={{ fontSize: "20px", fontWeight: 900, color: "white", margin: "4px 0" }}>
-                {profileData.bankName}
-              </h3>
-              <div style={{ display: "flex", gap: "20px", marginTop: "6px", flexWrap: "wrap" }}>
-                <span style={{ fontSize: "15px", color: "#cbd5e1", fontWeight: 600 }}>
-                  STK: <strong style={{ color: "#38bdf8", fontWeight: 800, fontSize: "17px" }}>{profileData.bankAccountNo}</strong>
-                </span>
-                <span style={{ fontSize: "15px", color: "#cbd5e1", fontWeight: 600 }}>
-                  Chủ tài khoản: <strong style={{ color: "white", fontWeight: 800 }}>{profileData.bankAccountName}</strong>
-                </span>
-              </div>
+              <h2 className="profile-section-title">
+                Thông tin cá nhân & Liên hệ
+              </h2>
             </div>
-          </div>
-
-          <button
-            className="secondary"
-            onClick={handleOpenEditModal}
-            style={{
-              background: "rgba(255, 255, 255, 0.12)",
-              color: "white",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
-              padding: "10px 20px",
-              fontSize: "14px",
-              fontWeight: 800,
-              borderRadius: "12px",
-            }}
-          >
-            <Icon name="edit" size={16} /> Thay đổi STK
-          </button>
-        </div>
-      </section>
-
-      {/* SECTION 2: THÔNG TIN CÔNG VIỆC & TỔ CHỨC */}
-      <section
-        className="panel"
-        style={{
-          background: "white",
-          borderRadius: "24px",
-          padding: "32px",
-          border: "1px solid var(--border-soft)",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            borderBottom: "2px solid var(--border-soft)",
-            paddingBottom: "18px",
-            marginBottom: "24px",
-          }}
-        >
-          <div>
-            <p style={{ fontSize: "13px", fontWeight: 800, color: "var(--text-sub)", letterSpacing: "0.8px" }}>
-              TỔ CHỨC & VỊ TRÍ
-            </p>
-            <h2 style={{ fontSize: "24px", fontWeight: 900, color: "var(--text-main)", margin: "2px 0" }}>
-              Thông tin công việc & Phòng ban
-            </h2>
-          </div>
-          <Status tone="blue">
-            <Icon name="briefcase" size={16} /> Chính thức
-          </Status>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "20px",
-          }}
-        >
-          {[
-            ["Mã nhân viên", profileData.code],
-            ["Phòng ban", "Product & Design"],
-            ["Chức danh chuyên môn", profileData.title],
-            ["Nhóm chuyên môn (Team)", "Product Development"],
-            ["Quản lý trực tiếp (Lead)", "Trần Hoàng Nam (Product Lead)"],
-            ["Chi nhánh làm việc", "Văn phòng TP. Hồ Chí Minh"],
-            ["Loại hình nhân sự", "Chính thức (Full-time)"],
-            ["Ngày gia nhập công ty", "15/04/2024"],
-            ["Thâm niên làm việc", "2 năm 5 tháng"],
-          ].map(([lbl, val]) => (
-            <div
-              key={lbl}
-              style={{
-                background: "#f8fafc",
-                borderRadius: "16px",
-                padding: "16px 20px",
-                border: "1px solid var(--border-soft)",
-              }}
+            <button
+              className="secondary profile-sec-btn"
+              onClick={handleOpenEditModal}
             >
-              <span style={{ fontSize: "14px", color: "var(--text-sub)", fontWeight: 700, display: "block", marginBottom: "4px" }}>
-                {lbl}
-              </span>
-              <b style={{ fontSize: "17px", fontWeight: 800, color: "var(--text-main)" }}>
-                {val}
-              </b>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* SECTION 3: HỢP ĐỒNG & CHỨNG CHỈ CHUYÊN MÔN (WITH DEDICATED UPDATE CERTIFICATE BUTTON) */}
-      <section
-        className="panel"
-        style={{
-          background: "white",
-          borderRadius: "24px",
-          padding: "32px",
-          border: "1px solid var(--border-soft)",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            borderBottom: "2px solid var(--border-soft)",
-            paddingBottom: "18px",
-            marginBottom: "24px",
-            flexWrap: "wrap",
-            gap: "12px",
-          }}
-        >
-          <div>
-            <p style={{ fontSize: "13px", fontWeight: 800, color: "var(--text-sub)", letterSpacing: "0.8px" }}>
-              PHÁP LÝ & BẰNG CẤP
-            </p>
-            <h2 style={{ fontSize: "24px", fontWeight: 900, color: "var(--text-main)", margin: "2px 0" }}>
-              Hợp đồng & Chứng chỉ chuyên môn
-            </h2>
+              <Icon name="edit" size={16} /> <span>Chỉnh sửa</span>
+            </button>
           </div>
-          <button
-            className="primary"
-            onClick={() => setIsCertModalOpen(true)}
-            style={{
-              padding: "10px 20px",
-              fontSize: "15px",
-              fontWeight: 800,
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              borderRadius: "12px",
-            }}
-          >
-            <Icon name="plus" size={18} /> Cập nhật chứng chỉ
-          </button>
-        </div>
 
-        {/* Contract Info Grid */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "20px",
-            marginBottom: "28px",
-          }}
-        >
-          {[
-            ["Loại hợp đồng lao động", "Hợp đồng Không xác định thời hạn"],
-            ["Mã hợp đồng", "HDLD-2024-018/OH"],
-            ["Ngày hiệu lực", "15/04/2024"],
-            ["Trình độ học vấn", "Cử nhân Thiết kế Đồ họa - ĐH Kiến trúc TP.HCM"],
-          ].map(([lbl, val]) => (
-            <div
-              key={lbl}
-              style={{
-                background: "#f8fafc",
-                borderRadius: "16px",
-                padding: "16px 20px",
-                border: "1px solid var(--border-soft)",
-              }}
-            >
-              <span style={{ fontSize: "14px", color: "var(--text-sub)", fontWeight: 700, display: "block", marginBottom: "4px" }}>
-                {lbl}
-              </span>
-              <b style={{ fontSize: "17px", fontWeight: 800, color: "var(--text-main)" }}>
-                {val}
-              </b>
-            </div>
-          ))}
-        </div>
-
-        {/* Certificates List Cards */}
-        <div>
-          <h3 style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-main)", marginBottom: "16px" }}>
-            Danh sách chứng chỉ đã xác minh ({certificates.length})
-          </h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "16px" }}>
-            {certificates.map((c) => (
-              <div
-                key={c.id}
-                style={{
-                  background: "#f0fdf4",
-                  borderRadius: "16px",
-                  padding: "18px 22px",
-                  border: "1px solid #bbf7d0",
-                  display: "flex",
-                  alignItems: "flex-start",
-                  justifyContent: "space-between",
-                  gap: "12px",
-                }}
-              >
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
-                    <span style={{ fontSize: "12px", fontWeight: 800, color: "#166534", background: "#dcfce7", padding: "2px 8px", borderRadius: "6px" }}>
-                      {c.type}
-                    </span>
-                    <span style={{ fontSize: "13px", color: "var(--text-sub)", fontWeight: 600 }}>Năm {c.year}</span>
-                  </div>
-                  <b style={{ fontSize: "17px", fontWeight: 900, color: "#14532d", display: "block", marginBottom: "4px" }}>
-                    {c.name}
-                  </b>
-                  <span style={{ fontSize: "14px", color: "var(--text-sub)", fontWeight: 600 }}>
-                    Cấp bởi: {c.issuer}
-                  </span>
-                </div>
-                <Status tone="green">Đã duyệt</Status>
+          <div className="profile-field-grid">
+            {[
+              ["Họ và tên khai sinh", profileData.name],
+              ["Ngày sinh", profileData.dob],
+              ["Giới tính", profileData.gender],
+              ["Số CCCD / CMND", profileData.cccd],
+              ["Email công ty", profileData.companyEmail],
+              ["Email cá nhân", profileData.personalEmail],
+              ["Số điện thoại di động", profileData.phone],
+              ["Địa chỉ thường trú", profileData.address],
+              ["Liên hệ khẩn cấp", profileData.emergencyContact],
+              ["Ngân hàng nhận lương", profileData.bankName],
+              ["Số tài khoản (STK)", profileData.bankAccountNo],
+              ["Tên chủ tài khoản", profileData.bankAccountName],
+            ].map(([lbl, val]) => (
+              <div key={lbl} className="profile-field-card">
+                <span className="profile-field-label">
+                  {lbl}
+                </span>
+                <b className="profile-field-val">
+                  {val}
+                </b>
               </div>
             ))}
           </div>
-        </div>
-      </section>
+
+          {/* Highlighted Bank Account Card for Salary Payment */}
+          <div className="profile-bank-card">
+            <div className="profile-bank-inner">
+              <div className="profile-bank-icon">
+                <Icon name="wallet" size={28} />
+              </div>
+              <div>
+                <p className="profile-bank-label">
+                  Tài khoản ngân hàng nhận lương hàng tháng
+                </p>
+                <h3 className="profile-bank-name">
+                  {profileData.bankName}
+                </h3>
+                <div className="profile-bank-details">
+                  <span>
+                    STK: <strong style={{ color: "#38bdf8", fontWeight: 800, fontSize: "17px" }}>{profileData.bankAccountNo}</strong>
+                  </span>
+                  <span>
+                    Chủ tài khoản: <strong style={{ color: "white", fontWeight: 800 }}>{profileData.bankAccountName}</strong>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              className="secondary profile-bank-btn"
+              onClick={handleOpenEditModal}
+            >
+              <Icon name="edit" size={16} /> <span>Thay đổi STK</span>
+            </button>
+          </div>
+        </section>
+      )}
+
+      {/* SECTION 2: THÔNG TIN CÔNG VIỆC & TỔ CHỨC */}
+      {(activeTab === "all" || activeTab === "job") && (
+        <section className="panel profile-section-panel">
+          <div className="profile-section-header">
+            <div>
+              <p className="profile-section-tag">
+                TỔ CHỨC & VỊ TRÍ
+              </p>
+              <h2 className="profile-section-title">
+                Thông tin công việc & Phòng ban
+              </h2>
+            </div>
+            <Status tone="blue">
+              <Icon name="briefcase" size={16} /> Chính thức
+            </Status>
+          </div>
+
+          <div className="profile-field-grid">
+            {[
+              ["Mã nhân viên", profileData.code],
+              ["Phòng ban", "Product & Design"],
+              ["Chức danh chuyên môn", profileData.title],
+              ["Nhóm chuyên môn (Team)", "Product Development"],
+              ["Quản lý trực tiếp (Lead)", "Trần Hoàng Nam (Product Lead)"],
+              ["Chi nhánh làm việc", "Văn phòng TP. Hồ Chí Minh"],
+              ["Loại hình nhân sự", "Chính thức (Full-time)"],
+              ["Ngày gia nhập công ty", "15/04/2024"],
+              ["Thâm niên làm việc", "2 năm 5 tháng"],
+            ].map(([lbl, val]) => (
+              <div key={lbl} className="profile-field-card">
+                <span className="profile-field-label">
+                  {lbl}
+                </span>
+                <b className="profile-field-val">
+                  {val}
+                </b>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* SECTION 3: HỢP ĐỒNG & CHỨNG CHỈ CHUYÊN MÔN */}
+      {(activeTab === "all" || activeTab === "contract") && (
+        <section className="panel profile-section-panel">
+          <div className="profile-section-header">
+            <div>
+              <p className="profile-section-tag">
+                PHÁP LÝ & BẰNG CẤP
+              </p>
+              <h2 className="profile-section-title">
+                Hợp đồng & Chứng chỉ chuyên môn
+              </h2>
+            </div>
+            <button
+              className="primary profile-sec-btn"
+              onClick={() => setIsCertModalOpen(true)}
+            >
+              <Icon name="plus" size={18} /> <span>Cập nhật chứng chỉ</span>
+            </button>
+          </div>
+
+          {/* Contract Info Grid */}
+          <div className="profile-field-grid" style={{ marginBottom: "28px" }}>
+            {[
+              ["Loại hợp đồng lao động", "Hợp đồng Không xác định thời hạn"],
+              ["Mã hợp đồng", "HDLD-2024-018/OH"],
+              ["Ngày hiệu lực", "15/04/2024"],
+              ["Trình độ học vấn", "Cử nhân Thiết kế Đồ họa - ĐH Kiến trúc TP.HCM"],
+            ].map(([lbl, val]) => (
+              <div key={lbl} className="profile-field-card">
+                <span className="profile-field-label">
+                  {lbl}
+                </span>
+                <b className="profile-field-val">
+                  {val}
+                </b>
+              </div>
+            ))}
+          </div>
+
+          {/* Certificates List Cards */}
+          <div>
+            <h3 className="profile-subhead">
+              Danh sách chứng chỉ đã xác minh ({certificates.length})
+            </h3>
+            <div className="profile-cert-grid">
+              {certificates.map((c) => (
+                <div key={c.id} className="profile-cert-card">
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+                      <span style={{ fontSize: "12px", fontWeight: 800, color: "#166534", background: "#dcfce7", padding: "2px 8px", borderRadius: "6px" }}>
+                        {c.type}
+                      </span>
+                      <span style={{ fontSize: "13px", color: "var(--text-sub)", fontWeight: 600 }}>Năm {c.year}</span>
+                    </div>
+                    <b style={{ fontSize: "17px", fontWeight: 900, color: "#14532d", display: "block", marginBottom: "4px" }}>
+                      {c.name}
+                    </b>
+                    <span style={{ fontSize: "14px", color: "var(--text-sub)", fontWeight: 600 }}>
+                      Cấp bởi: {c.issuer}
+                    </span>
+                  </div>
+                  <Status tone="green">Đã duyệt</Status>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* DIRECT EDIT PROFILE MODAL */}
       {isEditModalOpen && (
@@ -613,7 +428,7 @@ export default function ProfilePage() {
             </div>
 
             <form onSubmit={handleSaveProfile} style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              <div className="profile-modal-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                 <div>
                   <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
                     Họ và tên
@@ -652,7 +467,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              <div className="profile-modal-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                 <div>
                   <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
                     Số điện thoại di động
@@ -731,7 +546,7 @@ export default function ProfilePage() {
                 <h4 style={{ fontSize: "16px", fontWeight: 800, color: "var(--brand)", marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
                   <Icon name="wallet" size={18} /> Thông tin ngân hàng nhận lương
                 </h4>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "12px" }}>
+                <div className="profile-modal-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "12px" }}>
                   <div>
                     <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
                       Ngân hàng thụ hưởng
@@ -891,7 +706,7 @@ export default function ProfilePage() {
                 />
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              <div className="profile-modal-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                 <div>
                   <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
                     Tổ chức cấp

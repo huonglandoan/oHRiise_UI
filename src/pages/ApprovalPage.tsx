@@ -685,6 +685,7 @@ export default function ApprovalPage({ role }: { role?: string }) {
 
       {/* FILTER & TABS BAR */}
       <div
+        className="page-sub-tabs"
         style={{
           display: "flex",
           justifyContent: "space-between",

@@ -195,7 +195,7 @@ export default function ExpensePage({ open }: { open?: () => void }) {
       </div>
 
       {/* SUB-TABS NAVIGATION BAR: TẠO PHIẾU FIRST, LỊCH SỬ BỒI HOÀN AT THE END */}
-      <div style={{ marginBottom: "28px", borderBottom: "2px solid var(--border-soft)" }}>
+      <div className="page-sub-tabs" style={{ marginBottom: "28px", borderBottom: "2px solid var(--border-soft)" }}>
         <div style={{ display: "flex", gap: "12px" }}>
           {/* TAB 1: TẠO PHIẾU BỒI HOÀN (FIRST) */}
           <button

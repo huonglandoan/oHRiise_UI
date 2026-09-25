@@ -327,7 +327,7 @@ export default function LeavePage({ open }: { open?: () => void }) {
       </div>
 
       {/* SUB-TABS NAVIGATION BAR: ĐƠN NGHỈ PHÉP FIRST, LỊCH SỬ NGHỈ PHÉP AT THE END */}
-      <div style={{ marginBottom: "28px", borderBottom: "2px solid var(--border-soft)" }}>
+      <div className="page-sub-tabs" style={{ marginBottom: "28px", borderBottom: "2px solid var(--border-soft)" }}>
         <div style={{ display: "flex", gap: "12px" }}>
           {/* TAB 1: ĐƠN NGHỈ PHÉP (FIRST) */}
           <button
