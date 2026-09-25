@@ -1,0 +1,10 @@
+{
+  "description": "Streamline your project workflow with an intuitive interface for task management, allowing users to efficiently organize and track their tasks.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

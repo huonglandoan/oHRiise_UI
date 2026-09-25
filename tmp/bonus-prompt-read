@@ -1,0 +1,1909 @@
+[/workspaces/default/code/src/imports/bonus_prompt.txt#f14d]
+1:============================================================
+2:oHRiise — EXISTING FIGMA MAKE PROJECT
+3:UI/UX COMPLETION + FLOW REPAIR PATCH
+4:============================================================
+5:
+6:IMPORTANT:
+7:
+8:This is a PATCH to the EXISTING oHRiise application.
+9:
+10:DO NOT regenerate the entire application from scratch.
+11:
+12:DO NOT replace the existing design system.
+13:
+14:DO NOT redesign screens that are already complete and visually coherent.
+15:
+16:DO NOT remove existing working features.
+17:
+18:DO NOT create a second parallel application.
+19:
+20:Your task is to:
+21:
+22:1. AUDIT the current existing UI.
+23:2. PRESERVE all good existing screens.
+24:3. ADD missing modules/screens.
+25:4. REPLACE generic placeholder/template pages with
+26:   proper domain-specific UI where necessary.
+27:5. CONNECT all major screens into a coherent interactive demo.
+28:6. FIX the role-based navigation and demo flow.
+29:7. Make the final prototype accurately represent the
+30:   oHRiise Use Case architecture.
+31:
+32:============================================================
+33:SOURCE OF TRUTH
+34:============================================================
+35:
+36:The current application follows this architecture:
+37:
+38:EVERY ACCOUNT IS AN EMPLOYEE FIRST.
+39:
+40:There is ONE unified oHRiise application.
+41:
+42:Roles add capabilities:
+43:
+44:Employee
+45:+
+46:Team Lead capabilities
+47:+
+48:HR capabilities
+49:+
+50:System Admin capabilities
+51:
+52:A user can have multiple roles.
+53:
+54:Examples:
+55:
+56:Employee
+57:Employee + Team Lead
+58:Employee + HR
+59:Employee + HR + Team Lead
+60:Employee + System Admin
+61:
+62:Role MUST NOT replace Core Employee functionality.
+63:
+64:Use the current Use Case Overview and functional requirements
+65:as the business-flow reference.
+66:
+67:The Use Case overview groups detailed functions into
+68:high-level domain aggregates for readability.
+69:
+70:Therefore:
+71:
+72:"Quản lý chấm công"
+73:does NOT mean there is only one screen.
+74:
+75:It represents a domain containing multiple related screens,
+76:actions, states and workflows.
+77:
+78:The UI should expose the appropriate detail.
+79:
+80:============================================================
+81:CURRENT DESIGN SYSTEM — PRESERVE
+82:============================================================
+83:
+84:Preserve the current oHRiise visual language:
+85:
+86:- oHRiise branding
+87:- current logo
+88:- current sidebar
+89:- current header
+90:- current typography
+91:- current spacing
+92:- current buttons
+93:- current status chips
+94:- current cards
+95:- current table style
+96:- current blue / cyan / lime palette
+97:- current responsive behavior
+98:
+99:Do NOT introduce:
+100:
+101:- purple AI aesthetics
+102:- generic SaaS templates
+103:- glassmorphism
+104:- excessive gradients
+105:- giant KPI cards
+106:- unrelated illustration styles
+107:- completely different navigation
+108:
+109:The new screens must look like they belong to
+110:the SAME oHRiise application.
+111:
+112:============================================================
+113:CRITICAL PROBLEM TO FIX
+114:============================================================
+115:
+116:The current prototype contains several pages that visually reuse
+117:the same generic data-table layout even though the business
+118:domains are fundamentally different.
+119:
+120:DO NOT continue this pattern.
+121:
+122:The following MUST have domain-specific layouts:
+123:
+124:1. Nghỉ phép
+125:2. Phiếu lương
+126:3. Chi phí
+127:4. Lịch team
+128:5. Hồ sơ cá nhân
+129:6. Hợp đồng
+130:7. Thôi việc
+131:8. Hồ sơ nhân sự
+132:9. Tuyển dụng
+133:10. Đồng bộ bảng lương
+134:11. Phân tích nhân sự
+135:12. Cấu hình chính sách
+136:13. Quản lý người dùng
+137:14. RBAC
+138:15. Quản lý chi nhánh
+139:
+140:A table may still be used inside these pages where appropriate,
+141:but the ENTIRE PAGE MUST NOT be the same generic table template.
+142:
+143:============================================================
+144:PART A — LOGIN
+145:============================================================
+146:
+147:ADD A REAL LOGIN SCREEN.
+148:
+149:The application should NOT immediately open directly
+150:into the dashboard.
+151:
+152:Create:
+153:
+154:LOGIN
+155:
+156:Brand:
+157:
+158:oHRiise
+159:People rise together
+160:
+161:Fields:
+162:
+163:- Email / Tài khoản
+164:- Mật khẩu
+165:
+166:Actions:
+167:
+168:[ Đăng nhập ]
+169:
+170:Secondary:
+171:
+172:- Ghi nhớ đăng nhập
+173:- Quên mật khẩu
+174:
+175:Demo helper:
+176:
+177:"Chế độ demo"
+178:
+179:Provide clearly visible demo accounts:
+180:
+181:Employee
+182:Team Lead
+183:HR Branch
+184:HR Head
+185:System Admin
+186:
+187:These should allow the prototype to demonstrate
+188:different role-based experiences.
+189:
+190:After login:
+191:
+192:→ Dashboard
+193:
+194:The login screen must use the existing oHRiise visual language.
+195:
+196:Do not create a generic corporate login template.
+197:
+198:============================================================
+199:PART B — CORE EMPLOYEE MODULES
+200:============================================================
+201:
+202:Every role retains the Core Employee experience.
+203:
+204:The following modules MUST be available to every employee
+205:according to the current permission model:
+206:
+207:- Tổng quan
+208:- Chấm công
+209:- Làm việc từ xa
+210:- Nghỉ phép
+211:- Chi phí
+212:- Phiếu lương
+213:- Lịch team
+214:- Hồ sơ cá nhân
+215:- Hợp đồng cá nhân
+216:- Ca làm việc cá nhân
+217:- Thôi việc / resignation flow
+218:- Thông báo
+219:- AI WFH Monitoring
+220:
+221:============================================================
+222:B1 — NGHỈ PHÉP
+223:============================================================
+224:
+225:Do NOT reuse the generic DataPage.
+226:
+227:Create a dedicated Leave experience.
+228:
+229:Include:
+230:
+231:Header:
+232:
+233:"Nghỉ phép"
+234:
+235:Show:
+236:
+237:- Số ngày phép còn lại
+238:- Đã sử dụng
+239:- Đang chờ
+240:- Chính sách áp dụng
+241:
+242:Different leave types:
+243:
+244:- Nghỉ phép năm
+245:- Nghỉ ốm
+246:- Nghỉ bù
+247:- Nghỉ không lương
+248:
+249:Main sections:
+250:
+251:1. Leave balance
+252:2. Calendar
+253:3. My requests
+254:4. Leave policy
+255:
+256:Primary CTA:
+257:
+258:[ Tạo đơn nghỉ phép ]
+259:
+260:Create request flow:
+261:
+262:Loại nghỉ
+263:→ Ngày bắt đầu
+264:→ Ngày kết thúc
+265:→ Số ngày
+266:→ Lý do
+267:→ Gửi yêu cầu
+268:
+269:Show policy validation.
+270:
+271:Show status:
+272:
+273:Chờ duyệt
+274:Đã duyệt
+275:Từ chối
+276:Đã hủy
+277:
+278:The UI must make this visually distinct from:
+279:
+280:Expense
+281:Payslip
+282:Team Calendar
+283:
+284:============================================================
+285:B2 — PHIẾU LƯƠNG
+286:============================================================
+287:
+288:Create a financial-document-oriented interface.
+289:
+290:Do NOT use the generic employee table.
+291:
+292:Header:
+293:
+294:"Phiếu lương"
+295:
+296:Show:
+297:
+298:- Kỳ lương
+299:- Tổng thu nhập
+300:- Các khoản khấu trừ
+301:- Thực nhận
+302:
+303:Create a payslip document preview.
+304:
+305:Sections:
+306:
+307:Thu nhập
+308:Khấu trừ
+309:Thực nhận
+310:
+311:Actions:
+312:
+313:[ Xem chi tiết ]
+314:[ Tải phiếu lương ]
+315:
+316:Allow switching:
+317:
+318:Tháng 09/2026
+319:Tháng 08/2026
+320:...
+321:
+322:Clearly communicate that salary data is private.
+323:
+324:============================================================
+325:B3 — CHI PHÍ / BỒI HOÀN
+326:============================================================
+327:
+328:Create a dedicated expense-management UI.
+329:
+330:Do NOT use the generic employee data table as the main layout.
+331:
+332:Show:
+333:
+334:- Tổng chi phí đã gửi
+335:- Đang chờ duyệt
+336:- Đã duyệt
+337:- Đã thanh toán
+338:
+339:Expense list should use expense-specific information:
+340:
+341:- Loại chi phí
+342:- Số tiền
+343:- Ngày
+344:- Dự án / Team
+345:- Trạng thái
+346:- Người duyệt
+347:
+348:Primary CTA:
+349:
+350:[ Gửi chi phí ]
+351:
+352:Expense detail:
+353:
+354:Receipt / attachment
+355:Amount
+356:Category
+357:Description
+358:Project
+359:Approval history
+360:Payment status
+361:
+362:Show the actual approval flow:
+363:
+364:Employee
+365:→ Team Lead
+366:→ HR Branch
+367:→ HR Head when applicable
+368:
+369:For fast-track eligible expense,
+370:show the relevant approval context without inventing
+371:additional business rules.
+372:
+373:============================================================
+374:B4 — LỊCH TEAM
+375:============================================================
+376:
+377:This MUST NOT look like Leave or Expense.
+378:
+379:Create a real team calendar.
+380:
+381:Views:
+382:
+383:- Tuần
+384:- Tháng
+385:
+386:Show:
+387:
+388:Team members as rows.
+389:
+390:Days as columns.
+391:
+392:Visual states:
+393:
+394:Office
+395:WFH
+396:Leave
+397:Business trip if supported by current requirements
+398:
+399:Example:
+400:
+401:                Mon Tue Wed Thu Fri
+402:Nguyễn Minh Anh  🏢  🏠  🏢  🏢  🏠
+403:Trần Hoàng Nam   🏢  🏢  🏠  🏢  🏢
+404:...
+405:
+406:Allow viewing:
+407:
+408:- Team availability
+409:- WFH
+410:- Leave
+411:- Work schedule
+412:
+413:The Team Calendar should feel operational,
+414:not like another generic data table.
+415:
+416:============================================================
+417:B5 — HỒ SƠ CÁ NHÂN
+418:============================================================
+419:
+420:The current profile page is too shallow.
+421:
+422:Create a detailed employee self-service profile.
+423:
+424:Sections / tabs:
+425:
+426:1. Thông tin cá nhân
+427:2. Thông tin liên hệ
+428:3. Thông tin công việc
+429:4. Hợp đồng
+430:5. Chứng chỉ
+431:6. Tài liệu cá nhân
+432:7. Lịch sử thay đổi
+433:
+434:Show:
+435:
+436:- Họ tên
+437:- Ảnh
+438:- Mã nhân viên
+439:- Ngày sinh
+440:- Email
+441:- Số điện thoại
+442:- Địa chỉ
+443:- Phòng ban
+444:- Chức vụ
+445:- Team
+446:- Team Lead
+447:- Chi nhánh
+448:- Loại nhân sự
+449:
+450:Allow:
+451:
+452:[ Cập nhật hồ sơ ]
+453:
+454:Use editable vs read-only states.
+455:
+456:============================================================
+457:B6 — QUẢN LÝ HỢP ĐỒNG
+458:============================================================
+459:
+460:This is a MISSING CORE EMPLOYEE capability.
+461:
+462:Create:
+463:
+464:"Hợp đồng"
+465:
+466:Employee view:
+467:
+468:- Hợp đồng hiện tại
+469:- Loại hợp đồng
+470:- Ngày bắt đầu
+471:- Ngày kết thúc
+472:- Trạng thái
+473:- Tài liệu hợp đồng
+474:
+475:Actions:
+476:
+477:[ Xem hợp đồng ]
+478:[ Xem PDF ]
+479:
+480:Show contract history.
+481:
+482:If an expiry is approaching:
+483:
+484:"Đang đến hạn"
+485:
+486:Show appropriate notification/reminder.
+487:
+488:HR users should additionally be able to manage contracts
+489:within their permitted employee scope.
+490:
+491:HR contract management should include:
+492:
+493:- Contract list
+494:- Contract detail
+495:- Template
+496:- Generate contract
+497:- Preview PDF
+498:- Upload signed document
+499:- Expiry status
+500:- Renewal / non-renewal workflow
+501:
+502:Do NOT create completely separate visual systems
+503:for Employee Contract and HR Contract.
+504:
+505:They are the same domain with different permissions.
+506:
+507:============================================================
+508:B7 — CA LÀM VIỆC CÁ NHÂN
+509:============================================================
+510:
+511:Create:
+512:
+513:"Ca làm việc"
+514:
+515:Employee view:
+516:
+517:Current schedule
+518:Current shift
+519:Upcoming shifts
+520:Working hours
+521:Shift history
+522:
+523:Show a calendar/schedule view.
+524:
+525:Example:
+526:
+527:09/22
+528:08:00 — 17:00
+529:Office
+530:
+531:09/23
+532:08:00 — 17:00
+533:WFH
+534:
+535:09/24
+536:09:00 — 18:00
+537:Office
+538:
+539:If shift swap is supported by the functional requirements,
+540:provide:
+541:
+542:[ Đề xuất đổi ca ]
+543:
+544:Flow:
+545:
+546:Employee A proposes
+547:→ Employee B accepts/rejects
+548:→ Team Lead approves/rejects
+549:
+550:The UI must clearly show each state.
+551:
+552:============================================================
+553:B8 — THÔI VIỆC / RESIGNATION
+554:============================================================
+555:
+556:Create a dedicated employee resignation page.
+557:
+558:This MUST NOT be a generic form.
+559:
+560:Title:
+561:
+562:"Thôi việc"
+563:
+564:Show:
+565:
+566:- Loại nhân sự
+567:- Ngày làm việc cuối cùng
+568:- Thời hạn báo trước
+569:- Trạng thái hồ sơ
+570:- Hướng dẫn quy trình
+571:
+572:Important business rules:
+573:
+574:Full-time probation:
+575:minimum 3 days
+576:
+577:Full-time official:
+578:30 days
+579:
+580:Part-time:
+581:30 days
+582:
+583:Intern:
+584:contract end or applicable 3-day notice
+585:
+586:Contractor:
+587:follow service agreement / applicable contract handling
+588:
+589:The UI should dynamically explain the applicable notice rule.
+590:
+591:Employee submits:
+592:
+593:- Last working day
+594:- Reason
+595:- Completed signed resignation document
+596:- Supporting document when applicable
+597:
+598:Show:
+599:
+600:[ Gửi hồ sơ thôi việc ]
+601:
+602:After submission:
+603:
+604:Submitted
+605:→ HR processing
+606:→ Offboarding
+607:→ Completed
+608:
+609:HR must NOT be presented as "approving whether
+610:the employee is allowed to resign".
+611:
+612:HR tracks the post-submission offboarding process.
+613:
+614:============================================================
+615:B9 — NOTIFICATIONS
+616:============================================================
+617:
+618:The current notification bell is only decorative.
+619:
+620:Fix it.
+621:
+622:Clicking the bell MUST open a real notification panel.
+623:
+624:Include:
+625:
+626:- Unread count
+627:- Read/unread state
+628:- Timestamp
+629:- Notification category
+630:- Related module
+631:- CTA
+632:
+633:Examples:
+634:
+635:"Đơn nghỉ phép của bạn đã được phê duyệt."
+636:
+637:"Hợp đồng của bạn sắp hết hạn."
+638:
+639:"Yêu cầu bồi hoàn đang chờ Team Lead xử lý."
+640:
+641:"Bạn có lịch WFH ngày 25/09."
+642:
+643:"Yêu cầu điều chỉnh chấm công đã được xử lý."
+644:
+645:Click notification:
+646:
+647:→ navigate to related screen.
+648:
+649:Also create:
+650:
+651:"Xem tất cả thông báo"
+652:
+653:with a dedicated notification page.
+654:
+655:============================================================
+656:PART C — HR
+657:============================================================
+658:
+659:HR retains all Core Employee features.
+660:
+661:HR-specific modules must be visually and functionally distinct.
+662:
+663:Do NOT reuse the generic DataPage template.
+664:
+665:============================================================
+666:C1 — HỒ SƠ NHÂN SỰ
+667:============================================================
+668:
+669:Create a dedicated HR employee-management experience.
+670:
+671:Header:
+672:
+673:"Hồ sơ nhân sự"
+674:
+675:Show:
+676:
+677:- Tổng nhân sự
+678:- Đang hoạt động
+679:- Thử việc
+680:- Sắp hết hợp đồng
+681:- Đang offboarding
+682:
+683:Employee list:
+684:
+685:- Avatar
+686:- Employee ID
+687:- Name
+688:- Department
+689:- Position
+690:- Branch
+691:- Employment type
+692:- Team Lead
+693:- Status
+694:
+695:Click employee:
+696:
+697:→ detailed employee profile
+698:
+699:Tabs:
+700:
+701:Overview
+702:Personal Information
+703:Employment
+704:Contracts
+705:Attendance
+706:Leave
+707:Expense
+708:Equipment
+709:Documents
+710:Offboarding
+711:Activity
+712:
+713:HR should be able to perform actions
+714:according to permission.
+715:
+716:Do not expose sensitive information to roles
+717:without permission.
+718:
+719:============================================================
+720:C2 — HR OFFBOARDING
+721:============================================================
+722:
+723:Create a dedicated HR:
+724:
+725:"Quản lý thôi việc"
+726:
+727:Dashboard:
+728:
+729:- Đang xử lý
+730:- Chờ bàn giao
+731:- Chờ thu hồi tài sản
+732:- Chờ khóa tài khoản
+733:- Hoàn tất
+734:
+735:Offboarding detail:
+736:
+737:Employee
+738:Last working day
+739:Reason
+740:Resignation status
+741:
+742:Checklist:
+743:
+744:□ Hồ sơ thôi việc
+745:□ Bàn giao công việc
+746:□ Bàn giao tài sản / equipment
+747:□ Thu hồi quyền truy cập
+748:□ Xác nhận ngày làm việc cuối
+749:□ Hoàn tất offboarding
+750:
+751:Status progression:
+752:
+753:Resignation submitted
+754:→ HR processing
+755:→ Handover
+756:→ Asset recovery
+757:→ Account lock
+758:→ Completed
+759:
+760:============================================================
+761:C3 — HR POLICY CONFIGURATION
+762:============================================================
+763:
+764:Create:
+765:
+766:"Cấu hình chính sách"
+767:
+768:This is NOT System Admin configuration.
+769:
+770:It is HR business-policy configuration.
+771:
+772:Sections:
+773:
+774:- Chính sách nghỉ phép
+775:- Chính sách WFH
+776:- Chính sách chấm công
+777:- Chính sách ca làm việc
+778:- Chính sách hoàn ứng / chi phí
+779:- Quy tắc báo trước thôi việc
+780:
+781:Each policy should have:
+782:
+783:Status
+784:Effective date
+785:Scope
+786:Applicable employees
+787:Edit action
+788:
+789:Example:
+790:
+791:Hybrid Work — HCM
+792:
+793:Maximum WFH:
+794:2 days/week
+795:
+796:Advance registration:
+797:24 hours
+798:
+799:Approval:
+800:Team Lead
+801:
+802:Show:
+803:
+804:[ Chỉnh sửa chính sách ]
+805:
+806:Do not mix HR business policy with
+807:technical system configuration.
+808:
+809:============================================================
+810:C4 — HR PAYROLL / MISA SYNC
+811:============================================================
+812:
+813:Current "Đồng bộ bảng lương" is too similar to
+814:Hồ sơ nhân sự / Tuyển dụng / Analytics.
+815:
+816:Create a dedicated synchronization workflow.
+817:
+818:Title:
+819:
+820:"Đồng bộ bảng lương"
+821:
+822:Explain:
+823:
+824:oHRiise prepares attendance/timesheet data.
+825:
+826:→ Sync to MISA AMIS
+827:
+828:Show:
+829:
+830:Current payroll period
+831:Attendance status
+832:Timesheet status
+833:Validation status
+834:Sync status
+835:
+836:Flow:
+837:
+838:Chấm công
+839:→ Kiểm tra dữ liệu
+840:→ Chốt bảng công
+841:→ Đồng bộ MISA AMIS
+842:→ Đồng bộ hoàn tất
+843:
+844:Actions:
+845:
+846:[ Kiểm tra dữ liệu ]
+847:[ Đồng bộ MISA AMIS ]
+848:
+849:Show success / error / validation states.
+850:
+851:Do NOT design oHRiise as an independent payroll-calculation
+852:system if the current functional requirements define
+853:MISA AMIS as the payroll-processing system.
+854:
+855:============================================================
+856:C5 — HR ANALYTICS
+857:============================================================
+858:
+859:Create a REAL analytics dashboard.
+860:
+861:This MUST NOT look like the employee list.
+862:
+863:Use:
+864:
+865:- charts
+866:- trend lines
+867:- distributions
+868:- workforce composition
+869:- turnover
+870:- headcount
+871:- employment type
+872:- branch distribution
+873:- attendance trends
+874:- leave trends
+875:
+876:Use the existing oHRiise visual language.
+877:
+878:Avoid excessive giant KPI cards.
+879:
+880:Charts should answer real HR questions.
+881:
+882:============================================================
+883:C6 — RECRUITMENT
+884:============================================================
+885:
+886:Recruitment MUST become a dedicated domain.
+887:
+888:Create:
+889:
+890:Recruitment Dashboard
+891:
+892:Jobs
+893:Candidates
+894:Interviews
+895:AI Candidate Matching
+896:
+897:DO NOT use the generic DataPage.
+898:
+899:============================================================
+900:AI CANDIDATE MATCHING
+901:============================================================
+902:
+903:THIS IS A CRITICAL REQUIRED MODULE.
+904:
+905:It was missing / incomplete in the current prototype.
+906:
+907:It must be visible to:
+908:
+909:HR / Recruitment users with permission.
+910:
+911:It must NOT be visible to ordinary employees.
+912:
+913:It must NOT automatically become available to
+914:System Admin merely because they are Admin.
+915:
+916:Create the following flow:
+917:
+918:Recruitment
+919:→ Job
+920:→ JD
+921:→ Candidates
+922:→ AI Candidate Matching
+923:→ Upload / select CV
+924:→ AI analysis
+925:→ Candidate analysis
+926:→ HR decision
+927:
+928:Dedicated screens:
+929:
+930:1. AI Candidate Matching dashboard
+931:2. Job selection
+932:3. JD detail
+933:4. CV upload
+934:5. AI processing
+935:6. Candidate AI analysis
+936:7. Match score
+937:8. Explainable score
+938:9. Matched requirements
+939:10. Missing requirements
+940:11. Interview focus
+941:12. Candidate comparison
+942:13. Candidate pipeline
+943:14. Candidate detail
+944:15. Analysis history
+945:
+946:AI result example:
+947:
+948:Overall Match
+949:87%
+950:
+951:Skills Match
+952:92%
+953:
+954:Experience Match
+955:84%
+956:
+957:Education Match
+958:90%
+959:
+960:JD Alignment
+961:85%
+962:
+963:Show:
+964:
+965:MATCHED
+966:✓ Python
+967:✓ SQL
+968:✓ ETL
+969:
+970:PARTIALLY MATCHED
+971:◐ Airflow
+972:
+973:NOT FOUND
+974:○ Kubernetes
+975:
+976:Clearly label:
+977:
+978:"AI đánh giá tham khảo"
+979:
+980:Include:
+981:
+982:"AI chỉ hỗ trợ đánh giá dựa trên dữ liệu CV và JD.
+983:Quyết định tuyển dụng thuộc về người phụ trách."
+984:
+985:The AI module must feel like a professional recruitment
+986:tool, NOT a generic purple AI page.
+987:
+988:============================================================
+989:PART D — TEAM LEAD
+990:============================================================
+991:
+992:Team Lead is still an employee.
+993:
+994:Keep all Core Employee features.
+995:
+996:Add Team Lead capabilities.
+997:
+998:============================================================
+999:D1 — TEAM ORGANIZATION TREE
+1000:============================================================
+1001:
+1002:CURRENTLY MISSING.
+1003:
+1004:Create:
+1005:
+1006:"Đội ngũ của tôi"
+1007:
+1008:Show organization/team hierarchy
+1009:as a visual tree.
+1010:
+1011:Example:
+1012:
+1013:Engineering Lead
+1014:│
+1015:├── Backend Team
+1016:│   ├── Nguyễn Minh Anh
+1017:│   ├── Đỗ Thu Hà
+1018:│   └── Trần Thảo My
+1019:│
+1020:├── Frontend Team
+1021:│   ├── ...
+1022:│
+1023:└── QA Team
+1024:    ├── ...
+1025:
+1026:Each employee node:
+1027:
+1028:Avatar
+1029:Name
+1030:Position
+1031:Status
+1032:Work mode
+1033:
+1034:Click employee:
+1035:
+1036:→ employee detail
+1037:
+1038:Show team statistics:
+1039:
+1040:- Total members
+1041:- Working today
+1042:- WFH
+1043:- Leave
+1044:- Pending requests
+1045:
+1046:This should be a visual hierarchy,
+1047:not merely another employee table.
+1048:
+1049:============================================================
+1050:D2 — TEAM LEAD OFFBOARDING
+1051:============================================================
+1052:
+1053:Add Team Lead visibility into resignation/offboarding
+1054:for assigned team members.
+1055:
+1056:Team Lead can see:
+1057:
+1058:- employee resignation submitted
+1059:- last working day
+1060:- handover status
+1061:- pending work
+1062:- team impact
+1063:
+1064:Team Lead should handle team-level
+1065:handover / acknowledgement where required.
+1066:
+1067:Do not give Team Lead HR-only administrative capabilities.
+1068:
+1069:============================================================
+1070:D3 — TEAM LEAD SHIFT MANAGEMENT
+1071:============================================================
+1072:
+1073:Create:
+1074:
+1075:"Ca làm việc của team"
+1076:
+1077:Show:
+1078:
+1079:Weekly schedule
+1080:
+1081:Team members × dates
+1082:
+1083:Shift
+1084:Office / WFH
+1085:Leave
+1086:Availability
+1087:
+1088:Actions where permitted:
+1089:
+1090:- View team shifts
+1091:- Review shift swap requests
+1092:- Approve/reject shift swap
+1093:- Manage team schedule if permission allows
+1094:
+1095:Shift swap flow:
+1096:
+1097:Employee A proposes
+1098:→ Employee B accepts/rejects
+1099:→ Team Lead approves/rejects
+1100:
+1101:Make this visible in the prototype.
+1102:
+1103:============================================================
+1104:PART E — SYSTEM ADMIN
+1105:============================================================
+1106:
+1107:System Admin is still an employee.
+1108:
+1109:Do NOT replace the Core Employee navigation.
+1110:
+1111:System Admin gets:
+1112:
+1113:System Administration
+1114:
+1115:============================================================
+1116:E1 — USER MANAGEMENT
+1117:============================================================
+1118:
+1119:CURRENTLY MISSING.
+1120:
+1121:Create:
+1122:
+1123:"Quản lý người dùng"
+1124:
+1125:Show:
+1126:
+1127:- User
+1128:- Employee
+1129:- Email
+1130:- Account status
+1131:- Assigned roles
+1132:- Scope
+1133:- Last login
+1134:
+1135:Actions:
+1136:
+1137:[ Thêm người dùng ]
+1138:[ Khóa tài khoản ]
+1139:[ Mở khóa ]
+1140:[ Đặt lại mật khẩu ]
+1141:[ Xem quyền ]
+1142:
+1143:User detail should show:
+1144:
+1145:Identity
+1146:Account
+1147:Roles
+1148:Scope
+1149:Activity
+1150:
+1151:============================================================
+1152:E2 — RBAC
+1153:============================================================
+1154:
+1155:CURRENTLY MISSING.
+1156:
+1157:Create:
+1158:
+1159:"Vai trò & phân quyền"
+1160:
+1161:Use a permission matrix.
+1162:
+1163:Columns:
+1164:
+1165:Module
+1166:View
+1167:Create
+1168:Edit
+1169:Delete
+1170:Approve
+1171:Reject
+1172:Export
+1173:
+1174:Rows:
+1175:
+1176:Attendance
+1177:Leave
+1178:Expense
+1179:Employee
+1180:Contract
+1181:Recruitment
+1182:Payroll
+1183:Analytics
+1184:Policy
+1185:Administration
+1186:
+1187:Allow role selection:
+1188:
+1189:Employee
+1190:Team Lead
+1191:HR Branch
+1192:HR Head
+1193:System Admin
+1194:
+1195:But make clear:
+1196:
+1197:Role assignment ≠ unrestricted data access.
+1198:
+1199:Also show:
+1200:
+1201:DATA SCOPE
+1202:
+1203:Own
+1204:Team
+1205:Branch
+1206:Company
+1207:
+1208:Example:
+1209:
+1210:HR Branch
+1211:Employee Management
+1212:VIEW = Branch
+1213:EDIT = Branch
+1214:EXPORT = Branch
+1215:
+1216:System Admin:
+1217:User Management
+1218:VIEW = System
+1219:BUT sensitive HR business data is NOT automatically granted.
+1220:
+1221:Create a role detail screen.
+1222:
+1223:============================================================
+1224:E3 — BRANCH MANAGEMENT
+1225:============================================================
+1226:
+1227:CURRENTLY MISSING.
+1228:
+1229:Create:
+1230:
+1231:"Quản lý chi nhánh"
+1232:
+1233:Show branch cards/list:
+1234:
+1235:Chi nhánh
+1236:Address
+1237:Head
+1238:Employee count
+1239:Status
+1240:
+1241:Branch detail:
+1242:
+1243:- Basic information
+1244:- HR scope
+1245:- Departments
+1246:- Employees
+1247:- Policies
+1248:- Status
+1249:
+1250:Actions:
+1251:
+1252:[ Thêm chi nhánh ]
+1253:[ Chỉnh sửa ]
+1254:[ Xem nhân sự ]
+1255:
+1256:============================================================
+1257:E4 — SYSTEM CONFIGURATION
+1258:============================================================
+1259:
+1260:Keep separate from HR business policy.
+1261:
+1262:System configuration includes:
+1263:
+1264:- System settings
+1265:- Integrations
+1266:- Notification settings
+1267:- Audit logs
+1268:- System alerts
+1269:
+1270:This is technical/system administration.
+1271:
+1272:Do NOT mix it with:
+1273:
+1274:HR policy configuration.
+1275:
+1276:============================================================
+1277:PART F — NOTIFICATION + CROSS-MODULE FLOW
+1278:============================================================
+1279:
+1280:Every important action should generate a demo notification
+1281:where appropriate.
+1282:
+1283:Examples:
+1284:
+1285:Employee submits leave
+1286:→ Team Lead notification
+1287:
+1288:Team Lead approves leave
+1289:→ Employee notification
+1290:
+1291:Employee submits expense
+1292:→ Team Lead notification
+1293:
+1294:Contract approaching expiry
+1295:→ HR notification
+1296:
+1297:Employee submits resignation
+1298:→ HR notification
+1299:→ Team Lead notification where applicable
+1300:
+1301:Payroll sync completed
+1302:→ HR notification
+1303:
+1304:AI CV analysis completed
+1305:→ HR notification
+1306:
+1307:Notifications must link back to the relevant module.
+1308:
+1309:============================================================
+1310:PART G — DEMO FLOW
+1311:============================================================
+1312:
+1313:THIS IS CRITICAL.
+1314:
+1315:The prototype must NOT merely contain static pages.
+1316:
+1317:Fix the interaction flow.
+1318:
+1319:============================================================
+1320:DEMO FLOW 1 — EMPLOYEE
+1321:============================================================
+1322:
+1323:Login
+1324:→ Employee demo
+1325:
+1326:Dashboard
+1327:→ Check in
+1328:→ Attendance
+1329:
+1330:Dashboard
+1331:→ WFH
+1332:→ Create WFH request
+1333:→ Submit
+1334:→ Success
+1335:→ Notification
+1336:
+1337:Dashboard
+1338:→ Leave
+1339:→ Create leave request
+1340:→ Submit
+1341:→ Pending state
+1342:
+1343:Dashboard
+1344:→ Expense
+1345:→ Submit expense
+1346:→ Pending state
+1347:
+1348:Dashboard
+1349:→ Payslip
+1350:→ Open payslip
+1351:→ View detail
+1352:
+1353:Dashboard
+1354:→ Team Calendar
+1355:
+1356:Dashboard
+1357:→ Profile
+1358:→ Contract
+1359:
+1360:Dashboard
+1361:→ Work Schedule
+1362:
+1363:Dashboard
+1364:→ AI WFH Monitoring
+1365:
+1366:Dashboard
+1367:→ Notifications
+1368:
+1369:Dashboard
+1370:→ Resignation
+1371:→ Submit resignation
+1372:→ Show offboarding transition
+1373:
+1374:============================================================
+1375:DEMO FLOW 2 — TEAM LEAD
+1376:============================================================
+1377:
+1378:Switch/login as Team Lead
+1379:
+1380:Dashboard
+1381:→ Team overview
+1382:
+1383:Team Lead
+1384:→ Team tree
+1385:→ Select employee
+1386:
+1387:Team Lead
+1388:→ Approval Center
+1389:→ Approve WFH
+1390:→ Approve Leave
+1391:→ Review Expense
+1392:
+1393:Team Lead
+1394:→ Team Schedule
+1395:→ Shift management
+1396:
+1397:Team Lead
+1398:→ Shift Swap
+1399:→ Approve/reject
+1400:
+1401:Team Lead
+1402:→ Offboarding
+1403:→ Review team member handover
+1404:
+1405:Team Lead
+1406:→ Team Calendar
+1407:
+1408:============================================================
+1409:DEMO FLOW 3 — HR
+1410:============================================================
+1411:
+1412:Switch/login as HR Branch
+1413:
+1414:Dashboard
+1415:→ HR operational overview
+1416:
+1417:HR
+1418:→ Employee Management
+1419:→ Open employee
+1420:→ Contracts
+1421:→ Attendance
+1422:→ Leave
+1423:→ Expense
+1424:→ Offboarding
+1425:
+1426:HR
+1427:→ Recruitment
+1428:→ Job
+1429:→ Candidate
+1430:
+1431:HR
+1432:→ AI Candidate Matching
+1433:→ Select JD
+1434:→ Upload CV
+1435:→ Analyze
+1436:→ Score
+1437:→ Explanation
+1438:→ Shortlist
+1439:→ Interview
+1440:
+1441:HR
+1442:→ Payroll
+1443:→ Validate attendance
+1444:→ Prepare timesheet
+1445:→ Sync MISA AMIS
+1446:→ Success
+1447:
+1448:HR
+1449:→ Policy Configuration
+1450:
+1451:HR
+1452:→ HR Analytics
+1453:
+1454:HR
+1455:→ Notifications
+1456:
+1457:============================================================
+1458:DEMO FLOW 4 — SYSTEM ADMIN
+1459:============================================================
+1460:
+1461:Switch/login as System Admin
+1462:
+1463:Dashboard
+1464:→ User Management
+1465:→ Open user
+1466:→ Roles
+1467:
+1468:Admin
+1469:→ RBAC
+1470:→ Open role
+1471:→ Permission matrix
+1472:→ Data scope
+1473:
+1474:Admin
+1475:→ Branch Management
+1476:→ Open branch
+1477:
+1478:Admin
+1479:→ System Configuration
+1480:→ Integrations
+1481:
+1482:Admin
+1483:→ Audit Logs
+1484:
+1485:Admin
+1486:→ System Alerts
+1487:
+1488:IMPORTANT:
+1489:
+1490:System Admin still retains Core Employee navigation.
+1491:
+1492:Do NOT turn System Admin into a completely separate application.
+1493:
+1494:============================================================
+1495:PART H — ROLE SWITCHER
+1496:============================================================
+1497:
+1498:The existing prototype has a "Chế độ demo" role switcher.
+1499:
+1500:KEEP IT.
+1501:
+1502:Improve it.
+1503:
+1504:When switching role:
+1505:
+1506:- update user identity
+1507:- update role label
+1508:- update permitted navigation
+1509:- update dashboard content
+1510:- update available actions
+1511:- preserve Core Employee modules
+1512:
+1513:Example:
+1514:
+1515:Employee:
+1516:Core Employee + AI WFH
+1517:
+1518:Team Lead:
+1519:Core Employee + Team Management
+1520:
+1521:HR:
+1522:Core Employee + HR Operations + Recruitment + AI CV-JD
+1523:
+1524:Admin:
+1525:Core Employee + System Administration
+1526:
+1527:Do NOT hide Core Employee modules when changing role.
+1528:
+1529:============================================================
+1530:PART I — PAGE-SPECIFIC DESIGN RULE
+1531:============================================================
+1532:
+1533:The following pages MUST NOT share one generic visual template.
+1534:
+1535:------------------------------------------------------------
+1536:Nghỉ phép
+1537:------------------------------------------------------------
+1538:
+1539:Use:
+1540:
+1541:Balance
+1542:Calendar
+1543:Requests
+1544:Policy
+1545:
+1546:------------------------------------------------------------
+1547:Phiếu lương
+1548:------------------------------------------------------------
+1549:
+1550:Use:
+1551:
+1552:Payslip document
+1553:Income
+1554:Deductions
+1555:Net salary
+1556:History
+1557:
+1558:------------------------------------------------------------
+1559:Chi phí
+1560:------------------------------------------------------------
+1561:
+1562:Use:
+1563:
+1564:Expense claims
+1565:Amounts
+1566:Receipts
+1567:Approval status
+1568:Payment status
+1569:
+1570:------------------------------------------------------------
+1571:Lịch team
+1572:------------------------------------------------------------
+1573:
+1574:Use:
+1575:
+1576:Calendar grid
+1577:People × dates
+1578:Office/WFH/Leave states
+1579:
+1580:------------------------------------------------------------
+1581:Hồ sơ nhân sự
+1582:------------------------------------------------------------
+1583:
+1584:Use:
+1585:
+1586:Employee directory
+1587:Profile
+1588:Employment
+1589:Contract
+1590:Documents
+1591:Lifecycle
+1592:
+1593:------------------------------------------------------------
+1594:Tuyển dụng
+1595:------------------------------------------------------------
+1596:
+1597:Use:
+1598:
+1599:Jobs
+1600:Candidates
+1601:Pipeline
+1602:Interviews
+1603:AI matching
+1604:
+1605:------------------------------------------------------------
+1606:Đồng bộ bảng lương
+1607:------------------------------------------------------------
+1608:
+1609:Use:
+1610:
+1611:Validation
+1612:Timesheet
+1613:Sync status
+1614:MISA AMIS integration
+1615:
+1616:------------------------------------------------------------
+1617:Phân tích nhân sự
+1618:------------------------------------------------------------
+1619:
+1620:Use:
+1621:
+1622:Charts
+1623:Trends
+1624:Workforce analytics
+1625:
+1626:------------------------------------------------------------
+1627:Quản lý người dùng
+1628:------------------------------------------------------------
+1629:
+1630:Use:
+1631:
+1632:Account directory
+1633:Status
+1634:Roles
+1635:Scope
+1636:
+1637:------------------------------------------------------------
+1638:RBAC
+1639:------------------------------------------------------------
+1640:
+1641:Use:
+1642:
+1643:Permission matrix
+1644:Role detail
+1645:Scope assignment
+1646:
+1647:------------------------------------------------------------
+1648:Chi nhánh
+1649:------------------------------------------------------------
+1650:
+1651:Use:
+1652:
+1653:Branch directory
+1654:Branch detail
+1655:Employees
+1656:Policies
+1657:
+1658:============================================================
+1659:PART J — RESPONSIVE
+1660:============================================================
+1661:
+1662:Preserve the existing responsive design.
+1663:
+1664:Desktop:
+1665:
+1666:1440px
+1667:
+1668:Tablet:
+1669:
+1670:1024px
+1671:
+1672:Mobile:
+1673:
+1674:390px
+1675:
+1676:Mobile priority:
+1677:
+1678:- Check in/out
+1679:- WFH
+1680:- Leave
+1681:- Expense
+1682:- Payslip
+1683:- Notifications
+1684:- Profile
+1685:
+1686:Complex admin tables may become horizontally scrollable
+1687:or use mobile-friendly detail views.
+1688:
+1689:Do not simply shrink desktop UI.
+1690:
+1691:============================================================
+1692:PART K — INTERACTION REQUIREMENTS
+1693:============================================================
+1694:
+1695:Every major CTA MUST DO SOMETHING.
+1696:
+1697:Examples:
+1698:
+1699:[ Đăng nhập ]
+1700:→ Dashboard
+1701:
+1702:[ Check in ]
+1703:→ Checked-in state
+1704:
+1705:[ Tạo đơn nghỉ phép ]
+1706:→ Leave form
+1707:
+1708:[ Gửi yêu cầu ]
+1709:→ Success
+1710:→ Pending
+1711:→ Notification
+1712:
+1713:[ Xem phiếu lương ]
+1714:→ Payslip detail
+1715:
+1716:[ Xem hợp đồng ]
+1717:→ Contract detail
+1718:
+1719:[ Gửi thôi việc ]
+1720:→ Resignation submitted
+1721:→ Offboarding status
+1722:
+1723:[ Approve ]
+1724:→ Approved
+1725:→ Notification
+1726:
+1727:[ Reject ]
+1728:→ Rejected
+1729:→ Notification
+1730:
+1731:[ Upload CV ]
+1732:→ Analysis processing
+1733:
+1734:[ Analyze CV ]
+1735:→ AI result
+1736:
+1737:[ Shortlist ]
+1738:→ Candidate pipeline update
+1739:
+1740:[ Đồng bộ MISA AMIS ]
+1741:→ Sync progress
+1742:→ Success / error state
+1743:
+1744:[ Thêm người dùng ]
+1745:→ User creation form
+1746:
+1747:[ Phân quyền ]
+1748:→ Permission matrix
+1749:
+1750:[ Thêm chi nhánh ]
+1751:→ Branch creation form
+1752:
+1753:Bell icon
+1754:→ Notification panel
+1755:
+1756:============================================================
+1757:PART L — DO NOT FAKE COMPLETENESS
+1758:============================================================
+1759:
+1760:Do NOT solve missing functionality by adding:
+1761:
+1762:- a random card
+1763:- a KPI
+1764:- a generic table
+1765:- a decorative empty page
+1766:- a "Coming soon" state
+1767:- a single modal pretending to be a module
+1768:
+1769:Each missing domain needs an actual usable flow.
+1770:
+1771:However, do NOT overbuild functionality that is not
+1772:supported by the current functional requirements.
+1773:
+1774:The goal is:
+1775:
+1776:FUNCTIONALLY REPRESENTATIVE
+1777:+
+1778:VISUALLY COHERENT
+1779:+
+1780:INTERACTIVE DEMO
+1781:
+1782:not an entire production HR platform.
+1783:
+1784:============================================================
+1785:PART M — FINAL AUDIT BEFORE FINISHING
+1786:============================================================
+1787:
+1788:Before finishing, perform an internal UI/UX audit.
+1789:
+1790:CORE EMPLOYEE:
+1791:
+1792:□ Login
+1793:□ Dashboard
+1794:□ Attendance
+1795:□ WFH
+1796:□ AI WFH Monitoring
+1797:□ Leave
+1798:□ Expense
+1799:□ Payslip
+1800:□ Team Calendar
+1801:□ Personal Profile
+1802:□ Personal Contract
+1803:□ Personal Work Schedule
+1804:□ Resignation
+1805:□ Notifications
+1806:
+1807:HR:
+1808:
+1809:□ Employee Profiles
+1810:□ Contracts
+1811:□ Offboarding
+1812:□ Recruitment
+1813:□ AI Candidate Matching
+1814:□ Payroll / MISA Sync
+1815:□ HR Analytics
+1816:□ HR Policy Configuration
+1817:
+1818:TEAM LEAD:
+1819:
+1820:□ Team Tree
+1821:□ Approval Center
+1822:□ Team Offboarding
+1823:□ Team Shift Management
+1824:□ Team Calendar
+1825:
+1826:SYSTEM ADMIN:
+1827:
+1828:□ User Management
+1829:□ RBAC
+1830:□ Branch Management
+1831:□ System Configuration
+1832:□ Audit Logs
+1833:□ System Alerts
+1834:
+1835:AI:
+1836:
+1837:□ AI WFH Monitoring available to Employee
+1838:□ AI Candidate Matching available to authorized HR
+1839:□ AI Candidate Matching NOT visible to ordinary employees
+1840:□ AI Candidate Matching has complete flow
+1841:
+1842:ARCHITECTURE:
+1843:
+1844:□ Every role still has Core Employee functionality
+1845:□ Role adds capabilities instead of replacing Employee
+1846:□ Navigation changes according to permission
+1847:□ Data scope is represented
+1848:□ Action permissions are represented
+1849:□ HR business policy is separate from System Configuration
+1850:□ Recruitment is separate from Payroll
+1851:□ Analytics is separate from Employee Management
+1852:□ AI WFH and AI CV-JD are separate capabilities
+1853:
+1854:VISUAL:
+1855:
+1856:□ No duplicated generic page layouts
+1857:□ No unrelated visual styles
+1858:□ No purple AI theme
+1859:□ Existing oHRiise branding preserved
+1860:□ Existing design system preserved
+1861:□ Existing completed screens preserved
+1862:
+1863:PROTOTYPE:
+1864:
+1865:□ Login works
+1866:□ Role demo works
+1867:□ Navigation works
+1868:□ Major CTA buttons work
+1869:□ Requests have success/pending states
+1870:□ Approval flow works
+1871:□ Notifications work
+1872:□ AI CV flow works
+1873:□ Offboarding flow works
+1874:□ Contract flow works
+1875:□ Admin flows work
+1876:
+1877:============================================================
+1878:FINAL INSTRUCTION
+1879:============================================================
+1880:
+1881:DO NOT regenerate the whole oHRiise application.
+1882:
+1883:PATCH THE EXISTING APPLICATION.
+1884:
+1885:Prioritize correctness and completeness over creating
+1886:more decorative UI.
+1887:
+1888:If an existing screen is already good:
+1889:KEEP IT.
+1890:
+1891:If a screen is missing:
+1892:ADD IT.
+1893:
+1894:If a screen currently uses a generic template despite
+1895:representing a different business domain:
+1896:REFACTOR THAT SCREEN into a domain-specific layout.
+1897:
+1898:If a flow is disconnected:
+1899:CONNECT IT.
+1900:
+1901:If a button is decorative:
+1902:MAKE IT INTERACTIVE.
+1903:
+1904:The final prototype should feel like ONE coherent
+1905:oHRiise HR operating system whose UI visibly reflects
+1906:the Use Case architecture and functional workflows.
+
+(End of file — 1906 lines.)

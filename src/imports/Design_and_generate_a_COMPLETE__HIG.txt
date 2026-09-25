@@ -1,0 +1,3621 @@
+oHRiise — MASTER UI/UX DESIGN & INTERACTIVE PROTOTYPE PROMPT
+
+============================================================
+0. ROLE OF THIS DOCUMENT
+============================================================
+
+Design and generate a COMPLETE, HIGH-FIDELITY, INTERACTIVE WEB APPLICATION UI/UX for “oHRiise” — an HR Management System with AI for modern Vietnamese office / technology companies operating with hybrid work.
+
+This is a real HR operating system prototype, NOT a generic HR dashboard template.
+
+The design must represent:
+
+- real HR operational workflows
+- employee self-service
+- attendance
+- hybrid work / WFH
+- leave
+- expense
+- contracts
+- onboarding
+- offboarding
+- team management
+- HR operations
+- payroll preparation / synchronization
+- recruitment
+- AI candidate matching
+- AI WFH activity monitoring
+- analytics
+- dynamic permission / RBAC
+- system administration
+
+The final result must be visually beautiful AND operationally coherent.
+
+The most important UX principles are:
+
+EASY TO USE
+EASY TO SEE
+EASY TO UNDERSTAND
+EASY TO OPERATE
+MINIMAL
+PROFESSIONAL
+CALM
+CONSISTENT
+UNIQUE
+BRANDED
+HUMAN-CENTERED
+
+The UI must feel like a premium HR operating system rather than an old enterprise ERP.
+
+============================================================
+1. MOST IMPORTANT PRODUCT PRINCIPLE
+============================================================
+
+CRITICAL:
+
+EVERY ACCOUNT IS AN EMPLOYEE FIRST.
+
+Do NOT create completely separate products for:
+
+- Employee
+- Team Lead
+- HR
+- System Admin
+
+Do NOT design:
+
+“Employee UI”
+“HR UI”
+“Admin UI”
+
+as completely different applications.
+
+Instead:
+
+ONE unified oHRiise application
++
+ONE coherent design system
++
+ONE core employee experience
++
+role-specific capabilities
++
+dynamic permissions
++
+data scope
++
+action permissions
+
+The fundamental model is:
+
+USER
++
+CORE EMPLOYEE CAPABILITIES
++
+ADDITIONAL ROLE CAPABILITIES
++
+DATA SCOPE
++
+ACTION PERMISSIONS
+=
+DYNAMIC EXPERIENCE
+
+Every authenticated employee MUST have access to their own employee functionality.
+
+For example:
+
+HR is still an employee.
+
+Therefore HR MUST still be able to:
+
+- Check in
+- Check out
+- View attendance
+- Request WFH
+- View WFH status
+- Request leave
+- View leave balance
+- Submit expense
+- View payslip
+- View profile
+- View personal contracts
+- Manage personal certificates
+- View team calendar
+- Submit resignation when applicable
+- View personal AI WFH activity
+- Receive notifications
+
+Additional HR capabilities are added on top.
+
+The same applies to Team Lead and System Admin.
+
+============================================================
+2. ROLE CAPABILITY MODEL
+============================================================
+
+ROLE DOES NOT REPLACE EMPLOYEE FUNCTIONALITY.
+
+ROLE ADDS FUNCTIONALITY.
+
+EMPLOYEE:
+
+CORE EMPLOYEE CAPABILITIES
+
++
+
+TEAM LEAD:
+
+CORE EMPLOYEE CAPABILITIES
++
+TEAM MANAGEMENT / APPROVAL CAPABILITIES
+
++
+
+HR BRANCH:
+
+CORE EMPLOYEE CAPABILITIES
++
+BRANCH HR OPERATIONS
+
++
+
+HR HEAD:
+
+CORE EMPLOYEE CAPABILITIES
++
+COMPANY-WIDE HR MANAGEMENT
+
++
+
+SYSTEM ADMIN:
+
+CORE EMPLOYEE CAPABILITIES
++
+SYSTEM ADMINISTRATION
+
+A user may have multiple roles simultaneously.
+
+Example:
+
+HR + Team Lead
+
+means:
+
+CORE EMPLOYEE
++
+HR
++
+TEAM LEAD
+
+The UI must dynamically combine those capabilities.
+
+Do not create duplicate interfaces.
+
+============================================================
+3. DYNAMIC PERMISSION MODEL
+============================================================
+
+Implement the concept of dynamic permission throughout the UI.
+
+Permission depends on:
+
+- role
+- assigned capability
+- organization
+- branch
+- team
+- data scope
+- action permission
+
+Examples:
+
+Employee:
+Can view own personal HR data.
+
+Team Lead:
+Can view assigned team data.
+
+HR Branch:
+Can manage employees within assigned branch.
+
+HR Head:
+Can access company-wide HR data according to granted permissions.
+
+System Admin:
+Can manage system configuration and accounts, but does NOT automatically gain access to sensitive HR business data.
+
+Action-level permission:
+
+VIEW
+CREATE
+EDIT
+DELETE
+APPROVE
+REJECT
+EXPORT
+PUBLISH
+LOCK ACCOUNT
+VIEW SENSITIVE DATA
+
+A user can have:
+
+VIEW but not EDIT.
+
+VIEW but not EXPORT.
+
+APPROVE but not DELETE.
+
+This must be visually represented through:
+- hidden actions
+- disabled actions
+- read-only states
+- contextual menus
+- permission-aware buttons
+
+============================================================
+4. CORE EMPLOYEE EXPERIENCE
+============================================================
+
+EVERY EMPLOYEE MUST HAVE:
+
+MY WORK
+
+1. Dashboard
+2. Attendance
+3. WFH
+4. Leave
+5. Expense
+6. Payslip
+7. My Profile
+8. My Contracts
+9. My Certificates
+10. Team Calendar
+11. Resignation
+12. Notifications
+
+AND:
+
+AI
+
+13. AI WFH Monitoring
+
+These features must remain available even when the user also has HR, Team Lead, or Admin capabilities.
+
+============================================================
+5. EMPLOYEE DASHBOARD
+============================================================
+
+Create a highly usable personal employee dashboard.
+
+The dashboard should answer:
+
+“What do I need to know or do today?”
+
+Top area:
+
+Good morning, Nguyễn Minh Anh
+Tuesday, 22 September 2026
+
+Show:
+
+- current working status
+- current work mode
+- today's attendance
+- WFH status
+- pending requests
+- notifications
+
+Primary action:
+
+CHECK IN / CHECK OUT
+
+Make this highly visible but not oversized.
+
+Attendance card:
+
+- Check-in
+- Check-out
+- total working duration
+- working mode
+- attendance status
+
+Quick actions:
+
+- Check in
+- Request WFH
+- Request Leave
+- Submit Expense
+- View Payslip
+
+Personal summary:
+
+- leave balance
+- pending requests
+- upcoming leave
+- current contract
+- certificates expiring soon
+
+Team calendar preview:
+
+- who is in office
+- who is WFH
+- who is on leave
+
+AI WFH summary:
+
+- today's WFH activity
+- sampled screenshots count
+- AI assessment
+- daily report status
+
+Do not overload the dashboard.
+
+Use progressive disclosure.
+
+============================================================
+6. AUTHENTICATION
+============================================================
+
+Create:
+
+LOGIN
+
+Options:
+
+- Company email + password
+- Google OAuth2
+
+Screens:
+
+- Login
+- Forgot password
+- First-time password change
+- Change password
+- Security settings
+
+First login:
+
+Password must be changed if temporary password is issued.
+
+Use realistic Vietnamese UI copy.
+
+============================================================
+7. PERSONAL PROFILE
+============================================================
+
+Employee can view and update allowed information.
+
+Sections:
+
+PERSONAL INFORMATION
+- Full name
+- Phone
+- Temporary address
+- Emergency contact
+
+WORK INFORMATION
+- Employee ID
+- Department
+- Position
+- Team
+- Team Lead
+- Branch
+- Employment Type
+- Join date
+
+PAYMENT INFORMATION
+- Bank account
+- Bank name
+
+CERTIFICATES
+- certificate name
+- issue date
+- expiry date
+- attachment
+
+CONTRACTS
+- current contract
+- historical contracts
+- contract type
+- start date
+- end date
+- status
+
+Sensitive fields must be visually protected.
+
+============================================================
+8. ATTENDANCE
+============================================================
+
+Create a complete attendance experience.
+
+Employee screens:
+
+- Today's attendance
+- Monthly attendance calendar
+- Attendance detail
+- Work schedule
+- Attendance correction request
+
+Attendance calendar must visually distinguish:
+
+Present
+WFH
+Late
+Early leave
+Leave
+Absent
+
+Use both color and labels/icons.
+
+Check-in / Check-out:
+
+Show:
+- current status
+- time
+- working mode
+- attendance source
+
+Support office attendance according to configured branch methods, including integration with attendance devices / QR / GPS where applicable.
+
+Do not invent unnecessary attendance technology beyond the documented system scope.
+
+============================================================
+9. ATTENDANCE CORRECTION
+============================================================
+
+Flow:
+
+Forgot check-in / check-out
+OR
+business trip
+OR
+late arrival
+OR
+other attendance issue
+
+↓
+
+Create correction request
+
+Form:
+
+- date
+- affected time
+- reason
+- explanation
+- evidence attachment
+
+Evidence may include:
+
+- screenshot
+- Git commit
+- email
+- other work evidence
+
+↓
+
+Submit
+
+↓
+
+Route automatically to assigned Team Lead
+
+↓
+
+Team Lead reviews
+
+↓
+
+Approve / Reject
+
+↓
+
+Attendance is updated if approved
+
+Show full request timeline.
+
+============================================================
+10. WORK SCHEDULE / SHIFT
+============================================================
+
+Employee can view:
+
+- assigned working schedule
+- Office schedule
+- Flexible schedule
+- On-call night shift where applicable
+
+Create:
+
+MONTH CALENDAR
+
+with daily attendance and shift information.
+
+============================================================
+11. SHIFT SWAP
+============================================================
+
+Flow:
+
+Employee A
+→ proposes shift swap with Employee B
+
+↓
+
+Employee B receives notification
+
+↓
+
+Accept / Reject
+
+↓
+
+ONLY IF EMPLOYEE B ACCEPTS
+
+↓
+
+Request moves to Team Lead
+
+↓
+
+Team Lead Approves / Rejects
+
+↓
+
+Schedule updated
+
+The UI must clearly visualize these states.
+
+Do not send the request to Team Lead before the colleague accepts.
+
+============================================================
+12. WFH
+============================================================
+
+WFH is a CORE employee feature.
+
+Create:
+
+WFH dashboard
+
+Show:
+
+- WFH quota / policy
+- used WFH days
+- remaining WFH days
+- upcoming WFH
+- WFH history
+- pending WFH requests
+
+WFH request:
+
+- date
+- reason
+- working location if required
+- project/team context
+- policy validation
+- approver
+- status
+
+Flow:
+
+Request WFH
+→ policy validation
+→ assigned Team Lead
+→ approve / reject
+→ notification
+→ WFH status updated
+
+Employee can cancel a future WFH request before it becomes active if allowed by policy.
+
+============================================================
+13. AI WFH MONITORING
+============================================================
+
+IMPORTANT:
+
+AI WFH MONITORING IS A FIRST-CLASS AI MODULE.
+
+It is NOT merely a small feature inside the normal WFH page.
+
+AI WFH Monitoring is available to EVERY EMPLOYEE because every account represents an employee.
+
+However, DATA SCOPE is different.
+
+Employee:
+→ sees own activity.
+
+Team Lead:
+→ sees assigned team activity.
+
+HR:
+→ sees employee activity according to HR permission scope.
+
+Admin:
+→ does not automatically gain access to sensitive employee activity merely because they are an administrator.
+
+Create a dedicated:
+
+AI INTELLIGENCE
+→ AI WFH Monitoring
+
+module.
+
+============================================================
+14. AI WFH MONITORING — EMPLOYEE EXPERIENCE
+============================================================
+
+Employee sees:
+
+My WFH Activity
+
+Date
+Working period
+Work mode
+Daily report
+Meeting status
+AI assessment
+
+Activity timeline:
+
+08:00
+Work session started
+
+Random screenshot sample
+→ screenshot
+→ timestamp
+→ activity assessment
+
+11:00
+Morning sampling complete
+
+13:00–17:00
+Afternoon sampling
+
+End of day:
+AI assessment generated
+
+Show:
+
+- screenshots sampled
+- work-related activity
+- activity requiring review
+- daily report submitted/not submitted
+- meeting status
+- overall assessment
+
+Avoid punitive or surveillance-heavy visual language.
+
+The experience should communicate:
+
+visibility
+transparency
+work accountability
+
+not:
+
+punishment
+fear
+employee surveillance
+
+============================================================
+15. AI WFH MONITORING — ACTUAL AI FLOW
+============================================================
+
+Represent the configured conceptual flow:
+
+Morning working period:
+08:00–11:00
+→ randomly sample 10 screenshots
+
+Afternoon working period:
+13:00–17:00
+→ randomly sample 10 screenshots
+
+Total:
+20 screenshots
+
+↓
+
+AI analyzes the sampled screenshots
+
+↓
+
+Combine with:
+- daily report
+- meeting/report status
+- work context where available
+
+↓
+
+Generate AI assessment
+
+Possible states:
+
+Work-related activity detected
+Needs review
+Insufficient evidence
+Daily report missing
+Assessment completed
+
+Do NOT create an arbitrary numerical “employee productivity score” unless explicitly required.
+
+The AI should support human review.
+
+============================================================
+16. AI WFH MONITORING — HR / TEAM LEAD VIEW
+============================================================
+
+Create:
+
+AI WFH Monitoring Dashboard
+
+Metrics:
+
+- Employees currently WFH
+- WFH sessions today
+- screenshots sampled
+- assessments completed
+- cases requiring review
+- daily reports missing
+
+Employee list:
+
+Employee
+Team
+WFH date
+Working period
+Screenshots
+AI status
+Daily report
+Meeting status
+Review status
+
+Click employee:
+
+→ WFH session detail
+
+Show:
+
+- activity timeline
+- screenshot gallery
+- screenshot timestamp
+- AI assessment
+- daily report
+- meeting/report status
+- review history
+
+Use a side panel or detail page.
+
+============================================================
+17. LEAVE
+============================================================
+
+Create:
+
+Leave Dashboard
+
+Show:
+
+- annual leave balance
+- sick leave balance
+- compensatory leave
+- unpaid leave
+- upcoming leave
+- pending requests
+
+Leave types:
+
+- Annual leave
+- Sick leave
+- Compensatory leave
+- Unpaid leave
+
+Do not show unavailable leave types for employment types that do not have that leave balance.
+
+Leave request:
+
+- leave type
+- start date
+- end date
+- full day
+- half-day morning
+- half-day afternoon
+- reason
+- handover person
+- attachments where applicable
+
+Flow:
+
+Create request
+→ validate leave balance
+→ validate policy
+→ Team Lead
+→ Approve / Reject
+→ notification
+→ leave balance updated
+
+Cancellation:
+
+Pending:
+→ employee can cancel directly.
+
+Already approved:
+→ submit cancellation request
+→ Team Lead confirms
+→ leave balance restored.
+
+============================================================
+18. EXPENSE CLAIM
+============================================================
+
+Employee can submit work-related expense claims.
+
+Examples:
+
+- software license
+- certification
+- cloud certification
+- team bonding
+- business meal
+- work tools
+
+Required:
+
+- expense type
+- amount
+- description
+- date
+- project/team
+- invoice / receipt
+- VAT invoice or electronic payment evidence
+
+Workflow:
+
+Employee
+→ Team Lead approval
+→ HR Branch review
+→ HR Head final approval where required
+→ payment
+→ completed
+
+Cancellation:
+
+If still pending before any approval:
+→ cancel directly.
+
+If already approved by at least one level:
+→ cancellation request
+→ current approver confirms.
+
+If already paid:
+→ cannot cancel.
+
+For claims <= 2,000,000 VND:
+show FAST-TRACK state after the HR Branch approval stage according to the documented process.
+
+============================================================
+19. PAYSLIP
+============================================================
+
+Every employee can view their payslip.
+
+Show:
+
+- payroll period
+- base salary
+- allowance
+- actual working days
+- temporary PIT
+- insurance deductions where applicable
+- net salary
+
+Employment type changes display:
+
+Full-time / Part-time:
+- BHXH
+- BHYT
+- BHTN
+
+Contractor:
+- no mandatory insurance lines
+- contractual PIT deduction
+
+Provide:
+
+Download PDF
+
+Protected PDF with password.
+
+Create historical payslip list.
+
+============================================================
+20. RESIGNATION
+============================================================
+
+Employee resignation flow applies to:
+
+- Full-time probation
+- Full-time official
+- Part-time
+- Intern
+
+Contractor does NOT use the normal resignation request flow.
+
+Resignation form:
+
+- proposed last working day
+- reason
+- completed signed document / attachment where required
+
+System calculates minimum notice requirement.
+
+Rules:
+
+Full-time probation:
+minimum 3 days
+
+Full-time official:
+minimum 30 days
+
+Part-time:
+minimum 30 days
+
+Intern:
+contract end date;
+if leaving early, minimum 3 days
+
+Contractor:
+contract termination / expiry according to service agreement.
+
+Show warning if notice period is insufficient.
+
+For applicable employees:
+
+Employee
+→ Team Lead review
+→ Approve / Reject
+→ if approved
+→ HR Branch Offboarding Checklist triggered
+
+============================================================
+21. TEAM CALENDAR
+============================================================
+
+Employee can view team availability.
+
+Show:
+
+- WFH
+- Office
+- Leave
+- absent where applicable
+
+Use avatars and compact calendar cells.
+
+The purpose is operational:
+
+“Who is available today?”
+
+============================================================
+22. TEAM LEAD CAPABILITIES
+============================================================
+
+A Team Lead still has the entire Employee experience.
+
+Additional Team Lead capabilities:
+
+TEAM DASHBOARD
+
+Show:
+
+- team members
+- office
+- WFH
+- leave
+- late
+- pending requests
+
+APPROVAL CENTER
+
+Requests:
+
+- WFH
+- attendance correction
+- shift swap
+- leave
+- OT verification
+- expense claim
+- resignation
+
+Each request includes:
+
+- requester
+- team
+- date
+- reason
+- evidence
+- relevant team/project context
+- current workflow status
+
+Actions:
+
+Approve
+Reject
+Request clarification
+
+============================================================
+23. TEAM LEAD — WFH APPROVAL
+============================================================
+
+Show team schedule context before approval.
+
+Example:
+
+Employee requests WFH:
+Friday 25 September
+
+Team calendar:
+- 4 team members in office
+- 2 WFH
+- 1 on leave
+
+Display this context beside the request.
+
+Then:
+
+Approve
+or
+Reject with reason
+
+============================================================
+24. TEAM LEAD — LEAVE APPROVAL
+============================================================
+
+Before approving:
+
+Show:
+
+- employee leave balance
+- requested period
+- team calendar
+- project deadlines
+- release/deadline conflicts
+
+Then:
+
+Approve
+Reject
+Request clarification
+
+============================================================
+25. TEAM LEAD — OT / COMPENSATORY LEAVE
+============================================================
+
+For Full-time / Part-time:
+
+Show OT evidence.
+
+Team Lead verifies overtime.
+
+If approved:
+
+→ system generates compensatory leave balance.
+
+Do not display this approval flow for Contractor / Intern.
+
+============================================================
+26. TEAM LEAD — EXPENSE
+============================================================
+
+Review:
+
+- expense purpose
+- amount
+- project
+- receipt
+- budget relevance
+
+Approve / Reject
+
+If approved:
+
+→ send to HR Branch.
+
+============================================================
+27. TEAM LEAD — RESIGNATION
+============================================================
+
+Show:
+
+- employee
+- last working day
+- reason
+- notice period
+- handover plan
+- project responsibilities
+
+Approve / Reject.
+
+If approved:
+
+→ automatically trigger HR Branch Offboarding Checklist.
+
+============================================================
+28. HR BRANCH
+============================================================
+
+HR Branch has:
+
+CORE EMPLOYEE EXPERIENCE
++
+BRANCH HR OPERATIONS
+
+HR Branch dashboard:
+
+PERSONAL WORKDAY
++
+HR OPERATIONS
+
+Show:
+
+- personal attendance
+- personal WFH
+- personal leave
+- personal payslip
+- branch headcount
+- present today
+- WFH today
+- on leave
+- late / early
+- pending attendance corrections
+- onboarding tasks
+- offboarding tasks
+- expiring contracts
+- expense claims
+- timesheet status
+
+============================================================
+29. HR BRANCH — ONBOARDING
+============================================================
+
+Create onboarding workflow.
+
+Input:
+
+- full name
+- personal information
+- CCCD
+- bank information
+- branch
+- department
+- position
+- team
+- Team Lead
+- employment type
+
+Employment types:
+
+- Full-time
+- Part-time
+- Contractor
+- Intern
+
+Employment type becomes foundational data for:
+
+- leave balance
+- contract template
+- payroll/tax/insurance
+- resignation rules
+- offboarding
+
+System generates:
+
+- company email
+- temporary password
+
+Then:
+
+Welcome Email
+→ personal email
+
+Provide:
+
+Send again
+
+Leave initialization:
+
+Full-time:
+12 annual leave days
+
+Part-time:
+proportional to agreed working schedule
+
+Contractor / Intern:
+no annual leave balance by default
+
+============================================================
+30. HR BRANCH — EMPLOYEE RECORD
+============================================================
+
+Employee database.
+
+Columns:
+
+- Employee
+- ID
+- Employment Type
+- Branch
+- Department
+- Team
+- Position
+- Team Lead
+- Contract
+- Status
+
+Employee profile:
+
+Personal
+Employment
+Contracts
+Attendance
+Leave
+WFH
+Expense
+Payroll
+Equipment
+Certificates
+AI WFH activity
+Audit history
+
+Sensitive information must be permission-controlled.
+
+============================================================
+31. HR BRANCH — CONTRACT
+============================================================
+
+Support multiple contracts per employee.
+
+Contract types:
+
+Full-time:
+Probation 2 months
+Official 1 year
+
+Part-time:
+monthly part-time contract
+
+Contractor:
+service / project contract
+
+Intern:
+short-term internship contract
+
+Contract generation flow:
+
+1. Select employee
+2. System reads employment type
+3. Show valid template
+4. Generate PDF
+5. Preview
+6. Email preview to employee
+7. Print and sign physically
+8. HR uploads scanned signed document
+9. Status = Signed
+10. Schedule expiry warning
+
+Contract expiry:
+
+Full-time:
+show renewal / non-renewal actions
+
+Part-time / Contractor / Intern:
+show expiry warning
+and renewal / termination decision according to the employment type.
+
+Do NOT show “sign official contract” for employment types where it does not apply.
+
+============================================================
+32. HR BRANCH — CONTRACT EXPIRY
+============================================================
+
+Create a visually important:
+
+CONTRACT EXPIRY CENTER
+
+Sections:
+
+- Expiring within 7 days
+- Expiring within 15 days
+- Expiring within 30 days
+
+For each employee:
+
+- employment type
+- contract
+- expiry date
+- days remaining
+- recommended action
+
+Full-time probation:
+
+- Sign official contract
+- Do not renew
+
+Full-time official:
+
+- Renew
+- Do not renew
+
+Part-time / Contractor / Intern:
+
+- Renew
+- End
+
+For Contractor:
+ending contract can automatically trigger Offboarding.
+
+============================================================
+33. HR BRANCH — EQUIPMENT
+============================================================
+
+Manage:
+
+- laptop
+- monitor
+- keyboard
+- access card
+
+Each asset:
+
+- asset ID
+- serial number
+- type
+- branch
+- assigned employee
+- status
+
+Statuses:
+
+Available
+Assigned
+Returned
+Damaged
+Lost
+
+Assignment:
+
+HR
+→ select employee
+→ select equipment
+→ create handover record
+→ employee acknowledgement/signature
+→ assigned
+
+Return:
+
+employee offboarding
+→ retrieve equipment
+→ verify against assigned assets
+→ mark returned
+
+============================================================
+34. HR BRANCH — DAILY ATTENDANCE
+============================================================
+
+Show branch attendance monitoring.
+
+Today:
+
+- present
+- WFH
+- late
+- early leave
+- absent
+
+Filters:
+
+- department
+- team
+- employee
+- work mode
+
+Use compact operational visualization.
+
+============================================================
+35. HR BRANCH — MONTHLY TIMESHEET
+============================================================
+
+Monthly timesheet:
+
+- employee
+- working days
+- WFH days
+- leave
+- OT
+- attendance exceptions
+- pending corrections
+
+Important workflow:
+
+Team Lead approves attendance correction.
+
+HR Branch:
+
+- reviews pending corrections
+- reminds Team Lead
+- prepares monthly timesheet
+
+If deadline arrives while a correction remains pending:
+
+Use original attendance data for the current payroll cycle.
+
+The pending correction is processed in the next cycle.
+
+Create a clear confirmation modal before:
+
+CLOSE TIMESHEET
+
+Show:
+
+- pending corrections
+- unresolved items
+- impact
+
+============================================================
+36. HR BRANCH — EXPENSE REVIEW
+============================================================
+
+HR Branch receives claims approved by Team Lead.
+
+Review:
+
+- budget
+- branch limit
+- company policy
+- receipt
+- amount
+
+Then:
+
+Approve and send to HR Head
+
+OR
+
+For <= 2,000,000 VND:
+
+show fast-track payment state after branch approval.
+
+============================================================
+37. HR BRANCH — OFFBOARDING
+============================================================
+
+Offboarding is a dedicated HR workspace.
+
+Three major checklist steps:
+
+1. Recover equipment
+2. Confirm work / code handover
+3. Lock account + finalize last working day
+
+Possible triggers:
+
+A. Employee voluntary resignation approved by Team Lead
+
+B. Full-time probation:
+HR chooses “Do not renew”
+
+C. Full-time official:
+HR chooses “Do not renew” at contract expiry
+
+D. Contractor:
+contract expires or HR chooses early termination
+
+When triggered:
+
+Create Offboarding case.
+
+Checklist:
+
+STEP 1
+Equipment recovery
+
+Show assigned equipment from Equipment module.
+
+STEP 2
+Work / code handover
+
+Team Lead confirmation/signature.
+
+STEP 3
+Account lock
+
+Lock account
++
+finalize last working day
++
+send payroll settlement information to HR Head
+
+Require confirmation before account lock.
+
+============================================================
+38. HR HEAD
+============================================================
+
+HR Head has:
+
+CORE EMPLOYEE EXPERIENCE
++
+COMPANY-WIDE HR MANAGEMENT
+
+HR Head dashboard:
+
+PERSONAL
+- attendance
+- WFH
+- leave
+- payslip
+
+EXECUTIVE
+
+- total employees
+- headcount by branch
+- turnover rate
+- payroll cost
+- attendance
+- WFH
+- leave
+- branch comparison
+
+Show:
+
+- branch headcount
+- turnover trend
+- payroll cost by branch
+- attendance trend
+- WFH trend
+
+Filters:
+
+- date
+- branch
+- department
+- team
+
+============================================================
+39. HR HEAD — ORGANIZATION
+============================================================
+
+Organization hierarchy:
+
+Company
+→ Branch
+→ Department
+→ Position / Level
+→ Team
+→ Team Lead
+→ Employees
+
+Manage:
+
+- departments
+- positions
+- levels
+- salary ranges
+
+Team / Project structure:
+
+- create team/project
+- assign members
+- assign Team Lead
+
+This data is critical because it determines approval routing.
+
+If employee has no Team:
+
+System must block submission of routed requests where Team Lead approval is required.
+
+Show:
+
+“This employee is not assigned to a Team Lead. HR must complete the assignment before this request can be submitted.”
+
+============================================================
+40. HR HEAD — POLICIES
+============================================================
+
+WFH policy:
+
+- maximum WFH days/week
+- eligible employees
+- departments
+- teams
+- approval requirements
+
+Holiday policy:
+
+- holiday name
+- date
+- region
+- branch
+- recurring / non-recurring
+
+Use configuration cards and clear controls.
+
+============================================================
+41. PAYROLL WORKFLOW
+============================================================
+
+IMPORTANT:
+
+The current oHRiise scope focuses on attendance calculation / timesheet preparation and synchronization with MISA AMIS rather than creating a completely independent payroll engine.
+
+Represent the operational workflow:
+
+Attendance
+→ attendance validation
+→ monthly timesheet
+→ export / synchronization
+→ MISA AMIS payroll processing
+→ payroll data returned / available
+→ employee payslip
+
+Create UI states:
+
+Timesheet Ready
+Syncing to MISA AMIS
+Synced
+Awaiting Payroll
+Payroll Processed
+Payslip Published
+
+Do not invent a complex internal payroll calculation engine that is outside the documented scope.
+
+============================================================
+42. HR HEAD — EXPENSE FINAL APPROVAL
+============================================================
+
+HR Head receives eligible expense claims.
+
+Review:
+
+- employee
+- branch
+- team
+- Team Lead approval
+- HR Branch approval
+- amount
+- budget
+- evidence
+
+Approve final payment
+or
+Reject with reason.
+
+============================================================
+43. HR HEAD — EXECUTIVE REPORTING
+============================================================
+
+Dashboard:
+
+- branch comparison
+- headcount
+- turnover
+- payroll cost
+- attendance
+- WFH
+
+Export:
+
+- monthly timesheet
+- payroll payment detail
+- HR reports
+
+Use Excel export button.
+
+============================================================
+44. HR HEAD — ANNOUNCEMENTS
+============================================================
+
+Create company announcements.
+
+Fields:
+
+- title
+- message
+- audience
+- branch
+- publish date
+- attachment
+
+Audience:
+
+- everyone
+- specific branch
+- specific department
+- specific team
+
+Examples:
+
+- holiday announcement
+- HR policy update
+- payroll notice
+
+============================================================
+45. RECRUITMENT
+============================================================
+
+Recruitment is primarily an HR capability.
+
+Do not show Recruitment to ordinary employees.
+
+Recruitment screens:
+
+Recruitment Dashboard
+Job Positions
+Job Detail
+Candidates
+Candidate Pipeline
+Candidate Detail
+Interviews
+AI Candidate Matching
+
+Job Position:
+
+- title
+- department
+- team
+- hiring manager
+- employment type
+- location
+- JD
+- requirements
+- status
+
+Candidate pipeline:
+
+New
+→ Screening
+→ AI Review
+→ Interview
+→ Assessment
+→ Offer
+→ Hired
+→ Rejected
+
+============================================================
+46. AI CANDIDATE MATCHING
+============================================================
+
+AI Candidate Matching is an HR-specific AI capability.
+
+ONLY users with recruitment permission should see it.
+
+Create a dedicated:
+
+AI CANDIDATE MATCHING
+
+module.
+
+Workflow:
+
+Select Job Description
+
+↓
+
+Upload / select CVs
+
+↓
+
+CV Parsing
+
+↓
+
+Extract:
+
+- skills
+- experience
+- education
+- certifications
+- relevant history
+
+↓
+
+Semantic matching against JD
+
+↓
+
+Generate candidate match score
+
+↓
+
+Show transparent explanation
+
+The AI must NOT feel like a black box.
+
+Example:
+
+Overall Match
+87%
+
+Skills Match
+92%
+
+Experience Match
+84%
+
+Education Match
+90%
+
+JD Alignment
+85%
+
+Show:
+
+WHY THIS SCORE?
+
+Then:
+
+Matched requirements
+Missing requirements
+Relevant experience
+Potential concerns
+Suggested interview focus
+
+The UI should emphasize explainability.
+
+Do not create a generic chatbot.
+
+Do not use stereotypical robot graphics.
+
+============================================================
+47. AI CANDIDATE DETAIL
+============================================================
+
+Candidate detail:
+
+LEFT:
+CV preview
+
+RIGHT:
+AI analysis
+
+Sections:
+
+Candidate summary
+Skills
+Experience
+Education
+JD requirements
+Matched skills
+Missing skills
+AI score
+Explanation
+Interview focus
+
+Actions:
+
+- Move to interview
+- Reject
+- Shortlist
+- View original CV
+
+============================================================
+48. SYSTEM ADMIN
+============================================================
+
+System Admin still has the complete Employee experience.
+
+Additional:
+
+ADMINISTRATION
+
+1. Branch Management
+2. User Management
+3. Roles & Permissions
+4. Branch Assignment
+5. Integrations
+6. Notification Settings
+7. Audit Logs
+8. System Alerts
+9. System Configuration
+
+============================================================
+49. BRANCH MANAGEMENT
+============================================================
+
+Manage:
+
+- branch name
+- address
+- latitude
+- longitude
+- check-in radius
+- active / inactive
+
+Example:
+
+HCMC
+Hanoi
+Da Nang
+
+Default check-in radius:
+
+100m
+
+Show map/location configuration visually.
+
+============================================================
+50. USER MANAGEMENT
+============================================================
+
+Admin can:
+
+- create user
+- activate user
+- deactivate user
+- reset password
+- view account status
+
+When employee offboarding locks account:
+
+Account status changes:
+
+Active
+→ Pending Offboarding
+→ Locked
+
+============================================================
+51. RBAC / PERMISSION MANAGEMENT
+============================================================
+
+Create a sophisticated Permission Matrix.
+
+Rows:
+
+- Attendance
+- WFH
+- Leave
+- Expense
+- Payslip
+- Employee
+- Contract
+- Onboarding
+- Offboarding
+- Recruitment
+- AI Candidate Matching
+- AI WFH Monitoring
+- Payroll
+- Reports
+- Organization
+- System Settings
+
+Columns:
+
+Employee
+Team Lead
+HR Branch
+HR Head
+Admin
+
+Actions:
+
+View
+Create
+Edit
+Approve
+Reject
+Export
+Manage
+
+Also support:
+
+DATA SCOPE
+
+Own
+Team
+Branch
+Company
+System
+
+Create a visually understandable permission editor.
+
+Do NOT make this a giant unreadable spreadsheet.
+
+Use grouped permissions and expandable sections.
+
+============================================================
+52. ROLE + SCOPE ASSIGNMENT
+============================================================
+
+Admin can assign:
+
+Role
++
+Branch
++
+Scope
+
+Example:
+
+Nguyễn Minh Anh
+
+Roles:
+Employee
+HR Branch
+
+Branch:
+HCMC
+
+Scope:
+HCMC Branch
+
+Another:
+
+Trần Hoàng Nam
+
+Roles:
+Employee
+Team Lead
+
+Team:
+Data Engineering
+
+Another:
+
+HR Head
+
+Roles:
+Employee
+HR Head
+
+Scope:
+All branches
+
+Show these relationships clearly.
+
+============================================================
+53. SYSTEM INTEGRATIONS
+============================================================
+
+Create Integration settings.
+
+Attendance device integration:
+- fingerprint
+- face recognition
+- access device
+- API connection
+
+Notification:
+- SMTP
+- Firebase Cloud Messaging
+
+Payroll:
+- MISA AMIS synchronization
+
+Show integration state:
+
+Connected
+Disconnected
+Error
+Last synchronized
+Next synchronization
+
+============================================================
+54. AUDIT LOG
+============================================================
+
+Audit log records:
+
+- actor
+- timestamp
+- action
+- entity
+- before
+- after
+- IP/device where appropriate
+
+Examples:
+
+HR approved leave
+Team Lead approved WFH
+HR edited employee
+HR closed timesheet
+Admin changed role
+System locked account
+
+Allow filters:
+
+- actor
+- action
+- module
+- date
+- employee
+
+Logs are read-only for normal users.
+
+============================================================
+55. SYSTEM ALERTS
+============================================================
+
+System alerts:
+
+- system errors
+- abnormal login
+- repeated failed login
+- storage warning
+- integration error
+
+Use clear severity:
+
+Info
+Warning
+Critical
+
+Do not use scary red styling everywhere.
+
+============================================================
+56. NOTIFICATION CENTER
+============================================================
+
+Global notification center.
+
+Employee notifications:
+
+- leave approved/rejected
+- WFH approved/rejected
+- attendance correction
+- payslip published
+- contract expiry
+- contract invitation
+- forgot check-in/out
+
+Team Lead:
+
+- new approval requests
+- reminders after 48 hours
+
+HR Branch:
+
+- onboarding
+- pending attendance corrections
+- expense review
+- contract expiry
+- offboarding trigger
+
+HR Head:
+
+- payroll approval
+- high-level expense approval
+- announcements
+
+Admin:
+
+- system alerts
+- security events
+- integration errors
+
+Notification should deep-link into the relevant screen.
+
+============================================================
+57. APPROVAL ENGINE UX
+============================================================
+
+Create a consistent approval pattern throughout the system.
+
+Every request should show:
+
+Requester
+Request type
+Date
+Reason
+Evidence
+Current status
+Current approver
+Workflow timeline
+
+Timeline:
+
+Submitted
+→ Team Lead
+→ HR Branch
+→ HR Head
+→ Completed
+
+Only show the steps applicable to that request.
+
+Never make approval workflow ambiguous.
+
+============================================================
+58. ROUTING LOGIC
+============================================================
+
+The system automatically routes:
+
+- WFH
+- Leave
+- Attendance correction
+- Shift swap
+- OT
+- Expense
+- Resignation
+
+to the appropriate Team Lead based on employee's Team assignment.
+
+If no Team Lead exists:
+
+BLOCK SUBMISSION
+
+Show a helpful empty/error state:
+
+“Your team assignment is incomplete.
+Please contact HR to assign a Team Lead before submitting this request.”
+
+This must be represented in the prototype.
+
+============================================================
+59. REQUEST STATUS SYSTEM
+============================================================
+
+Use consistent states:
+
+Draft
+Submitted
+Pending
+Approved
+Rejected
+Cancelled
+Requires clarification
+Processing
+Completed
+Expired
+
+Status must always be visible.
+
+Never communicate status through color alone.
+
+============================================================
+60. IMPORTANT CROSS-MODULE RELATIONSHIPS
+============================================================
+
+The UI must demonstrate that modules are connected.
+
+Do NOT design isolated feature pages.
+
+Examples:
+
+EMPLOYEE
+→ Team assignment
+→ determines approval routing
+
+EMPLOYMENT TYPE
+→ determines leave balance
+→ contract template
+→ insurance/tax treatment
+→ resignation rules
+→ offboarding rules
+
+ATTENDANCE
+→ monthly timesheet
+→ payroll synchronization
+
+WFH
+→ attendance
+→ AI WFH monitoring
+→ Team Lead visibility
+
+CONTRACT EXPIRY
+→ renewal / non-renewal
+→ potentially offboarding
+
+EQUIPMENT
+→ employee profile
+→ offboarding checklist
+
+TEAM
+→ Team Lead
+→ approval routing
+→ team calendar
+→ access scope
+
+RBAC
+→ navigation
+→ data
+→ actions
+
+This relationship is critical.
+
+The UI should feel like ONE SYSTEM.
+
+============================================================
+61. DASHBOARD COMPOSITION
+============================================================
+
+Do NOT create one completely different dashboard per role.
+
+Create ONE compositional dashboard engine.
+
+The dashboard contains:
+
+PERSONAL / EMPLOYEE AREA
+
++
+ROLE-SPECIFIC OPERATIONAL AREA
+
++
+
+AI AREA
+
++
+
+ANALYTICS AREA where permitted
+
+Example:
+
+Employee:
+
+Personal Workday
+Leave
+Requests
+Payslip
+Team Calendar
+AI WFH
+
+HR:
+
+Personal Workday
++
+HR Operations
++
+AI WFH
++
+AI Candidate Matching
++
+HR Analytics
+
+Team Lead:
+
+Personal Workday
++
+Team Overview
++
+Approval Center
++
+AI WFH for team
+
+Admin:
+
+Personal Workday
++
+AI WFH personal
++
+System Administration
+
+This makes the system coherent.
+
+============================================================
+62. VISUAL BRANDING
+============================================================
+
+Use the provided oHRiise logo as the primary visual reference.
+
+Logo visual DNA:
+
+- deep blue
+- electric blue
+- cyan / turquoise
+- lime green
+- upward movement
+- curved rising forms
+- circular human-like nodes
+- growth
+- progression
+- connection
+
+Translate this into UI without literally repeating the logo.
+
+Use:
+
+- upward curves
+- subtle arcs
+- circular nodes
+- soft gradient transitions
+- flowing connectors
+- progressive shapes
+- subtle rising-line motifs
+
+Use these selectively in:
+
+- dashboard hero
+- progress indicators
+- AI modules
+- empty states
+- onboarding
+- workflow diagrams
+- section backgrounds
+
+Do not overdecorate.
+
+The UI should still look enterprise-ready.
+
+============================================================
+63. COLOR SYSTEM
+============================================================
+
+Primary brand colors inspired by logo:
+
+Deep Navy:
+#062E78
+
+Brand Blue:
+#1267E8
+
+Cyan:
+#13C8C8
+
+Lime:
+#8BEA19
+
+Pastel equivalents:
+
+Soft Blue:
+#E8F1FF
+
+Soft Cyan:
+#E4FAF8
+
+Soft Lime:
+#F0FBD9
+
+Soft Cyan/Blue:
+#E8F7FF
+
+Soft Cyan/Lime:
+#EDFBDD
+
+Neutrals:
+
+Background:
+#F7F9FC
+
+Surface:
+#FFFFFF
+
+Primary text:
+#14233B
+
+Secondary text:
+#65748B
+
+Muted:
+#98A5B5
+
+Border:
+#E5EAF0
+
+Use brand colors primarily for:
+
+- active navigation
+- primary CTA
+- selected states
+- important metrics
+- progress
+- AI highlights
+- subtle decorative accents
+
+Do not flood the UI with saturated colors.
+
+============================================================
+64. VISUAL STYLE
+============================================================
+
+Modern premium SaaS.
+
+Reference qualities:
+
+- clean
+- calm
+- precise
+- human
+- lightweight
+- professional
+- modern
+
+Use:
+
+- generous whitespace
+- 8px spacing system
+- 12–16px radius
+- subtle shadows
+- thin borders
+- pastel surfaces
+- compact tables
+- clear hierarchy
+- consistent iconography
+- restrained gradients
+
+Avoid:
+
+- generic SaaS templates
+- giant KPI cards
+- card soup
+- excessive glassmorphism
+- excessive gradients
+- childish illustrations
+- stock HR illustrations
+- giant decorative icons
+- excessive rounded blobs
+- old ERP appearance
+- generic purple AI aesthetic
+
+============================================================
+65. UNIQUE BRAND LANGUAGE
+============================================================
+
+The oHRiise UI should remain recognizable even when the logo is removed.
+
+Build a visual language around:
+
+RISING MOTION
++
+HUMAN NODES
++
+SOFT GRADIENTS
++
+PASTEL BRAND COLORS
++
+CURVED PROGRESSIVE SHAPES
+
+Examples:
+
+- progress indicators can subtly rise
+- onboarding stepper can use connected nodes
+- AI assessment can use connected gradient nodes
+- dashboard empty states can use abstract rising geometry
+- workflow timelines can use soft curved connectors
+
+Do not put the logo everywhere.
+
+============================================================
+66. TYPOGRAPHY
+============================================================
+
+Use:
+
+Inter / Geist / SF Pro style.
+
+Page title:
+28–32px semibold
+
+Section:
+20–24px semibold
+
+Card:
+15–17px semibold
+
+Body:
+14–15px
+
+Secondary:
+12–13px
+
+Keep typography readable.
+
+Do not make everything bold.
+
+============================================================
+67. ICONOGRAPHY
+============================================================
+
+Use a consistent Lucide-style outline icon system.
+
+Examples:
+
+Attendance:
+clock
+
+WFH:
+home / laptop
+
+Leave:
+calendar
+
+Expense:
+receipt
+
+Payslip:
+wallet
+
+Employees:
+users
+
+Contracts:
+file-text
+
+Onboarding:
+user-plus
+
+Offboarding:
+log-out
+
+Recruitment:
+briefcase
+
+AI:
+sparkle / connected nodes
+
+Security:
+shield
+
+Settings:
+settings
+
+Use small icons.
+
+Do not use giant decorative icons.
+
+============================================================
+68. DESIGN SYSTEM
+============================================================
+
+Create reusable:
+
+Buttons
+Inputs
+Search
+Select
+Date Picker
+Tabs
+Cards
+Tables
+Avatars
+Badges
+Status chips
+Dropdowns
+Modal
+Drawer
+Toast
+Breadcrumb
+Pagination
+Progress
+Stepper
+Timeline
+Calendar
+Charts
+Empty states
+Loading states
+Skeletons
+Confirmation dialogs
+
+Every component must support:
+
+Default
+Hover
+Active
+Focus
+Disabled
+Loading
+Error
+Success
+
+============================================================
+69. TABLE DESIGN
+============================================================
+
+Tables must be compact and readable.
+
+Use:
+
+- sticky header
+- filters
+- search
+- sorting
+- pagination
+- bulk actions where appropriate
+- row actions
+- expandable details where useful
+
+Avoid tables that contain every possible field.
+
+Use progressive disclosure.
+
+============================================================
+70. DATA VISUALIZATION
+============================================================
+
+Use:
+
+- line charts
+- bar charts
+- donut charts
+- sparklines
+- progress bars
+
+Charts must be simple.
+
+Do not use 3D charts.
+
+Do not make every dashboard chart-heavy.
+
+============================================================
+71. RESPONSIVE
+============================================================
+
+Create:
+
+Desktop:
+1440px
+
+Tablet:
+1024px
+
+Mobile:
+390px
+
+Desktop:
+collapsible sidebar
+
+Mobile:
+bottom navigation / compact drawer
+
+Employee mobile priority:
+
+- Check in/out
+- WFH
+- Leave
+- Expense
+- Payslip
+- Notifications
+
+============================================================
+72. PROTOTYPE REQUIREMENT
+============================================================
+
+IMPORTANT:
+
+Do NOT create static screens only.
+
+Simulate real interaction with Figma prototype connections.
+
+Use:
+
+- Smart Animate
+- dissolve
+- slide-in drawer
+- modal overlay
+- tabs
+- dropdowns
+- confirmation dialogs
+- success states
+- error states
+
+Every important CTA should lead somewhere.
+
+============================================================
+73. REQUIRED DEMO FLOWS
+============================================================
+
+The prototype must demonstrate these end-to-end flows.
+
+FLOW 1 — EMPLOYEE CHECK-IN
+
+Login
+→ Dashboard
+→ Check In
+→ confirmation
+→ Working state
+→ attendance updated
+
+FLOW 2 — WFH REQUEST
+
+Dashboard
+→ WFH
+→ Request WFH
+→ select date
+→ policy validation
+→ submit
+→ Pending
+→ Team Lead notification
+→ Approve
+→ Employee notification
+→ WFH Approved
+
+FLOW 3 — LEAVE REQUEST
+
+Dashboard
+→ Leave
+→ New Leave
+→ select leave type
+→ select dates
+→ handover person
+→ submit
+→ Team Lead
+→ Approve
+→ leave balance updated
+→ notification
+
+FLOW 4 — ATTENDANCE CORRECTION
+
+Attendance
+→ missing check-out
+→ Request correction
+→ reason
+→ upload evidence
+→ submit
+→ Team Lead
+→ approve
+→ attendance updated
+
+FLOW 5 — SHIFT SWAP
+
+Employee A
+→ Shift Swap
+→ select colleague
+→ submit
+→ Employee B
+→ Accept
+→ Team Lead
+→ Approve
+→ schedule updated
+
+FLOW 6 — EXPENSE
+
+Expense
+→ New Claim
+→ amount
+→ upload receipt
+→ submit
+→ Team Lead approval
+→ HR Branch approval
+→ HR Head approval if required
+→ payment
+→ Completed
+
+FLOW 7 — EMPLOYEE RESIGNATION
+
+Profile
+→ Resignation
+→ last working day
+→ reason
+→ system calculates notice
+→ submit
+→ Team Lead
+→ approve
+→ HR Branch Offboarding created
+
+FLOW 8 — ONBOARDING
+
+HR
+→ Onboarding
+→ New Employee
+→ select employment type
+→ department/team
+→ contract
+→ account generated
+→ welcome email
+→ contract generated
+→ preview
+→ signed document upload
+→ employee activated
+
+FLOW 9 — CONTRACT EXPIRY
+
+HR Dashboard
+→ Contract Expiry
+→ employee detail
+→ review contract
+→ renew / non-renew
+→ if non-renew
+→ Offboarding triggered where applicable
+
+FLOW 10 — OFFBOARDING
+
+HR
+→ Offboarding
+→ case detail
+→ equipment checklist
+→ handover confirmation
+→ final working day
+→ Lock Account
+→ confirmation
+→ account locked
+
+FLOW 11 — MONTHLY TIMESHEET
+
+HR Branch
+→ Monthly Timesheet
+→ select month
+→ review attendance
+→ pending corrections
+→ remind Team Lead
+→ close timesheet
+→ warning modal
+→ confirm
+→ Ready for MISA AMIS synchronization
+
+FLOW 12 — PAYROLL SYNCHRONIZATION
+
+HR Branch / HR Head
+→ Timesheet
+→ Ready for sync
+→ Sync to MISA AMIS
+→ Syncing
+→ Synced
+→ Payroll processed externally / integrated
+→ Payslip available
+→ Employee notification
+
+FLOW 13 — AI CV MATCHING
+
+HR
+→ Recruitment
+→ Job
+→ AI Candidate Matching
+→ select JD
+→ upload CVs
+→ parsing
+→ matching
+→ candidate scores
+→ candidate detail
+→ score explanation
+→ shortlist / reject
+
+FLOW 14 — AI WFH MONITORING
+
+Employee:
+→ AI WFH Monitoring
+→ Today's session
+→ activity timeline
+→ screenshots
+→ daily report
+→ AI assessment
+
+Team Lead / HR:
+→ AI WFH Monitoring
+→ team / branch view
+→ employee
+→ session detail
+→ screenshot timeline
+→ AI assessment
+→ human review
+
+FLOW 15 — DYNAMIC PERMISSION
+
+Admin
+→ User Management
+→ select employee
+→ assign:
+Employee + HR Branch
+→ assign HCMC scope
+
+Result:
+
+same user sees:
+
+MY WORK
++
+HR OPERATIONS
++
+AI WFH
++
+AI Candidate Matching
+
+Do NOT remove MY WORK.
+
+============================================================
+74. DEMO ROLE STATES
+============================================================
+
+Create prototype examples for at least these users:
+
+USER A
+Nguyễn Minh Anh
+Role:
+Employee
+
+Visible:
+Core Employee
+AI WFH
+
+USER B
+Trần Hoàng Nam
+Roles:
+Employee + Team Lead
+
+Visible:
+Core Employee
+AI WFH
+Team Management
+Approval Center
+
+USER C
+Lê Khánh Linh
+Roles:
+Employee + HR Branch
+
+Scope:
+HCMC Branch
+
+Visible:
+Core Employee
+AI WFH
+HR Operations
+Recruitment
+AI Candidate Matching
+Branch Analytics
+
+USER D
+Phạm Gia Huy
+Roles:
+Employee + HR Head
+
+Scope:
+Company-wide
+
+Visible:
+Core Employee
+AI WFH
+Company HR
+Recruitment
+AI Candidate Matching
+Payroll
+Executive Analytics
+Announcements
+
+USER E
+System Administrator
+
+Roles:
+Employee + System Admin
+
+Visible:
+Core Employee
+AI WFH
+Administration
+
+Do NOT automatically expose sensitive HR data.
+
+============================================================
+75. INFORMATION ARCHITECTURE
+============================================================
+
+Use a coherent navigation system.
+
+Suggested structure:
+
+MY WORK
+- Dashboard
+- Attendance
+- WFH
+- Leave
+- Expense
+- Payslip
+- Team Calendar
+
+PEOPLE
+- My Profile
+- My Contracts
+- My Certificates
+
+TEAM / WORKFORCE
+- Team Overview
+- Attendance Management
+- Leave Management
+- WFH Management
+- Timesheets
+
+HR OPERATIONS
+- Employees
+- Onboarding
+- Offboarding
+- Contracts
+- Equipment
+
+RECRUITMENT
+- Jobs
+- Candidates
+- Interviews
+
+AI INTELLIGENCE
+- AI WFH Monitoring
+- AI Candidate Matching
+
+PAYROLL
+- Timesheet / Payroll Sync
+- Payroll Review
+- Payslips
+
+ANALYTICS
+- People Analytics
+- Executive Dashboard
+- Reports
+
+ADMINISTRATION
+- Users
+- Roles & Permissions
+- Branches
+- Integrations
+- System Settings
+- Audit Logs
+- System Alerts
+
+The visibility of these groups is permission-driven.
+
+But:
+
+MY WORK MUST EXIST FOR EVERY EMPLOYEE.
+
+AI WFH Monitoring MUST exist for every employee.
+
+AI Candidate Matching is HR/recruitment permission only.
+
+============================================================
+76. INFORMATION HIERARCHY
+============================================================
+
+Do not make every feature look like an independent application.
+
+The system should visually communicate:
+
+PERSON
+↓
+WORKDAY
+↓
+REQUESTS
+↓
+TEAM
+↓
+HR OPERATIONS
+↓
+AI
+↓
+ANALYTICS
+↓
+ADMINISTRATION
+
+Use contextual links between modules.
+
+Example:
+
+Employee profile
+→ Attendance
+→ Leave
+→ WFH
+→ Expense
+→ Payslip
+→ Contract
+→ Equipment
+→ AI WFH
+
+Employee contract expiry
+→ HR action
+→ renewal / non-renewal
+→ offboarding
+
+Employee team assignment
+→ Team Lead
+→ approval routing
+
+Attendance
+→ timesheet
+→ MISA AMIS sync
+
+============================================================
+77. EMPTY / ERROR / EDGE STATES
+============================================================
+
+Create realistic states.
+
+Examples:
+
+No Team Assigned:
+
+“Bạn chưa được gán vào Team. Vui lòng liên hệ HR để hoàn tất phân công trước khi gửi yêu cầu.”
+
+No leave balance:
+
+“Bạn không còn đủ số dư cho loại phép này.”
+
+Pending approval:
+
+“Đang chờ Team Lead xử lý.”
+
+Rejected:
+
+“Yêu cầu bị từ chối”
++ reason
+
+No AI WFH evidence:
+
+“Không đủ dữ liệu để đánh giá phiên làm việc này.”
+
+Contract expiry:
+
+“Contract expires in 7 days.”
+
+Missing evidence:
+
+“Please upload supporting evidence.”
+
+Permission restricted:
+
+“You don't have permission to view this information.”
+
+============================================================
+78. ACCESSIBILITY
+============================================================
+
+Use:
+
+- readable contrast
+- minimum 14px body text
+- clear focus state
+- keyboard-friendly controls
+- status labels in addition to colors
+- accessible forms
+- meaningful error messages
+
+============================================================
+79. CONTENT LANGUAGE
+============================================================
+
+All UI copy should be Vietnamese.
+
+Use realistic Vietnamese HR terminology.
+
+Examples:
+
+“Chấm công”
+“Làm việc từ xa”
+“Nghỉ phép”
+“Đơn đang chờ duyệt”
+“Bảng công tháng”
+“Nhân viên”
+“Chi nhánh”
+“Phòng ban”
+“Team”
+“Quản lý”
+“Phiếu lương”
+“Bồi hoàn chi phí”
+“Hợp đồng”
+“Ngày làm việc cuối”
+“Bàn giao công việc”
+“Khóa tài khoản”
+
+Use realistic Vietnamese employee names.
+
+============================================================
+80. REALISTIC SAMPLE DATA
+============================================================
+
+Use:
+
+Nguyễn Minh Anh
+Trần Hoàng Nam
+Lê Khánh Linh
+Phạm Gia Huy
+
+Departments:
+
+Engineering
+Data
+Product
+Business
+Human Resources
+
+Teams:
+
+Data Engineering
+Product Development
+Customer Success
+HR Operations
+
+Branches:
+
+Hồ Chí Minh
+Hà Nội
+Đà Nẵng
+
+Use realistic VND values.
+
+Use realistic dates.
+
+Do not use Lorem Ipsum.
+
+============================================================
+81. SCREEN INVENTORY
+============================================================
+
+Generate a comprehensive set of high-fidelity screens.
+
+AUTH:
+- Login
+- Forgot Password
+- Change Password
+
+CORE EMPLOYEE:
+- Dashboard
+- Attendance
+- Attendance Detail
+- Attendance Correction
+- Work Schedule
+- Shift Swap
+- WFH Dashboard
+- WFH Request
+- Leave Dashboard
+- Leave Request
+- Leave Detail
+- Expense Dashboard
+- Expense Claim
+- Payslip
+- Payslip Detail
+- Team Calendar
+- Profile
+- Contracts
+- Certificates
+- Resignation
+- Notifications
+
+TEAM LEAD:
+- Team Dashboard
+- Approval Center
+- WFH Approval
+- Attendance Correction Approval
+- Shift Swap Approval
+- Leave Approval
+- OT Verification
+- Expense Approval
+- Resignation Approval
+- Team Calendar
+
+HR BRANCH:
+- HR Dashboard
+- Employee List
+- Employee Detail
+- Onboarding
+- Contract Management
+- Contract Generation
+- Contract Expiry
+- Equipment
+- Daily Attendance
+- Monthly Timesheet
+- Expense Review
+- Offboarding
+- Branch HR Notifications
+
+HR HEAD:
+- Executive Dashboard
+- Organization
+- Team / Project Structure
+- WFH Policy
+- Holiday Policy
+- Payroll / MISA Sync
+- Payroll Review
+- Expense Final Approval
+- Reports
+- Announcements
+
+RECRUITMENT:
+- Recruitment Dashboard
+- Job List
+- Job Detail
+- Candidate List
+- Candidate Pipeline
+- Candidate Detail
+- Interview
+
+AI:
+- AI WFH Dashboard
+- Employee WFH Activity
+- Screenshot Timeline
+- AI Assessment
+- Human Review
+- AI Candidate Matching
+- CV Parsing
+- Candidate Score
+- AI Explanation
+
+ADMIN:
+- User Management
+- Role Management
+- Permission Matrix
+- Branch Management
+- Branch GPS
+- Integrations
+- Notification Settings
+- Audit Logs
+- System Alerts
+- System Settings
+
+============================================================
+82. IMPORTANT VISUAL UX RULE
+============================================================
+
+The final product should NOT feel like:
+
+“50 unrelated feature pages.”
+
+Instead it should feel like:
+
+ONE coherent HR operating system.
+
+Features must connect through:
+
+- employee profile
+- team
+- branch
+- employment type
+- workflow
+- permission
+- AI
+- analytics
+
+The user should understand:
+
+“This system manages my entire working life.”
+
+HR should understand:
+
+“This system manages the employee lifecycle.”
+
+Team Lead should understand:
+
+“This system helps me manage my team.”
+
+Admin should understand:
+
+“This system lets me configure and secure the platform.”
+
+============================================================
+83. ANTI-GENERIC DESIGN RULE
+============================================================
+
+Do NOT create a generic SaaS template.
+
+Do not default to:
+
+- blue sidebar + white cards everywhere
+- identical KPI cards
+- giant colorful charts
+- generic HR illustrations
+- purple AI gradients
+- excessive glassmorphism
+- giant rounded containers
+- card soup
+- excessive decorative blobs
+- random gradients
+- generic enterprise ERP UI
+
+The oHRiise identity must be visible in:
+
+- layout rhythm
+- navigation
+- status treatment
+- progress visualization
+- workflow visualization
+- AI modules
+- dashboard composition
+- pastel color system
+- rising visual motifs
+
+The UI must remain recognizable even when the logo is removed.
+
+============================================================
+84. FINAL PRODUCT CHARACTER
+============================================================
+
+The final UI should communicate:
+
+“oHRiise is a calm, intelligent, human-centered HR operating system for modern hybrid organizations.”
+
+It should feel:
+
+Minimal
+Professional
+Beautiful
+Calm
+Intelligent
+Efficient
+Distinctive
+Easy to use
+
+The UI must be beautiful because it is:
+
+convenient
+coherent
+readable
+well structured
+well branded
+
+NOT because it contains unnecessary decoration.
+
+============================================================
+85. FINAL GENERATION INSTRUCTION
+============================================================
+
+Generate:
+
+1. Complete oHRiise Design System
+2. Complete responsive application shell
+3. Dynamic permission-aware navigation
+4. High-fidelity screens
+5. Realistic Vietnamese HR data
+6. Reusable components
+7. Interactive prototype flows
+8. Role/capability examples
+9. Empty/error/success states
+10. Connected workflows
+
+Prioritize the most important demo journeys:
+
+EMPLOYEE:
+Login
+→ Dashboard
+→ Check-in
+→ WFH
+→ Leave
+→ Expense
+→ Payslip
+→ AI WFH
+
+TEAM LEAD:
+Dashboard
+→ Approval Center
+→ WFH approval
+→ Leave approval
+→ Attendance correction
+→ Expense
+→ Resignation
+
+HR:
+Dashboard
+→ Employees
+→ Onboarding
+→ Contract
+→ Attendance
+→ Timesheet
+→ Expense
+→ Offboarding
+→ Recruitment
+→ AI Candidate Matching
+→ AI WFH Monitoring
+
+HR HEAD:
+Dashboard
+→ Organization
+→ Policy
+→ Payroll / MISA Sync
+→ Executive Analytics
+→ Announcement
+
+ADMIN:
+Dashboard
+→ Users
+→ Roles
+→ Permissions
+→ Branch
+→ Integrations
+→ Audit Logs
+→ System Alerts
+
+The result must demonstrate that:
+
+ALL USERS ARE EMPLOYEES FIRST.
+
+ROLE-SPECIFIC FEATURES ARE ADDITIVE.
+
+AI WFH MONITORING IS A CORE EMPLOYEE AI CAPABILITY.
+
+AI CANDIDATE MATCHING IS AN HR / RECRUITMENT CAPABILITY.
+
+PERMISSIONS CONTROL MODULES, DATA, AND ACTIONS.
+
+THE ENTIRE PRODUCT IS ONE COHERENT HR OPERATING SYSTEM.
+
+Do not simplify this architecture into separate role-specific applications.
+
+Do not remove employee functionality when a user gains another role.
+
+Do not turn every function into an isolated card or disconnected page.
+
+Design the product as one integrated, dynamic, branded HR ecosystem.

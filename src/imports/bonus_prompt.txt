@@ -1,0 +1,1906 @@
+============================================================
+oHRiise — EXISTING FIGMA MAKE PROJECT
+UI/UX COMPLETION + FLOW REPAIR PATCH
+============================================================
+
+IMPORTANT:
+
+This is a PATCH to the EXISTING oHRiise application.
+
+DO NOT regenerate the entire application from scratch.
+
+DO NOT replace the existing design system.
+
+DO NOT redesign screens that are already complete and visually coherent.
+
+DO NOT remove existing working features.
+
+DO NOT create a second parallel application.
+
+Your task is to:
+
+1. AUDIT the current existing UI.
+2. PRESERVE all good existing screens.
+3. ADD missing modules/screens.
+4. REPLACE generic placeholder/template pages with
+   proper domain-specific UI where necessary.
+5. CONNECT all major screens into a coherent interactive demo.
+6. FIX the role-based navigation and demo flow.
+7. Make the final prototype accurately represent the
+   oHRiise Use Case architecture.
+
+============================================================
+SOURCE OF TRUTH
+============================================================
+
+The current application follows this architecture:
+
+EVERY ACCOUNT IS AN EMPLOYEE FIRST.
+
+There is ONE unified oHRiise application.
+
+Roles add capabilities:
+
+Employee
++
+Team Lead capabilities
++
+HR capabilities
++
+System Admin capabilities
+
+A user can have multiple roles.
+
+Examples:
+
+Employee
+Employee + Team Lead
+Employee + HR
+Employee + HR + Team Lead
+Employee + System Admin
+
+Role MUST NOT replace Core Employee functionality.
+
+Use the current Use Case Overview and functional requirements
+as the business-flow reference.
+
+The Use Case overview groups detailed functions into
+high-level domain aggregates for readability.
+
+Therefore:
+
+"Quản lý chấm công"
+does NOT mean there is only one screen.
+
+It represents a domain containing multiple related screens,
+actions, states and workflows.
+
+The UI should expose the appropriate detail.
+
+============================================================
+CURRENT DESIGN SYSTEM — PRESERVE
+============================================================
+
+Preserve the current oHRiise visual language:
+
+- oHRiise branding
+- current logo
+- current sidebar
+- current header
+- current typography
+- current spacing
+- current buttons
+- current status chips
+- current cards
+- current table style
+- current blue / cyan / lime palette
+- current responsive behavior
+
+Do NOT introduce:
+
+- purple AI aesthetics
+- generic SaaS templates
+- glassmorphism
+- excessive gradients
+- giant KPI cards
+- unrelated illustration styles
+- completely different navigation
+
+The new screens must look like they belong to
+the SAME oHRiise application.
+
+============================================================
+CRITICAL PROBLEM TO FIX
+============================================================
+
+The current prototype contains several pages that visually reuse
+the same generic data-table layout even though the business
+domains are fundamentally different.
+
+DO NOT continue this pattern.
+
+The following MUST have domain-specific layouts:
+
+1. Nghỉ phép
+2. Phiếu lương
+3. Chi phí
+4. Lịch team
+5. Hồ sơ cá nhân
+6. Hợp đồng
+7. Thôi việc
+8. Hồ sơ nhân sự
+9. Tuyển dụng
+10. Đồng bộ bảng lương
+11. Phân tích nhân sự
+12. Cấu hình chính sách
+13. Quản lý người dùng
+14. RBAC
+15. Quản lý chi nhánh
+
+A table may still be used inside these pages where appropriate,
+but the ENTIRE PAGE MUST NOT be the same generic table template.
+
+============================================================
+PART A — LOGIN
+============================================================
+
+ADD A REAL LOGIN SCREEN.
+
+The application should NOT immediately open directly
+into the dashboard.
+
+Create:
+
+LOGIN
+
+Brand:
+
+oHRiise
+People rise together
+
+Fields:
+
+- Email / Tài khoản
+- Mật khẩu
+
+Actions:
+
+[ Đăng nhập ]
+
+Secondary:
+
+- Ghi nhớ đăng nhập
+- Quên mật khẩu
+
+Demo helper:
+
+"Chế độ demo"
+
+Provide clearly visible demo accounts:
+
+Employee
+Team Lead
+HR Branch
+HR Head
+System Admin
+
+These should allow the prototype to demonstrate
+different role-based experiences.
+
+After login:
+
+→ Dashboard
+
+The login screen must use the existing oHRiise visual language.
+
+Do not create a generic corporate login template.
+
+============================================================
+PART B — CORE EMPLOYEE MODULES
+============================================================
+
+Every role retains the Core Employee experience.
+
+The following modules MUST be available to every employee
+according to the current permission model:
+
+- Tổng quan
+- Chấm công
+- Làm việc từ xa
+- Nghỉ phép
+- Chi phí
+- Phiếu lương
+- Lịch team
+- Hồ sơ cá nhân
+- Hợp đồng cá nhân
+- Ca làm việc cá nhân
+- Thôi việc / resignation flow
+- Thông báo
+- AI WFH Monitoring
+
+============================================================
+B1 — NGHỈ PHÉP
+============================================================
+
+Do NOT reuse the generic DataPage.
+
+Create a dedicated Leave experience.
+
+Include:
+
+Header:
+
+"Nghỉ phép"
+
+Show:
+
+- Số ngày phép còn lại
+- Đã sử dụng
+- Đang chờ
+- Chính sách áp dụng
+
+Different leave types:
+
+- Nghỉ phép năm
+- Nghỉ ốm
+- Nghỉ bù
+- Nghỉ không lương
+
+Main sections:
+
+1. Leave balance
+2. Calendar
+3. My requests
+4. Leave policy
+
+Primary CTA:
+
+[ Tạo đơn nghỉ phép ]
+
+Create request flow:
+
+Loại nghỉ
+→ Ngày bắt đầu
+→ Ngày kết thúc
+→ Số ngày
+→ Lý do
+→ Gửi yêu cầu
+
+Show policy validation.
+
+Show status:
+
+Chờ duyệt
+Đã duyệt
+Từ chối
+Đã hủy
+
+The UI must make this visually distinct from:
+
+Expense
+Payslip
+Team Calendar
+
+============================================================
+B2 — PHIẾU LƯƠNG
+============================================================
+
+Create a financial-document-oriented interface.
+
+Do NOT use the generic employee table.
+
+Header:
+
+"Phiếu lương"
+
+Show:
+
+- Kỳ lương
+- Tổng thu nhập
+- Các khoản khấu trừ
+- Thực nhận
+
+Create a payslip document preview.
+
+Sections:
+
+Thu nhập
+Khấu trừ
+Thực nhận
+
+Actions:
+
+[ Xem chi tiết ]
+[ Tải phiếu lương ]
+
+Allow switching:
+
+Tháng 09/2026
+Tháng 08/2026
+...
+
+Clearly communicate that salary data is private.
+
+============================================================
+B3 — CHI PHÍ / BỒI HOÀN
+============================================================
+
+Create a dedicated expense-management UI.
+
+Do NOT use the generic employee data table as the main layout.
+
+Show:
+
+- Tổng chi phí đã gửi
+- Đang chờ duyệt
+- Đã duyệt
+- Đã thanh toán
+
+Expense list should use expense-specific information:
+
+- Loại chi phí
+- Số tiền
+- Ngày
+- Dự án / Team
+- Trạng thái
+- Người duyệt
+
+Primary CTA:
+
+[ Gửi chi phí ]
+
+Expense detail:
+
+Receipt / attachment
+Amount
+Category
+Description
+Project
+Approval history
+Payment status
+
+Show the actual approval flow:
+
+Employee
+→ Team Lead
+→ HR Branch
+→ HR Head when applicable
+
+For fast-track eligible expense,
+show the relevant approval context without inventing
+additional business rules.
+
+============================================================
+B4 — LỊCH TEAM
+============================================================
+
+This MUST NOT look like Leave or Expense.
+
+Create a real team calendar.
+
+Views:
+
+- Tuần
+- Tháng
+
+Show:
+
+Team members as rows.
+
+Days as columns.
+
+Visual states:
+
+Office
+WFH
+Leave
+Business trip if supported by current requirements
+
+Example:
+
+                Mon Tue Wed Thu Fri
+Nguyễn Minh Anh  🏢  🏠  🏢  🏢  🏠
+Trần Hoàng Nam   🏢  🏢  🏠  🏢  🏢
+...
+
+Allow viewing:
+
+- Team availability
+- WFH
+- Leave
+- Work schedule
+
+The Team Calendar should feel operational,
+not like another generic data table.
+
+============================================================
+B5 — HỒ SƠ CÁ NHÂN
+============================================================
+
+The current profile page is too shallow.
+
+Create a detailed employee self-service profile.
+
+Sections / tabs:
+
+1. Thông tin cá nhân
+2. Thông tin liên hệ
+3. Thông tin công việc
+4. Hợp đồng
+5. Chứng chỉ
+6. Tài liệu cá nhân
+7. Lịch sử thay đổi
+
+Show:
+
+- Họ tên
+- Ảnh
+- Mã nhân viên
+- Ngày sinh
+- Email
+- Số điện thoại
+- Địa chỉ
+- Phòng ban
+- Chức vụ
+- Team
+- Team Lead
+- Chi nhánh
+- Loại nhân sự
+
+Allow:
+
+[ Cập nhật hồ sơ ]
+
+Use editable vs read-only states.
+
+============================================================
+B6 — QUẢN LÝ HỢP ĐỒNG
+============================================================
+
+This is a MISSING CORE EMPLOYEE capability.
+
+Create:
+
+"Hợp đồng"
+
+Employee view:
+
+- Hợp đồng hiện tại
+- Loại hợp đồng
+- Ngày bắt đầu
+- Ngày kết thúc
+- Trạng thái
+- Tài liệu hợp đồng
+
+Actions:
+
+[ Xem hợp đồng ]
+[ Xem PDF ]
+
+Show contract history.
+
+If an expiry is approaching:
+
+"Đang đến hạn"
+
+Show appropriate notification/reminder.
+
+HR users should additionally be able to manage contracts
+within their permitted employee scope.
+
+HR contract management should include:
+
+- Contract list
+- Contract detail
+- Template
+- Generate contract
+- Preview PDF
+- Upload signed document
+- Expiry status
+- Renewal / non-renewal workflow
+
+Do NOT create completely separate visual systems
+for Employee Contract and HR Contract.
+
+They are the same domain with different permissions.
+
+============================================================
+B7 — CA LÀM VIỆC CÁ NHÂN
+============================================================
+
+Create:
+
+"Ca làm việc"
+
+Employee view:
+
+Current schedule
+Current shift
+Upcoming shifts
+Working hours
+Shift history
+
+Show a calendar/schedule view.
+
+Example:
+
+09/22
+08:00 — 17:00
+Office
+
+09/23
+08:00 — 17:00
+WFH
+
+09/24
+09:00 — 18:00
+Office
+
+If shift swap is supported by the functional requirements,
+provide:
+
+[ Đề xuất đổi ca ]
+
+Flow:
+
+Employee A proposes
+→ Employee B accepts/rejects
+→ Team Lead approves/rejects
+
+The UI must clearly show each state.
+
+============================================================
+B8 — THÔI VIỆC / RESIGNATION
+============================================================
+
+Create a dedicated employee resignation page.
+
+This MUST NOT be a generic form.
+
+Title:
+
+"Thôi việc"
+
+Show:
+
+- Loại nhân sự
+- Ngày làm việc cuối cùng
+- Thời hạn báo trước
+- Trạng thái hồ sơ
+- Hướng dẫn quy trình
+
+Important business rules:
+
+Full-time probation:
+minimum 3 days
+
+Full-time official:
+30 days
+
+Part-time:
+30 days
+
+Intern:
+contract end or applicable 3-day notice
+
+Contractor:
+follow service agreement / applicable contract handling
+
+The UI should dynamically explain the applicable notice rule.
+
+Employee submits:
+
+- Last working day
+- Reason
+- Completed signed resignation document
+- Supporting document when applicable
+
+Show:
+
+[ Gửi hồ sơ thôi việc ]
+
+After submission:
+
+Submitted
+→ HR processing
+→ Offboarding
+→ Completed
+
+HR must NOT be presented as "approving whether
+the employee is allowed to resign".
+
+HR tracks the post-submission offboarding process.
+
+============================================================
+B9 — NOTIFICATIONS
+============================================================
+
+The current notification bell is only decorative.
+
+Fix it.
+
+Clicking the bell MUST open a real notification panel.
+
+Include:
+
+- Unread count
+- Read/unread state
+- Timestamp
+- Notification category
+- Related module
+- CTA
+
+Examples:
+
+"Đơn nghỉ phép của bạn đã được phê duyệt."
+
+"Hợp đồng của bạn sắp hết hạn."
+
+"Yêu cầu bồi hoàn đang chờ Team Lead xử lý."
+
+"Bạn có lịch WFH ngày 25/09."
+
+"Yêu cầu điều chỉnh chấm công đã được xử lý."
+
+Click notification:
+
+→ navigate to related screen.
+
+Also create:
+
+"Xem tất cả thông báo"
+
+with a dedicated notification page.
+
+============================================================
+PART C — HR
+============================================================
+
+HR retains all Core Employee features.
+
+HR-specific modules must be visually and functionally distinct.
+
+Do NOT reuse the generic DataPage template.
+
+============================================================
+C1 — HỒ SƠ NHÂN SỰ
+============================================================
+
+Create a dedicated HR employee-management experience.
+
+Header:
+
+"Hồ sơ nhân sự"
+
+Show:
+
+- Tổng nhân sự
+- Đang hoạt động
+- Thử việc
+- Sắp hết hợp đồng
+- Đang offboarding
+
+Employee list:
+
+- Avatar
+- Employee ID
+- Name
+- Department
+- Position
+- Branch
+- Employment type
+- Team Lead
+- Status
+
+Click employee:
+
+→ detailed employee profile
+
+Tabs:
+
+Overview
+Personal Information
+Employment
+Contracts
+Attendance
+Leave
+Expense
+Equipment
+Documents
+Offboarding
+Activity
+
+HR should be able to perform actions
+according to permission.
+
+Do not expose sensitive information to roles
+without permission.
+
+============================================================
+C2 — HR OFFBOARDING
+============================================================
+
+Create a dedicated HR:
+
+"Quản lý thôi việc"
+
+Dashboard:
+
+- Đang xử lý
+- Chờ bàn giao
+- Chờ thu hồi tài sản
+- Chờ khóa tài khoản
+- Hoàn tất
+
+Offboarding detail:
+
+Employee
+Last working day
+Reason
+Resignation status
+
+Checklist:
+
+□ Hồ sơ thôi việc
+□ Bàn giao công việc
+□ Bàn giao tài sản / equipment
+□ Thu hồi quyền truy cập
+□ Xác nhận ngày làm việc cuối
+□ Hoàn tất offboarding
+
+Status progression:
+
+Resignation submitted
+→ HR processing
+→ Handover
+→ Asset recovery
+→ Account lock
+→ Completed
+
+============================================================
+C3 — HR POLICY CONFIGURATION
+============================================================
+
+Create:
+
+"Cấu hình chính sách"
+
+This is NOT System Admin configuration.
+
+It is HR business-policy configuration.
+
+Sections:
+
+- Chính sách nghỉ phép
+- Chính sách WFH
+- Chính sách chấm công
+- Chính sách ca làm việc
+- Chính sách hoàn ứng / chi phí
+- Quy tắc báo trước thôi việc
+
+Each policy should have:
+
+Status
+Effective date
+Scope
+Applicable employees
+Edit action
+
+Example:
+
+Hybrid Work — HCM
+
+Maximum WFH:
+2 days/week
+
+Advance registration:
+24 hours
+
+Approval:
+Team Lead
+
+Show:
+
+[ Chỉnh sửa chính sách ]
+
+Do not mix HR business policy with
+technical system configuration.
+
+============================================================
+C4 — HR PAYROLL / MISA SYNC
+============================================================
+
+Current "Đồng bộ bảng lương" is too similar to
+Hồ sơ nhân sự / Tuyển dụng / Analytics.
+
+Create a dedicated synchronization workflow.
+
+Title:
+
+"Đồng bộ bảng lương"
+
+Explain:
+
+oHRiise prepares attendance/timesheet data.
+
+→ Sync to MISA AMIS
+
+Show:
+
+Current payroll period
+Attendance status
+Timesheet status
+Validation status
+Sync status
+
+Flow:
+
+Chấm công
+→ Kiểm tra dữ liệu
+→ Chốt bảng công
+→ Đồng bộ MISA AMIS
+→ Đồng bộ hoàn tất
+
+Actions:
+
+[ Kiểm tra dữ liệu ]
+[ Đồng bộ MISA AMIS ]
+
+Show success / error / validation states.
+
+Do NOT design oHRiise as an independent payroll-calculation
+system if the current functional requirements define
+MISA AMIS as the payroll-processing system.
+
+============================================================
+C5 — HR ANALYTICS
+============================================================
+
+Create a REAL analytics dashboard.
+
+This MUST NOT look like the employee list.
+
+Use:
+
+- charts
+- trend lines
+- distributions
+- workforce composition
+- turnover
+- headcount
+- employment type
+- branch distribution
+- attendance trends
+- leave trends
+
+Use the existing oHRiise visual language.
+
+Avoid excessive giant KPI cards.
+
+Charts should answer real HR questions.
+
+============================================================
+C6 — RECRUITMENT
+============================================================
+
+Recruitment MUST become a dedicated domain.
+
+Create:
+
+Recruitment Dashboard
+
+Jobs
+Candidates
+Interviews
+AI Candidate Matching
+
+DO NOT use the generic DataPage.
+
+============================================================
+AI CANDIDATE MATCHING
+============================================================
+
+THIS IS A CRITICAL REQUIRED MODULE.
+
+It was missing / incomplete in the current prototype.
+
+It must be visible to:
+
+HR / Recruitment users with permission.
+
+It must NOT be visible to ordinary employees.
+
+It must NOT automatically become available to
+System Admin merely because they are Admin.
+
+Create the following flow:
+
+Recruitment
+→ Job
+→ JD
+→ Candidates
+→ AI Candidate Matching
+→ Upload / select CV
+→ AI analysis
+→ Candidate analysis
+→ HR decision
+
+Dedicated screens:
+
+1. AI Candidate Matching dashboard
+2. Job selection
+3. JD detail
+4. CV upload
+5. AI processing
+6. Candidate AI analysis
+7. Match score
+8. Explainable score
+9. Matched requirements
+10. Missing requirements
+11. Interview focus
+12. Candidate comparison
+13. Candidate pipeline
+14. Candidate detail
+15. Analysis history
+
+AI result example:
+
+Overall Match
+87%
+
+Skills Match
+92%
+
+Experience Match
+84%
+
+Education Match
+90%
+
+JD Alignment
+85%
+
+Show:
+
+MATCHED
+✓ Python
+✓ SQL
+✓ ETL
+
+PARTIALLY MATCHED
+◐ Airflow
+
+NOT FOUND
+○ Kubernetes
+
+Clearly label:
+
+"AI đánh giá tham khảo"
+
+Include:
+
+"AI chỉ hỗ trợ đánh giá dựa trên dữ liệu CV và JD.
+Quyết định tuyển dụng thuộc về người phụ trách."
+
+The AI module must feel like a professional recruitment
+tool, NOT a generic purple AI page.
+
+============================================================
+PART D — TEAM LEAD
+============================================================
+
+Team Lead is still an employee.
+
+Keep all Core Employee features.
+
+Add Team Lead capabilities.
+
+============================================================
+D1 — TEAM ORGANIZATION TREE
+============================================================
+
+CURRENTLY MISSING.
+
+Create:
+
+"Đội ngũ của tôi"
+
+Show organization/team hierarchy
+as a visual tree.
+
+Example:
+
+Engineering Lead
+│
+├── Backend Team
+│   ├── Nguyễn Minh Anh
+│   ├── Đỗ Thu Hà
+│   └── Trần Thảo My
+│
+├── Frontend Team
+│   ├── ...
+│
+└── QA Team
+    ├── ...
+
+Each employee node:
+
+Avatar
+Name
+Position
+Status
+Work mode
+
+Click employee:
+
+→ employee detail
+
+Show team statistics:
+
+- Total members
+- Working today
+- WFH
+- Leave
+- Pending requests
+
+This should be a visual hierarchy,
+not merely another employee table.
+
+============================================================
+D2 — TEAM LEAD OFFBOARDING
+============================================================
+
+Add Team Lead visibility into resignation/offboarding
+for assigned team members.
+
+Team Lead can see:
+
+- employee resignation submitted
+- last working day
+- handover status
+- pending work
+- team impact
+
+Team Lead should handle team-level
+handover / acknowledgement where required.
+
+Do not give Team Lead HR-only administrative capabilities.
+
+============================================================
+D3 — TEAM LEAD SHIFT MANAGEMENT
+============================================================
+
+Create:
+
+"Ca làm việc của team"
+
+Show:
+
+Weekly schedule
+
+Team members × dates
+
+Shift
+Office / WFH
+Leave
+Availability
+
+Actions where permitted:
+
+- View team shifts
+- Review shift swap requests
+- Approve/reject shift swap
+- Manage team schedule if permission allows
+
+Shift swap flow:
+
+Employee A proposes
+→ Employee B accepts/rejects
+→ Team Lead approves/rejects
+
+Make this visible in the prototype.
+
+============================================================
+PART E — SYSTEM ADMIN
+============================================================
+
+System Admin is still an employee.
+
+Do NOT replace the Core Employee navigation.
+
+System Admin gets:
+
+System Administration
+
+============================================================
+E1 — USER MANAGEMENT
+============================================================
+
+CURRENTLY MISSING.
+
+Create:
+
+"Quản lý người dùng"
+
+Show:
+
+- User
+- Employee
+- Email
+- Account status
+- Assigned roles
+- Scope
+- Last login
+
+Actions:
+
+[ Thêm người dùng ]
+[ Khóa tài khoản ]
+[ Mở khóa ]
+[ Đặt lại mật khẩu ]
+[ Xem quyền ]
+
+User detail should show:
+
+Identity
+Account
+Roles
+Scope
+Activity
+
+============================================================
+E2 — RBAC
+============================================================
+
+CURRENTLY MISSING.
+
+Create:
+
+"Vai trò & phân quyền"
+
+Use a permission matrix.
+
+Columns:
+
+Module
+View
+Create
+Edit
+Delete
+Approve
+Reject
+Export
+
+Rows:
+
+Attendance
+Leave
+Expense
+Employee
+Contract
+Recruitment
+Payroll
+Analytics
+Policy
+Administration
+
+Allow role selection:
+
+Employee
+Team Lead
+HR Branch
+HR Head
+System Admin
+
+But make clear:
+
+Role assignment ≠ unrestricted data access.
+
+Also show:
+
+DATA SCOPE
+
+Own
+Team
+Branch
+Company
+
+Example:
+
+HR Branch
+Employee Management
+VIEW = Branch
+EDIT = Branch
+EXPORT = Branch
+
+System Admin:
+User Management
+VIEW = System
+BUT sensitive HR business data is NOT automatically granted.
+
+Create a role detail screen.
+
+============================================================
+E3 — BRANCH MANAGEMENT
+============================================================
+
+CURRENTLY MISSING.
+
+Create:
+
+"Quản lý chi nhánh"
+
+Show branch cards/list:
+
+Chi nhánh
+Address
+Head
+Employee count
+Status
+
+Branch detail:
+
+- Basic information
+- HR scope
+- Departments
+- Employees
+- Policies
+- Status
+
+Actions:
+
+[ Thêm chi nhánh ]
+[ Chỉnh sửa ]
+[ Xem nhân sự ]
+
+============================================================
+E4 — SYSTEM CONFIGURATION
+============================================================
+
+Keep separate from HR business policy.
+
+System configuration includes:
+
+- System settings
+- Integrations
+- Notification settings
+- Audit logs
+- System alerts
+
+This is technical/system administration.
+
+Do NOT mix it with:
+
+HR policy configuration.
+
+============================================================
+PART F — NOTIFICATION + CROSS-MODULE FLOW
+============================================================
+
+Every important action should generate a demo notification
+where appropriate.
+
+Examples:
+
+Employee submits leave
+→ Team Lead notification
+
+Team Lead approves leave
+→ Employee notification
+
+Employee submits expense
+→ Team Lead notification
+
+Contract approaching expiry
+→ HR notification
+
+Employee submits resignation
+→ HR notification
+→ Team Lead notification where applicable
+
+Payroll sync completed
+→ HR notification
+
+AI CV analysis completed
+→ HR notification
+
+Notifications must link back to the relevant module.
+
+============================================================
+PART G — DEMO FLOW
+============================================================
+
+THIS IS CRITICAL.
+
+The prototype must NOT merely contain static pages.
+
+Fix the interaction flow.
+
+============================================================
+DEMO FLOW 1 — EMPLOYEE
+============================================================
+
+Login
+→ Employee demo
+
+Dashboard
+→ Check in
+→ Attendance
+
+Dashboard
+→ WFH
+→ Create WFH request
+→ Submit
+→ Success
+→ Notification
+
+Dashboard
+→ Leave
+→ Create leave request
+→ Submit
+→ Pending state
+
+Dashboard
+→ Expense
+→ Submit expense
+→ Pending state
+
+Dashboard
+→ Payslip
+→ Open payslip
+→ View detail
+
+Dashboard
+→ Team Calendar
+
+Dashboard
+→ Profile
+→ Contract
+
+Dashboard
+→ Work Schedule
+
+Dashboard
+→ AI WFH Monitoring
+
+Dashboard
+→ Notifications
+
+Dashboard
+→ Resignation
+→ Submit resignation
+→ Show offboarding transition
+
+============================================================
+DEMO FLOW 2 — TEAM LEAD
+============================================================
+
+Switch/login as Team Lead
+
+Dashboard
+→ Team overview
+
+Team Lead
+→ Team tree
+→ Select employee
+
+Team Lead
+→ Approval Center
+→ Approve WFH
+→ Approve Leave
+→ Review Expense
+
+Team Lead
+→ Team Schedule
+→ Shift management
+
+Team Lead
+→ Shift Swap
+→ Approve/reject
+
+Team Lead
+→ Offboarding
+→ Review team member handover
+
+Team Lead
+→ Team Calendar
+
+============================================================
+DEMO FLOW 3 — HR
+============================================================
+
+Switch/login as HR Branch
+
+Dashboard
+→ HR operational overview
+
+HR
+→ Employee Management
+→ Open employee
+→ Contracts
+→ Attendance
+→ Leave
+→ Expense
+→ Offboarding
+
+HR
+→ Recruitment
+→ Job
+→ Candidate
+
+HR
+→ AI Candidate Matching
+→ Select JD
+→ Upload CV
+→ Analyze
+→ Score
+→ Explanation
+→ Shortlist
+→ Interview
+
+HR
+→ Payroll
+→ Validate attendance
+→ Prepare timesheet
+→ Sync MISA AMIS
+→ Success
+
+HR
+→ Policy Configuration
+
+HR
+→ HR Analytics
+
+HR
+→ Notifications
+
+============================================================
+DEMO FLOW 4 — SYSTEM ADMIN
+============================================================
+
+Switch/login as System Admin
+
+Dashboard
+→ User Management
+→ Open user
+→ Roles
+
+Admin
+→ RBAC
+→ Open role
+→ Permission matrix
+→ Data scope
+
+Admin
+→ Branch Management
+→ Open branch
+
+Admin
+→ System Configuration
+→ Integrations
+
+Admin
+→ Audit Logs
+
+Admin
+→ System Alerts
+
+IMPORTANT:
+
+System Admin still retains Core Employee navigation.
+
+Do NOT turn System Admin into a completely separate application.
+
+============================================================
+PART H — ROLE SWITCHER
+============================================================
+
+The existing prototype has a "Chế độ demo" role switcher.
+
+KEEP IT.
+
+Improve it.
+
+When switching role:
+
+- update user identity
+- update role label
+- update permitted navigation
+- update dashboard content
+- update available actions
+- preserve Core Employee modules
+
+Example:
+
+Employee:
+Core Employee + AI WFH
+
+Team Lead:
+Core Employee + Team Management
+
+HR:
+Core Employee + HR Operations + Recruitment + AI CV-JD
+
+Admin:
+Core Employee + System Administration
+
+Do NOT hide Core Employee modules when changing role.
+
+============================================================
+PART I — PAGE-SPECIFIC DESIGN RULE
+============================================================
+
+The following pages MUST NOT share one generic visual template.
+
+------------------------------------------------------------
+Nghỉ phép
+------------------------------------------------------------
+
+Use:
+
+Balance
+Calendar
+Requests
+Policy
+
+------------------------------------------------------------
+Phiếu lương
+------------------------------------------------------------
+
+Use:
+
+Payslip document
+Income
+Deductions
+Net salary
+History
+
+------------------------------------------------------------
+Chi phí
+------------------------------------------------------------
+
+Use:
+
+Expense claims
+Amounts
+Receipts
+Approval status
+Payment status
+
+------------------------------------------------------------
+Lịch team
+------------------------------------------------------------
+
+Use:
+
+Calendar grid
+People × dates
+Office/WFH/Leave states
+
+------------------------------------------------------------
+Hồ sơ nhân sự
+------------------------------------------------------------
+
+Use:
+
+Employee directory
+Profile
+Employment
+Contract
+Documents
+Lifecycle
+
+------------------------------------------------------------
+Tuyển dụng
+------------------------------------------------------------
+
+Use:
+
+Jobs
+Candidates
+Pipeline
+Interviews
+AI matching
+
+------------------------------------------------------------
+Đồng bộ bảng lương
+------------------------------------------------------------
+
+Use:
+
+Validation
+Timesheet
+Sync status
+MISA AMIS integration
+
+------------------------------------------------------------
+Phân tích nhân sự
+------------------------------------------------------------
+
+Use:
+
+Charts
+Trends
+Workforce analytics
+
+------------------------------------------------------------
+Quản lý người dùng
+------------------------------------------------------------
+
+Use:
+
+Account directory
+Status
+Roles
+Scope
+
+------------------------------------------------------------
+RBAC
+------------------------------------------------------------
+
+Use:
+
+Permission matrix
+Role detail
+Scope assignment
+
+------------------------------------------------------------
+Chi nhánh
+------------------------------------------------------------
+
+Use:
+
+Branch directory
+Branch detail
+Employees
+Policies
+
+============================================================
+PART J — RESPONSIVE
+============================================================
+
+Preserve the existing responsive design.
+
+Desktop:
+
+1440px
+
+Tablet:
+
+1024px
+
+Mobile:
+
+390px
+
+Mobile priority:
+
+- Check in/out
+- WFH
+- Leave
+- Expense
+- Payslip
+- Notifications
+- Profile
+
+Complex admin tables may become horizontally scrollable
+or use mobile-friendly detail views.
+
+Do not simply shrink desktop UI.
+
+============================================================
+PART K — INTERACTION REQUIREMENTS
+============================================================
+
+Every major CTA MUST DO SOMETHING.
+
+Examples:
+
+[ Đăng nhập ]
+→ Dashboard
+
+[ Check in ]
+→ Checked-in state
+
+[ Tạo đơn nghỉ phép ]
+→ Leave form
+
+[ Gửi yêu cầu ]
+→ Success
+→ Pending
+→ Notification
+
+[ Xem phiếu lương ]
+→ Payslip detail
+
+[ Xem hợp đồng ]
+→ Contract detail
+
+[ Gửi thôi việc ]
+→ Resignation submitted
+→ Offboarding status
+
+[ Approve ]
+→ Approved
+→ Notification
+
+[ Reject ]
+→ Rejected
+→ Notification
+
+[ Upload CV ]
+→ Analysis processing
+
+[ Analyze CV ]
+→ AI result
+
+[ Shortlist ]
+→ Candidate pipeline update
+
+[ Đồng bộ MISA AMIS ]
+→ Sync progress
+→ Success / error state
+
+[ Thêm người dùng ]
+→ User creation form
+
+[ Phân quyền ]
+→ Permission matrix
+
+[ Thêm chi nhánh ]
+→ Branch creation form
+
+Bell icon
+→ Notification panel
+
+============================================================
+PART L — DO NOT FAKE COMPLETENESS
+============================================================
+
+Do NOT solve missing functionality by adding:
+
+- a random card
+- a KPI
+- a generic table
+- a decorative empty page
+- a "Coming soon" state
+- a single modal pretending to be a module
+
+Each missing domain needs an actual usable flow.
+
+However, do NOT overbuild functionality that is not
+supported by the current functional requirements.
+
+The goal is:
+
+FUNCTIONALLY REPRESENTATIVE
++
+VISUALLY COHERENT
++
+INTERACTIVE DEMO
+
+not an entire production HR platform.
+
+============================================================
+PART M — FINAL AUDIT BEFORE FINISHING
+============================================================
+
+Before finishing, perform an internal UI/UX audit.
+
+CORE EMPLOYEE:
+
+□ Login
+□ Dashboard
+□ Attendance
+□ WFH
+□ AI WFH Monitoring
+□ Leave
+□ Expense
+□ Payslip
+□ Team Calendar
+□ Personal Profile
+□ Personal Contract
+□ Personal Work Schedule
+□ Resignation
+□ Notifications
+
+HR:
+
+□ Employee Profiles
+□ Contracts
+□ Offboarding
+□ Recruitment
+□ AI Candidate Matching
+□ Payroll / MISA Sync
+□ HR Analytics
+□ HR Policy Configuration
+
+TEAM LEAD:
+
+□ Team Tree
+□ Approval Center
+□ Team Offboarding
+□ Team Shift Management
+□ Team Calendar
+
+SYSTEM ADMIN:
+
+□ User Management
+□ RBAC
+□ Branch Management
+□ System Configuration
+□ Audit Logs
+□ System Alerts
+
+AI:
+
+□ AI WFH Monitoring available to Employee
+□ AI Candidate Matching available to authorized HR
+□ AI Candidate Matching NOT visible to ordinary employees
+□ AI Candidate Matching has complete flow
+
+ARCHITECTURE:
+
+□ Every role still has Core Employee functionality
+□ Role adds capabilities instead of replacing Employee
+□ Navigation changes according to permission
+□ Data scope is represented
+□ Action permissions are represented
+□ HR business policy is separate from System Configuration
+□ Recruitment is separate from Payroll
+□ Analytics is separate from Employee Management
+□ AI WFH and AI CV-JD are separate capabilities
+
+VISUAL:
+
+□ No duplicated generic page layouts
+□ No unrelated visual styles
+□ No purple AI theme
+□ Existing oHRiise branding preserved
+□ Existing design system preserved
+□ Existing completed screens preserved
+
+PROTOTYPE:
+
+□ Login works
+□ Role demo works
+□ Navigation works
+□ Major CTA buttons work
+□ Requests have success/pending states
+□ Approval flow works
+□ Notifications work
+□ AI CV flow works
+□ Offboarding flow works
+□ Contract flow works
+□ Admin flows work
+
+============================================================
+FINAL INSTRUCTION
+============================================================
+
+DO NOT regenerate the whole oHRiise application.
+
+PATCH THE EXISTING APPLICATION.
+
+Prioritize correctness and completeness over creating
+more decorative UI.
+
+If an existing screen is already good:
+KEEP IT.
+
+If a screen is missing:
+ADD IT.
+
+If a screen currently uses a generic template despite
+representing a different business domain:
+REFACTOR THAT SCREEN into a domain-specific layout.
+
+If a flow is disconnected:
+CONNECT IT.
+
+If a button is decorative:
+MAKE IT INTERACTIVE.
+
+The final prototype should feel like ONE coherent
+oHRiise HR operating system whose UI visibly reflects
+the Use Case architecture and functional workflows.
