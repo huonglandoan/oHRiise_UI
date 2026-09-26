@@ -25,7 +25,7 @@ export default function ProfilePage() {
     phone: "090 123 4567",
     address: "128 Thảo Điền, TP. Thủ Đức, TP. Hồ Chí Minh",
     emergencyContact: "Nguyễn Văn Hùng (Bố) · 091 234 5678",
-    bankName: "Techcombank (Ngân hàng TMCP Kỹ Thương Việt Nam)",
+    bankName: "Techcombank (TMCP Kỹ Thương VN)",
     bankAccountNo: "1903 8888 999 018",
     bankAccountName: "NGUYEN MINH ANH",
   });
@@ -62,7 +62,7 @@ export default function ProfilePage() {
     name: "",
     issuer: "",
     year: "2026",
-    type: "Chuyên môn",
+    type: "Chuyên môn UI/UX",
     link: "",
   });
 
@@ -94,280 +94,242 @@ export default function ProfilePage() {
     };
     setCertificates([...certificates, newCert]);
     setIsCertModalOpen(false);
-    setCertForm({ name: "", issuer: "", year: "2026", type: "Chuyên môn", link: "" });
+    setCertForm({ name: "", issuer: "", year: "2026", type: "Chuyên môn UI/UX", link: "" });
     alert("Đã cập nhật chứng chỉ chuyên môn mới thành công!");
   };
 
   return (
-    <div className="page inner-page" style={{ gap: "24px" }}>
-      {/* HERO AVATAR & HEADER - RESPONSIVE HERO CARD */}
-      <section className="panel profile-hero-card">
-        <div className="profile-hero-inner">
-          {/* Avatar & Basic Info */}
-          <div className="profile-hero-user">
-            <div className="profile-avatar-wrap">
-              <div className="profile-avatar-large">
-                MA
-              </div>
-              <div className="profile-avatar-check">
-                <Icon name="check" size={18} />
-              </div>
+    <div className="page inner-page">
+      <div className="profile-minimal-container">
+        {/* MINIMAL PROFILE HERO HEADER */}
+        <div className="profile-header-minimal">
+          <div className="profile-header-main">
+            <div className="profile-avatar-minimal">
+              MA
             </div>
-
-            <div className="profile-hero-meta">
+            <div className="profile-header-info">
               <div className="profile-badge-row">
-                <span className="profile-code-badge">
-                  MÃ NV: {profileData.code}
-                </span>
+                <span className="profile-code-badge">MÃ NV: {profileData.code}</span>
                 <Status tone="green">Đang làm việc</Status>
                 <Status tone="blue">Chính thức (Full-time)</Status>
               </div>
-
-              <h1 className="profile-name">
-                {profileData.name}
-              </h1>
-
-              <p className="profile-title">
-                {profileData.title} · {profileData.department}
-              </p>
+              <h1 className="profile-name">{profileData.name}</h1>
+              <p className="profile-title">{profileData.title} · {profileData.department}</p>
             </div>
           </div>
 
-          {/* Action Button: Edit Profile */}
-          <div className="profile-hero-actions">
-            <button
-              className="primary profile-edit-btn"
-              onClick={handleOpenEditModal}
-            >
-              <Icon name="edit" size={20} />
-              <span>Cập nhật thông tin hồ sơ</span>
+          <div className="profile-header-actions">
+            <button className="primary profile-edit-btn" onClick={handleOpenEditModal}>
+              <Icon name="edit" size={18} />
+              <span>Chỉnh sửa thông tin</span>
             </button>
           </div>
         </div>
-      </section>
 
-      {/* TOP SUB-TABS NAVIGATION FOR PROFILE SECTIONS */}
-      <div className="page-sub-tabs profile-sub-tabs">
-        <button
-          className={activeTab === "all" ? "active" : ""}
-          onClick={() => setActiveTab("all")}
-        >
-          <Icon name="user" size={18} />
-          <span>Tất cả thông tin</span>
-        </button>
-        <button
-          className={activeTab === "personal" ? "active" : ""}
-          onClick={() => setActiveTab("personal")}
-        >
-          <Icon name="user" size={18} />
-          <span>Cá nhân & Liên hệ</span>
-        </button>
-        <button
-          className={activeTab === "job" ? "active" : ""}
-          onClick={() => setActiveTab("job")}
-        >
-          <Icon name="briefcase" size={18} />
-          <span>Công việc & Tổ chức</span>
-        </button>
-        <button
-          className={activeTab === "contract" ? "active" : ""}
-          onClick={() => setActiveTab("contract")}
-        >
-          <Icon name="file-text" size={18} />
-          <span>Hợp đồng & Chứng chỉ</span>
-        </button>
-      </div>
+        {/* MINIMAL NAVIGATION SUB-TABS */}
+        <div className="profile-tabs-minimal">
+          <button
+            className={activeTab === "all" ? "active" : ""}
+            onClick={() => setActiveTab("all")}
+          >
+            <Icon name="user" size={16} />
+            <span>Tất cả thông tin</span>
+          </button>
+          <button
+            className={activeTab === "personal" ? "active" : ""}
+            onClick={() => setActiveTab("personal")}
+          >
+            <Icon name="user" size={16} />
+            <span>Cá nhân & Liên hệ</span>
+          </button>
+          <button
+            className={activeTab === "job" ? "active" : ""}
+            onClick={() => setActiveTab("job")}
+          >
+            <Icon name="briefcase" size={16} />
+            <span>Công việc & Tổ chức</span>
+          </button>
+          <button
+            className={activeTab === "contract" ? "active" : ""}
+            onClick={() => setActiveTab("contract")}
+          >
+            <Icon name="file" size={16} />
+            <span>Hợp đồng & Chứng chỉ</span>
+          </button>
+        </div>
 
-      {/* SECTION 1: THÔNG TIN CÁ NHÂN & LIÊN HỆ */}
-      {(activeTab === "all" || activeTab === "personal") && (
-        <section className="panel profile-section-panel">
-          <div className="profile-section-header">
-            <div>
-              <p className="profile-section-tag">
-                HỒ SƠ LÝ LỊCH
-              </p>
-              <h2 className="profile-section-title">
-                Thông tin cá nhân & Liên hệ
-              </h2>
-            </div>
-            <button
-              className="secondary profile-sec-btn"
-              onClick={handleOpenEditModal}
-            >
-              <Icon name="edit" size={16} /> <span>Chỉnh sửa</span>
-            </button>
-          </div>
-
-          <div className="profile-field-grid">
-            {[
-              ["Họ và tên khai sinh", profileData.name],
-              ["Ngày sinh", profileData.dob],
-              ["Giới tính", profileData.gender],
-              ["Số CCCD / CMND", profileData.cccd],
-              ["Email công ty", profileData.companyEmail],
-              ["Email cá nhân", profileData.personalEmail],
-              ["Số điện thoại di động", profileData.phone],
-              ["Địa chỉ thường trú", profileData.address],
-              ["Liên hệ khẩn cấp", profileData.emergencyContact],
-              ["Ngân hàng nhận lương", profileData.bankName],
-              ["Số tài khoản (STK)", profileData.bankAccountNo],
-              ["Tên chủ tài khoản", profileData.bankAccountName],
-            ].map(([lbl, val]) => (
-              <div key={lbl} className="profile-field-card">
-                <span className="profile-field-label">
-                  {lbl}
-                </span>
-                <b className="profile-field-val">
-                  {val}
-                </b>
+        {/* UNIFIED MINIMAL CONTENT SHEET */}
+        <div className="profile-content-minimal">
+          {/* SECTION 1: CÁ NHÂN & LIÊN HỆ */}
+          {(activeTab === "all" || activeTab === "personal") && (
+            <div className="profile-section-minimal">
+              <div className="profile-section-top">
+                <h2 className="profile-section-heading">
+                  <Icon name="user" size={20} />
+                  <span>Thông tin cá nhân & Liên hệ</span>
+                </h2>
+                <button className="profile-link-btn" onClick={handleOpenEditModal}>
+                  <Icon name="edit" size={15} /> <span>Chỉnh sửa</span>
+                </button>
               </div>
-            ))}
-          </div>
 
-          {/* Highlighted Bank Account Card for Salary Payment */}
-          <div className="profile-bank-card">
-            <div className="profile-bank-inner">
-              <div className="profile-bank-icon">
-                <Icon name="wallet" size={28} />
-              </div>
-              <div>
-                <p className="profile-bank-label">
-                  Tài khoản ngân hàng nhận lương hàng tháng
-                </p>
-                <h3 className="profile-bank-name">
-                  {profileData.bankName}
-                </h3>
-                <div className="profile-bank-details">
-                  <span>
-                    STK: <strong style={{ color: "#38bdf8", fontWeight: 800, fontSize: "17px" }}>{profileData.bankAccountNo}</strong>
-                  </span>
-                  <span>
-                    Chủ tài khoản: <strong style={{ color: "white", fontWeight: 800 }}>{profileData.bankAccountName}</strong>
-                  </span>
+              <div className="profile-list-minimal">
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Họ và tên khai sinh</span>
+                  <span className="profile-row-val">{profileData.name}</span>
                 </div>
-              </div>
-            </div>
-
-            <button
-              className="secondary profile-bank-btn"
-              onClick={handleOpenEditModal}
-            >
-              <Icon name="edit" size={16} /> <span>Thay đổi STK</span>
-            </button>
-          </div>
-        </section>
-      )}
-
-      {/* SECTION 2: THÔNG TIN CÔNG VIỆC & TỔ CHỨC */}
-      {(activeTab === "all" || activeTab === "job") && (
-        <section className="panel profile-section-panel">
-          <div className="profile-section-header">
-            <div>
-              <p className="profile-section-tag">
-                TỔ CHỨC & VỊ TRÍ
-              </p>
-              <h2 className="profile-section-title">
-                Thông tin công việc & Phòng ban
-              </h2>
-            </div>
-            <Status tone="blue">
-              <Icon name="briefcase" size={16} /> Chính thức
-            </Status>
-          </div>
-
-          <div className="profile-field-grid">
-            {[
-              ["Mã nhân viên", profileData.code],
-              ["Phòng ban", "Product & Design"],
-              ["Chức danh chuyên môn", profileData.title],
-              ["Nhóm chuyên môn (Team)", "Product Development"],
-              ["Quản lý trực tiếp (Lead)", "Trần Hoàng Nam (Product Lead)"],
-              ["Chi nhánh làm việc", "Văn phòng TP. Hồ Chí Minh"],
-              ["Loại hình nhân sự", "Chính thức (Full-time)"],
-              ["Ngày gia nhập công ty", "15/04/2024"],
-              ["Thâm niên làm việc", "2 năm 5 tháng"],
-            ].map(([lbl, val]) => (
-              <div key={lbl} className="profile-field-card">
-                <span className="profile-field-label">
-                  {lbl}
-                </span>
-                <b className="profile-field-val">
-                  {val}
-                </b>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* SECTION 3: HỢP ĐỒNG & CHỨNG CHỈ CHUYÊN MÔN */}
-      {(activeTab === "all" || activeTab === "contract") && (
-        <section className="panel profile-section-panel">
-          <div className="profile-section-header">
-            <div>
-              <p className="profile-section-tag">
-                PHÁP LÝ & BẰNG CẤP
-              </p>
-              <h2 className="profile-section-title">
-                Hợp đồng & Chứng chỉ chuyên môn
-              </h2>
-            </div>
-            <button
-              className="primary profile-sec-btn"
-              onClick={() => setIsCertModalOpen(true)}
-            >
-              <Icon name="plus" size={18} /> <span>Cập nhật chứng chỉ</span>
-            </button>
-          </div>
-
-          {/* Contract Info Grid */}
-          <div className="profile-field-grid" style={{ marginBottom: "28px" }}>
-            {[
-              ["Loại hợp đồng lao động", "Hợp đồng Không xác định thời hạn"],
-              ["Mã hợp đồng", "HDLD-2024-018/OH"],
-              ["Ngày hiệu lực", "15/04/2024"],
-              ["Trình độ học vấn", "Cử nhân Thiết kế Đồ họa - ĐH Kiến trúc TP.HCM"],
-            ].map(([lbl, val]) => (
-              <div key={lbl} className="profile-field-card">
-                <span className="profile-field-label">
-                  {lbl}
-                </span>
-                <b className="profile-field-val">
-                  {val}
-                </b>
-              </div>
-            ))}
-          </div>
-
-          {/* Certificates List Cards */}
-          <div>
-            <h3 className="profile-subhead">
-              Danh sách chứng chỉ đã xác minh ({certificates.length})
-            </h3>
-            <div className="profile-cert-grid">
-              {certificates.map((c) => (
-                <div key={c.id} className="profile-cert-card">
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
-                      <span style={{ fontSize: "12px", fontWeight: 800, color: "#166534", background: "#dcfce7", padding: "2px 8px", borderRadius: "6px" }}>
-                        {c.type}
-                      </span>
-                      <span style={{ fontSize: "13px", color: "var(--text-sub)", fontWeight: 600 }}>Năm {c.year}</span>
-                    </div>
-                    <b style={{ fontSize: "17px", fontWeight: 900, color: "#14532d", display: "block", marginBottom: "4px" }}>
-                      {c.name}
-                    </b>
-                    <span style={{ fontSize: "14px", color: "var(--text-sub)", fontWeight: 600 }}>
-                      Cấp bởi: {c.issuer}
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Ngày sinh</span>
+                  <span className="profile-row-val">{profileData.dob}</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Giới tính</span>
+                  <span className="profile-row-val">{profileData.gender}</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Số CCCD / CMND</span>
+                  <span className="profile-row-val">{profileData.cccd}</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Email công ty</span>
+                  <span className="profile-row-val highlight">{profileData.companyEmail}</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Email cá nhân</span>
+                  <span className="profile-row-val">{profileData.personalEmail}</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Số điện thoại di động</span>
+                  <span className="profile-row-val">{profileData.phone}</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Địa chỉ thường trú</span>
+                  <span className="profile-row-val">{profileData.address}</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Liên hệ khẩn cấp</span>
+                  <span className="profile-row-val">{profileData.emergencyContact}</span>
+                </div>
+                <div className="profile-row-item full-width-row">
+                  <span className="profile-row-label">Ngân hàng nhận lương</span>
+                  <div className="profile-row-val-group">
+                    <span className="profile-bank-text">
+                      <strong>{profileData.bankName}</strong> — STK: <code className="bank-acc">{profileData.bankAccountNo}</code> ({profileData.bankAccountName})
                     </span>
+                    <button className="profile-mini-edit-btn" onClick={handleOpenEditModal}>
+                      <Icon name="edit" size={14} /> Sửa STK
+                    </button>
                   </div>
-                  <Status tone="green">Đã duyệt</Status>
                 </div>
-              ))}
+              </div>
             </div>
-          </div>
-        </section>
-      )}
+          )}
+
+          {/* SECTION 2: CÔNG VIỆC & TỔ CHỨC */}
+          {(activeTab === "all" || activeTab === "job") && (
+            <div className="profile-section-minimal">
+              <div className="profile-section-top">
+                <h2 className="profile-section-heading">
+                  <Icon name="briefcase" size={20} />
+                  <span>Thông tin công việc & Tổ chức</span>
+                </h2>
+                <Status tone="blue">Chính thức</Status>
+              </div>
+
+              <div className="profile-list-minimal">
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Mã nhân viên</span>
+                  <span className="profile-row-val font-mono">{profileData.code}</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Phòng ban</span>
+                  <span className="profile-row-val">Product & Design</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Chức danh chuyên môn</span>
+                  <span className="profile-row-val">{profileData.title}</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Nhóm chuyên môn (Team)</span>
+                  <span className="profile-row-val">Product Development</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Quản lý trực tiếp (Lead)</span>
+                  <span className="profile-row-val">Trần Hoàng Nam (Product Lead)</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Chi nhánh làm việc</span>
+                  <span className="profile-row-val">Văn phòng TP. Hồ Chí Minh</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Loại hình nhân sự</span>
+                  <span className="profile-row-val">Chính thức (Full-time)</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Ngày gia nhập công ty</span>
+                  <span className="profile-row-val">15/04/2024</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Thâm niên làm việc</span>
+                  <span className="profile-row-val">2 năm 5 tháng</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 3: HỢP ĐỒNG & CHỨNG CHỈ */}
+          {(activeTab === "all" || activeTab === "contract") && (
+            <div className="profile-section-minimal">
+              <div className="profile-section-top">
+                <h2 className="profile-section-heading">
+                  <Icon name="file" size={20} />
+                  <span>Hợp đồng & Chứng chỉ</span>
+                </h2>
+                <button className="profile-link-btn" onClick={() => setIsCertModalOpen(true)}>
+                  <Icon name="plus" size={15} /> <span>Thêm chứng chỉ</span>
+                </button>
+              </div>
+
+              <div className="profile-list-minimal">
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Loại hợp đồng lao động</span>
+                  <span className="profile-row-val">Hợp đồng Không xác định thời hạn</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Mã hợp đồng</span>
+                  <span className="profile-row-val font-mono">HDLD-2024-018/OH</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Ngày hiệu lực</span>
+                  <span className="profile-row-val">15/04/2024</span>
+                </div>
+                <div className="profile-row-item">
+                  <span className="profile-row-label">Trình độ học vấn</span>
+                  <span className="profile-row-val">Cử nhân Thiết kế Đồ họa - ĐH Kiến trúc TP.HCM</span>
+                </div>
+              </div>
+
+              <div className="profile-certs-minimal">
+                <h3 className="profile-subheading">Chứng chỉ & Bằng cấp đã xác minh ({certificates.length})</h3>
+                <div className="profile-cert-rows">
+                  {certificates.map((c) => (
+                    <div key={c.id} className="profile-cert-row-item">
+                      <div className="profile-cert-info">
+                        <div className="profile-cert-title-line">
+                          <span className="cert-type-tag">{c.type}</span>
+                          <strong className="cert-name">{c.name}</strong>
+                        </div>
+                        <span className="cert-issuer">Cấp bởi {c.issuer} · Năm {c.year}</span>
+                      </div>
+                      <Status tone="green">Đã duyệt</Status>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* DIRECT EDIT PROFILE MODAL */}
       {isEditModalOpen && (
