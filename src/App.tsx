@@ -2,6 +2,7 @@ import { useState } from "react";
 import logo from "./imports/oHRiise_icon.png";
 import { Icon, IconName, Status } from "./components/UI";
 import { UserProfilePermissions, DYNAMIC_PROFILES, Page } from "./types";
+import { AdminTab } from "./admin/types";
 
 // Extracted Page Components
 import EmployeeDashboard from "./EmployeeDashboard";
@@ -30,6 +31,7 @@ import RecruitmentPage from "./pages/RecruitmentPage";
 import PayrollPage from "./pages/PayrollPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import LoginPage from "./pages/LoginPage";
+import HRAttendanceMonitor from "./components/HRAttendanceMonitor";
 
 // Re-export for compatibility across pages
 export { Icon, Status } from "./components/UI";
@@ -51,18 +53,207 @@ function Sidebar({
   page,
   setPage,
   currentProfile,
+  adminTab,
+  setAdminTab,
 }: {
   page: Page;
   setPage: (p: Page) => void;
   currentProfile: UserProfilePermissions;
+  adminTab: AdminTab;
+  setAdminTab: (tab: AdminTab) => void;
 }) {
   const perms = currentProfile.permissions;
+  const isSysAdmin = currentProfile.id === "system_admin";
 
-  // Build dynamic management nav items based on granted permissions
+  // Specialized System Admin Sidebar View
+  if (isSysAdmin) {
+    return (
+      <aside className="sidebar">
+        <div className="brand">
+          <div className="logo-crop">
+            <img src={logo} alt="oHRiise" />
+          </div>
+          <div>
+            <b>oHRiise</b>
+            <span>Admin Console</span>
+          </div>
+        </div>
+        <nav>
+          <p className="nav-label">GIÁM SÁT & BÁO CÁO</p>
+          <button
+            className={page === "admin" && adminTab === "dash" ? "active" : ""}
+            onClick={() => {
+              setAdminTab("dash");
+              setPage("admin");
+            }}
+          >
+            <Icon name="home" />
+            <span>Tổng quan Console</span>
+          </button>
+          <button
+            className={page === "admin" && adminTab === "lg" ? "active" : ""}
+            onClick={() => {
+              setAdminTab("lg");
+              setPage("admin");
+            }}
+          >
+            <Icon name="file" />
+            <span>Nhật ký & cảnh báo</span>
+            <em>4</em>
+          </button>
+
+          <p className="nav-label">TỔ CHỨC & TÀI KHOẢN</p>
+          <button
+            className={page === "admin" && adminTab === "us" ? "active" : ""}
+            onClick={() => {
+              setAdminTab("us");
+              setPage("admin");
+            }}
+          >
+            <Icon name="users" />
+            <span>Tài khoản người dùng</span>
+            <em>60</em>
+          </button>
+          <button
+            className={page === "admin" && adminTab === "org" ? "active" : ""}
+            onClick={() => {
+              setAdminTab("org");
+              setPage("admin");
+            }}
+          >
+            <Icon name="briefcase" />
+            <span>Phòng ban & cơ cấu</span>
+          </button>
+          <button
+            className={page === "admin" && adminTab === "br" ? "active" : ""}
+            onClick={() => {
+              setAdminTab("br");
+              setPage("admin");
+            }}
+          >
+            <Icon name="clock" />
+            <span>Chi nhánh & GPS</span>
+          </button>
+
+          <p className="nav-label">PHÂN QUYỀN & BẢO MẬT</p>
+          <button
+            className={page === "admin" && adminTab === "pm" ? "active" : ""}
+            onClick={() => {
+              setAdminTab("pm");
+              setPage("admin");
+            }}
+          >
+            <Icon name="settings" />
+            <span>Phân quyền tài khoản</span>
+          </button>
+          <button
+            className={page === "admin" && adminTab === "tp" ? "active" : ""}
+            onClick={() => {
+              setAdminTab("tp");
+              setPage("admin");
+            }}
+          >
+            <Icon name="shield" />
+            <span>Template quyền</span>
+          </button>
+          <button
+            className={page === "admin" && adminTab === "dg" ? "active" : ""}
+            onClick={() => {
+              setAdminTab("dg");
+              setPage("admin");
+            }}
+          >
+            <Icon name="check" />
+            <span>Ủy quyền & quy tắc</span>
+          </button>
+          <button
+            className={page === "admin" && adminTab === "rv" ? "active" : ""}
+            onClick={() => {
+              setAdminTab("rv");
+              setPage("admin");
+            }}
+          >
+            <Icon name="check" />
+            <span>Rà soát & duyệt quyền</span>
+            <em>2</em>
+          </button>
+
+          <p className="nav-label">HỆ THỐNG & DỮ LIỆU NỀN</p>
+          <button
+            className={page === "admin" && adminTab === "st" ? "active" : ""}
+            onClick={() => {
+              setAdminTab("st");
+              setPage("admin");
+            }}
+          >
+            <Icon name="wallet" />
+            <span>Danh mục nền</span>
+          </button>
+          <button
+            className={page === "admin" && adminTab === "sy" ? "active" : ""}
+            onClick={() => {
+              setAdminTab("sy");
+              setPage("admin");
+            }}
+          >
+            <Icon name="settings" />
+            <span>Cấu hình hệ thống</span>
+          </button>
+          <button
+            className={page === "admin" && adminTab === "em" ? "active" : ""}
+            onClick={() => {
+              setAdminTab("em");
+              setPage("admin");
+            }}
+          >
+            <Icon name="file" />
+            <span>Email & Hộp thư</span>
+            <em>3</em>
+          </button>
+          <button
+            className={page === "admin" && adminTab === "nt" ? "active" : ""}
+            onClick={() => {
+              setAdminTab("nt");
+              setPage("admin");
+            }}
+          >
+            <Icon name="bell" />
+            <span>Thông báo Admin</span>
+            <em>5</em>
+          </button>
+
+          <p className="nav-label">TRÍ TUỆ NHÂN TẠO (AI)</p>
+          <button
+            className={page === "admin" && adminTab === "ai" ? "active" : ""}
+            onClick={() => {
+              setAdminTab("ai");
+              setPage("admin");
+            }}
+          >
+            <Icon name="sparkles" />
+            <span>Hệ thống AI</span>
+          </button>
+        </nav>
+        <button className="profile-link" onClick={() => setPage("profile")}>
+          <span className="avatar sm">{currentProfile.initials}</span>
+          <div>
+            <b>{currentProfile.name}</b>
+            <small>{currentProfile.title}</small>
+          </div>
+          <Icon name="more" />
+        </button>
+      </aside>
+    );
+  }
+
+  // Standard user nav
   const dynamicNav: { page: Page; label: string; icon: IconName; badge?: number }[] = [];
 
   if (perms.canApproveRequests) {
     dynamicNav.push({ page: "approvals", label: "Trung tâm phê duyệt", icon: "check", badge: 8 });
+  }
+  if (perms.canMonitorAttendanceLive) {
+    dynamicNav.push({ page: "live_attendance", label: "Giám sát chấm công Live", icon: "clock" });
   }
   if (perms.canManageEmployees) {
     dynamicNav.push({ page: "employees", label: "Hồ sơ nhân sự", icon: "users" });
@@ -83,7 +274,6 @@ function Sidebar({
     dynamicNav.push({ page: "admin", label: "Quản trị hệ thống & RBAC", icon: "settings" });
   }
 
-  // Filter out team calendar for regular employees (privacy rule: employee cannot view others' presence)
   const userCoreNav = coreNav.filter((item) => {
     if (item.page === "team" && !perms.canApproveRequests) {
       return false;
@@ -369,17 +559,28 @@ export default function App() {
   const [authenticated, setAuthenticated] = useState(false);
   const [page, setPage] = useState<Page>("dashboard");
   const [profileKey, setProfileKey] = useState<string>("emp_standard");
+  const [adminTab, setAdminTab] = useState<AdminTab>("dash");
   const [checkedIn, setCheckedIn] = useState(false);
   const [request, setRequest] = useState<"wfh" | "leave" | "expense" | null>(null);
   const [mobileMenu, setMobileMenu] = useState(false);
 
   const currentProfile = DYNAMIC_PROFILES[profileKey] || DYNAMIC_PROFILES.emp_standard;
 
+  const handleProfileSwitch = (pk: string) => {
+    setProfileKey(pk);
+    if (pk === "system_admin") {
+      setPage("admin");
+    }
+  };
+
   if (!authenticated) {
     return (
       <LoginPage
         onLogin={(pk) => {
           setProfileKey(pk);
+          if (pk === "system_admin") {
+            setPage("admin");
+          }
           setAuthenticated(true);
         }}
       />
@@ -395,7 +596,13 @@ export default function App() {
   return (
     <div className="app-shell">
       {/* Desktop sidebar — hidden on mobile via CSS */}
-      <Sidebar page={page} setPage={setPage} currentProfile={currentProfile} />
+      <Sidebar
+        page={page}
+        setPage={setPage}
+        currentProfile={currentProfile}
+        adminTab={adminTab}
+        setAdminTab={setAdminTab}
+      />
 
       {/* Mobile sidebar overlay */}
       <div
@@ -423,7 +630,7 @@ export default function App() {
 
           <div className="mobile-drawer-role">
             <span>Tập quyền Động:</span>
-            <select value={profileKey} onChange={(e) => setProfileKey(e.target.value)}>
+            <select value={profileKey} onChange={(e) => handleProfileSwitch(e.target.value)}>
               {Object.values(DYNAMIC_PROFILES).map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name} ({p.customRoleName})
@@ -432,7 +639,13 @@ export default function App() {
             </select>
           </div>
 
-          <Sidebar page={page} setPage={handleMobileNav} currentProfile={currentProfile} />
+          <Sidebar
+            page={page}
+            setPage={handleMobileNav}
+            currentProfile={currentProfile}
+            adminTab={adminTab}
+            setAdminTab={setAdminTab}
+          />
 
           <div className="mobile-drawer-footer">
             <button
@@ -449,7 +662,7 @@ export default function App() {
       <div className="main-content">
         <Header
           profileKey={profileKey}
-          setProfileKey={setProfileKey}
+          setProfileKey={handleProfileSwitch}
           profiles={DYNAMIC_PROFILES}
           onMenu={() => setMobileMenu(true)}
           onNotifications={() => setPage("notifications")}
@@ -498,12 +711,30 @@ export default function App() {
           {page === "approvals" && (
             <ApprovalPage role={currentProfile.permissions.canApproveRequests ? "lead" : "emp"} />
           )}
+          {page === "live_attendance" && (
+            currentProfile.permissions.canMonitorAttendanceLive ? (
+              <HRAttendanceMonitor />
+            ) : (
+              <div className="panel" style={{ textAlign: "center", padding: "40px" }}>
+                <h2 style={{ color: "#e11d48", marginBottom: "12px" }}>Không có quyền truy cập</h2>
+                <p style={{ color: "var(--text-sub)" }}>
+                  Tính năng Giám sát Chấm công Realtime chỉ dành riêng cho vai trò Quản trị Nhân sự (HR).
+                </p>
+              </div>
+            )
+          )}
           {page === "employees" && <EmployeeManagementPage />}
           {page === "recruitment" && <RecruitmentPage />}
           {page === "payroll" && <PayrollPage />}
           {page === "analytics" && <AnalyticsPage />}
           {page === "policies" && <PolicyPage />}
-          {page === "admin" && <AdminPage />}
+          {page === "admin" && (
+            <AdminPage
+              activeAdminTab={adminTab}
+              onTabChange={setAdminTab}
+              hideSubNav={currentProfile.id === "system_admin"}
+            />
+          )}
         </main>
       </div>
 

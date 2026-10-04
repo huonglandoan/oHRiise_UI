@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Icon, Status } from "../components/UI";
+import { PageHeader } from "../components/PageHeader";
 
 interface WfhRecord {
   id: string;
@@ -194,83 +195,34 @@ export default function WfhPage({ open }: { open: () => void }) {
   return (
     <div className="page inner-page">
       {/* Page Heading */}
-      <div className="page-heading">
-        <div>
-          <p style={{ fontSize: "13px", fontWeight: 700, letterSpacing: "0.5px" }}>LÀM VIỆC LINH HOẠT</p>
-          <h1 style={{ fontSize: "28px", fontWeight: 800 }}>Làm việc từ xa (WFH)</h1>
-          <span style={{ fontSize: "15px" }}>Đăng ký ngày WFH, nộp Báo cáo Daily Report và xem Lịch sử đơn từ.</span>
-        </div>
-      </div>
+      <PageHeader
+        group="LÀM VIỆC LINH HOẠT"
+        title="Làm việc từ xa (WFH)"
+        description="Đăng ký ngày WFH, nộp Báo cáo Daily Report và xem Lịch sử đơn từ."
+        icon="laptop"
+      />
 
       {/* TOP SUB-TABS NAVIGATION */}
-      <div
-        className="page-sub-tabs"
-        style={{
-          display: "flex",
-          gap: "28px",
-          borderBottom: "2px solid var(--border-soft)",
-          marginBottom: "28px",
-          flexWrap: "wrap",
-        }}
-      >
+      <div className="approval-tabs mb-6">
         <button
           onClick={() => setActiveTab("register")}
-          style={{
-            padding: "14px 6px",
-            background: "none",
-            border: "none",
-            borderBottom: activeTab === "register" ? "3px solid var(--brand)" : "3px solid transparent",
-            color: activeTab === "register" ? "var(--brand)" : "var(--text-sub)",
-            fontWeight: 800,
-            fontSize: "16px",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            transition: "all 0.15s",
-          }}
+          className={activeTab === "register" ? "active" : ""}
         >
-          <Icon name="laptop" size={20} /> Đăng ký WFH
+          Đăng ký WFH
         </button>
 
         <button
           onClick={() => setActiveTab("report")}
-          style={{
-            padding: "14px 6px",
-            background: "none",
-            border: "none",
-            borderBottom: activeTab === "report" ? "3px solid var(--brand)" : "3px solid transparent",
-            color: activeTab === "report" ? "var(--brand)" : "var(--text-sub)",
-            fontWeight: 800,
-            fontSize: "16px",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            transition: "all 0.15s",
-          }}
+          className={activeTab === "report" ? "active" : ""}
         >
-          <Icon name="file" size={20} /> Nộp Daily Report
+          Nộp Daily Report
         </button>
 
         <button
           onClick={() => setActiveTab("history")}
-          style={{
-            padding: "14px 6px",
-            background: "none",
-            border: "none",
-            borderBottom: activeTab === "history" ? "3px solid var(--brand)" : "3px solid transparent",
-            color: activeTab === "history" ? "var(--brand)" : "var(--text-sub)",
-            fontWeight: 800,
-            fontSize: "16px",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            transition: "all 0.15s",
-          }}
+          className={activeTab === "history" ? "active" : ""}
         >
-          <Icon name="clock" size={20} /> Lịch sử WFH & Báo cáo
+          Lịch sử WFH & Báo cáo
         </button>
       </div>
 

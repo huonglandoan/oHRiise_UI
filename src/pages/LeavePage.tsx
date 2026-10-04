@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Icon, Status } from "../components/UI";
+import { PageHeader } from "../components/PageHeader";
 
 export interface LeaveRecord {
   id: string;
@@ -187,20 +188,13 @@ export default function LeavePage({ open }: { open?: () => void }) {
 
   return (
     <div className="page inner-page">
-      {/* PAGE HEADER - LARGER FONTS */}
-      <div className="page-heading" style={{ marginBottom: "28px" }}>
-        <div>
-          <p style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-sub)", letterSpacing: "0.8px" }}>
-            QUẢN LÝ NGHỈ PHÉP
-          </p>
-          <h1 style={{ fontSize: "32px", fontWeight: 900, color: "var(--text-main)", margin: "4px 0" }}>
-            Nghỉ phép
-          </h1>
-          <span style={{ fontSize: "16px", color: "var(--text-sub)", fontWeight: 500 }}>
-            Quản lý quỹ phép cá nhân và gửi đơn xin nghỉ phép tối giản, nhanh chóng.
-          </span>
-        </div>
-      </div>
+      {/* PAGE HEADER */}
+      <PageHeader
+        group="QUẢN LÝ NGHỈ PHÉP"
+        title="Nghỉ phép"
+        description="Quản lý quỹ phép cá nhân và gửi đơn xin nghỉ phép tối giản, nhanh chóng."
+        icon="calendar"
+      />
 
       {/* OVERVIEW: SỐ NGÀY PHÉP CÒN LẠI (CARDS WITH LARGER TYPOGRAPHY) */}
       <div style={{ marginBottom: "32px" }}>
@@ -327,50 +321,20 @@ export default function LeavePage({ open }: { open?: () => void }) {
       </div>
 
       {/* SUB-TABS NAVIGATION BAR: ĐƠN NGHỈ PHÉP FIRST, LỊCH SỬ NGHỈ PHÉP AT THE END */}
-      <div className="page-sub-tabs" style={{ marginBottom: "28px", borderBottom: "2px solid var(--border-soft)" }}>
-        <div style={{ display: "flex", gap: "12px" }}>
-          {/* TAB 1: ĐƠN NGHỈ PHÉP (FIRST) */}
-          <button
-            onClick={() => setActiveTab("form")}
-            style={{
-              padding: "16px 28px",
-              fontSize: "18px",
-              fontWeight: 800,
-              border: "none",
-              background: "transparent",
-              cursor: "pointer",
-              color: activeTab === "form" ? "var(--brand)" : "var(--text-sub)",
-              borderBottom: activeTab === "form" ? "3.5px solid var(--brand)" : "3.5px solid transparent",
-              marginBottom: "-2px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            <Icon name="plus" size={22} /> Đơn nghỉ phép
-          </button>
+      <div className="approval-tabs mb-6">
+        <button
+          onClick={() => setActiveTab("form")}
+          className={activeTab === "form" ? "active" : ""}
+        >
+          Đơn nghỉ phép
+        </button>
 
-          {/* TAB 2: LỊCH SỬ NGHỈ PHÉP (AT THE END / SECOND) */}
-          <button
-            onClick={() => setActiveTab("history")}
-            style={{
-              padding: "16px 28px",
-              fontSize: "18px",
-              fontWeight: 800,
-              border: "none",
-              background: "transparent",
-              cursor: "pointer",
-              color: activeTab === "history" ? "var(--brand)" : "var(--text-sub)",
-              borderBottom: activeTab === "history" ? "3.5px solid var(--brand)" : "3.5px solid transparent",
-              marginBottom: "-2px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            <Icon name="file" size={22} /> Lịch sử nghỉ phép ({filteredRecords.length})
-          </button>
-        </div>
+        <button
+          onClick={() => setActiveTab("history")}
+          className={activeTab === "history" ? "active" : ""}
+        >
+          Lịch sử nghỉ phép ({filteredRecords.length})
+        </button>
       </div>
 
       {/* SUB-TAB 1: TẠO ĐƠN NGHỈ PHÉP */}

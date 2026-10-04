@@ -13,6 +13,8 @@ export interface UserProfilePermissions {
     canViewAnalytics: boolean; // Analytics Charts
     canManagePolicies: boolean; // Policy Config
     canManageAdmin: boolean; // System Admin & RBAC
+    canMonitorAttendanceLive: boolean; // Live HR Attendance Monitor
+    canManageAttendanceApproval: boolean; // HR Attendance Adjustment Approval Center
   };
 }
 
@@ -32,6 +34,8 @@ export const DYNAMIC_PROFILES: Record<string, UserProfilePermissions> = {
       canViewAnalytics: false,
       canManagePolicies: false,
       canManageAdmin: false,
+      canMonitorAttendanceLive: false,
+      canManageAttendanceApproval: false,
     },
   },
   emp_delegated_lead: {
@@ -49,6 +53,8 @@ export const DYNAMIC_PROFILES: Record<string, UserProfilePermissions> = {
       canViewAnalytics: true,
       canManagePolicies: false,
       canManageAdmin: false,
+      canMonitorAttendanceLive: false,
+      canManageAttendanceApproval: false,
     },
   },
   lead_manager: {
@@ -66,6 +72,8 @@ export const DYNAMIC_PROFILES: Record<string, UserProfilePermissions> = {
       canViewAnalytics: true,
       canManagePolicies: false,
       canManageAdmin: false,
+      canMonitorAttendanceLive: false,
+      canManageAttendanceApproval: false,
     },
   },
   hr_ops: {
@@ -83,6 +91,8 @@ export const DYNAMIC_PROFILES: Record<string, UserProfilePermissions> = {
       canViewAnalytics: true,
       canManagePolicies: true,
       canManageAdmin: false,
+      canMonitorAttendanceLive: true,
+      canManageAttendanceApproval: true,
     },
   },
   system_admin: {
@@ -100,6 +110,8 @@ export const DYNAMIC_PROFILES: Record<string, UserProfilePermissions> = {
       canViewAnalytics: true,
       canManagePolicies: true,
       canManageAdmin: true,
+      canMonitorAttendanceLive: true,
+      canManageAttendanceApproval: true,
     },
   },
 };
@@ -108,6 +120,7 @@ export type ProfileKey = string;
 export type Page =
   | "dashboard"
   | "attendance"
+  | "live_attendance"
   | "wfh"
   | "leave"
   | "expense"

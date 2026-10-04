@@ -365,6 +365,87 @@ const INITIAL_REQUESTS: ApprovalRequest[] = [
       note: "Phê duyệt WFH hoàn thành kịp deadline chiến dịch 02/09.",
     },
   },
+  {
+    id: "req-10",
+    code: "#YCD-2026-104",
+    employeeName: "Hoàng Minh Tuấn",
+    avatarInitials: "MT",
+    avatarColor: "cyan",
+    role: "Mobile App Developer",
+    department: "Phòng Công nghệ (Engineering)",
+    type: "attendance",
+    typeLabel: "Điều chỉnh chấm công",
+    summary: "24/09/2026 · Lỗi GPS Chi nhánh (Đề xuất 08:30 - 17:35)",
+    submittedAt: "25/09/2026 09:00",
+    status: "pending",
+    statusText: "Chờ duyệt",
+    fields: [
+      { label: "Ngày cần điều chỉnh", value: "Thứ Năm, 24/09/2026", isHighlight: true },
+      { label: "Giờ gốc trên hệ thống", value: "Check-in: --:-- | Check-out: 17:35" },
+      { label: "Giờ đề xuất điều chỉnh", value: "Check-in: 08:30 | Check-out: 17:35 (Đúng giờ)", isSuccess: true },
+      { label: "Lý do điều chỉnh", value: "Lỗi GPS Chi nhánh (Tòa nhà Bitexco)" },
+    ],
+    reason: "Sáng 24/09 đến văn phòng lúc 08:25 nhưng app báo lỗi ngoài bán kính 50m do GPS trong thang máy/tòa nhà bị trôi. Đã có mặt đúng giờ và bắt đầu làm việc.",
+    ruleCheck: {
+      passed: true,
+      title: "Xác thực địa chỉ IP Wi-Fi",
+      message: "Đã kết nối Wi-Fi 'oHRiise-Corp-5G' từ 08:26 sáng (Khớp 100%).",
+    },
+    teamContext: {
+      officeCount: 8,
+      wfhCount: 0,
+      leaveCount: 0,
+      notes: "Khớp nhật ký router văn phòng và Git commit sáng.",
+    },
+    flow: [
+      { step: "Gửi đơn", actor: "Hoàng Minh Tuấn", status: "completed", time: "25/09 09:00" },
+      { step: "Lead / HR duyệt", actor: "Nguyễn Minh Anh (Bạn)", status: "current" },
+      { step: "Cập nhật bảng công", actor: "Hệ thống Payroll Auto", status: "pending" },
+    ],
+  },
+  {
+    id: "req-11",
+    code: "#YCD-2026-105",
+    employeeName: "Võ Thị Quỳnh Như",
+    avatarInitials: "QN",
+    avatarColor: "lime",
+    role: "Account Executive",
+    department: "Phòng Kinh doanh (Sales & Partnerships)",
+    type: "attendance",
+    typeLabel: "Điều chỉnh chấm công",
+    summary: "23/09/2026 · Gặp Khách hàng ngoài (Đề xuất 09:00 - 18:00)",
+    submittedAt: "24/09/2026 08:45",
+    status: "pending",
+    statusText: "Chờ duyệt",
+    fields: [
+      { label: "Ngày cần điều chỉnh", value: "Thứ Tư, 23/09/2026", isHighlight: true },
+      { label: "Giờ gốc trên hệ thống", value: "Check-in: --:-- | Check-out: --:--" },
+      { label: "Giờ đề xuất điều chỉnh", value: "Check-in: 09:00 | Check-out: 18:00 (Đủ 8 giờ công)", isSuccess: true },
+      { label: "Lý do điều chỉnh", value: "Gặp Khách hàng đối tác ngoài Onsite" },
+    ],
+    reason: "Đi gặp ban giám đốc Tập đoàn VinaTech ký hợp đồng triển khai giải pháp nhân sự cả ngày. Đính kèm biên bản làm việc & ảnh check-in tại trụ sở đối tác.",
+    attachment: {
+      name: "Bien_ban_hop_VinaTech_2309.pdf",
+      size: "2.4 MB",
+      type: "PDF Document",
+    },
+    ruleCheck: {
+      passed: true,
+      title: "Lịch trình công tác hợp lệ",
+      message: "Có lịch hẹn Google Calendar được phê duyệt trước và ảnh check-in đối tác.",
+    },
+    teamContext: {
+      officeCount: 5,
+      wfhCount: 0,
+      leaveCount: 0,
+      notes: "Khách hàng xác nhận cuộc họp thành công.",
+    },
+    flow: [
+      { step: "Gửi đơn", actor: "Võ Thị Quỳnh Như", status: "completed", time: "24/09 08:45" },
+      { step: "Lead / HR duyệt", actor: "Nguyễn Minh Anh (Bạn)", status: "current" },
+      { step: "Cập nhật bảng công", actor: "Hệ thống Payroll Auto", status: "pending" },
+    ],
+  },
 ];
 
 export default function ApprovalPage({ role }: { role?: string }) {
@@ -684,47 +765,30 @@ export default function ApprovalPage({ role }: { role?: string }) {
       </div>
 
       {/* FILTER & TABS BAR */}
-      <div
-        className="page-sub-tabs"
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "16px",
-          background: "white",
-          borderRadius: "20px",
-          padding: "16px 24px",
-          border: "1px solid var(--border-soft)",
-        }}
-      >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "16px", marginBottom: "24px" }}>
         {/* Navigation Tabs */}
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+        <div className="approval-tabs" style={{ marginBottom: 0, paddingBottom: 0, borderBottom: "none" }}>
           <button
-            className={activeTab === "pending" ? "primary" : "secondary"}
+            className={activeTab === "pending" ? "active" : ""}
             onClick={() => setActiveTab("pending")}
-            style={{ padding: "10px 18px", fontSize: "15px", fontWeight: 800, borderRadius: "12px" }}
           >
-            Chờ tôi xử lý {pendingCount > 0 && <em style={{ fontStyle: "normal", background: "#f59e0b", color: "white", padding: "2px 8px", borderRadius: "10px", marginLeft: "6px", fontSize: "13px" }}>{pendingCount}</em>}
+            Chờ tôi xử lý {pendingCount > 0 && `(${pendingCount})`}
           </button>
           <button
-            className={activeTab === "processed" ? "primary" : "secondary"}
+            className={activeTab === "processed" ? "active" : ""}
             onClick={() => setActiveTab("processed")}
-            style={{ padding: "10px 18px", fontSize: "15px", fontWeight: 800, borderRadius: "12px" }}
           >
             Đã xử lý ({processedCount})
           </button>
           <button
-            className={activeTab === "history" ? "primary" : "secondary"}
+            className={activeTab === "history" ? "active" : ""}
             onClick={() => setActiveTab("history")}
-            style={{ padding: "10px 18px", fontSize: "15px", fontWeight: 800, borderRadius: "12px" }}
           >
-            <Icon name="clock" size={16} /> Lịch sử phê duyệt
+            Lịch sử phê duyệt
           </button>
           <button
-            className={activeTab === "all" ? "primary" : "secondary"}
+            className={activeTab === "all" ? "active" : ""}
             onClick={() => setActiveTab("all")}
-            style={{ padding: "10px 18px", fontSize: "15px", fontWeight: 800, borderRadius: "12px" }}
           >
             Toàn bộ danh sách ({requests.length})
           </button>
@@ -765,14 +829,122 @@ export default function ApprovalPage({ role }: { role?: string }) {
             }}
           >
             <option value="all">Tất cả loại yêu cầu</option>
-            <option value="wfh">Làm việc từ xa (WFH)</option>
-            <option value="leave">Nghỉ phép năm</option>
-            <option value="attendance">Điều chỉnh chấm công</option>
-            <option value="expense">Bồi hoàn chi phí</option>
-            <option value="equipment">Cấp mới thiết bị</option>
+            <option value="attendance">⏱️ Điều chỉnh chấm công</option>
+            <option value="wfh">💻 Làm việc từ xa (WFH)</option>
+            <option value="leave">🌴 Nghỉ phép năm</option>
+            <option value="expense">💵 Bồi hoàn chi phí</option>
+            <option value="equipment">🖥️ Cấp mới thiết bị</option>
           </select>
         </div>
       </div>
+
+      {/* SPECIAL ATTENDANCE ADJUSTMENT INSIGHT BANNER WHEN ATTENDANCE FILTER IS SELECTED */}
+      {typeFilter === "attendance" && (
+        <div
+          style={{
+            background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+            border: "1.5px solid #bae6fd",
+            borderRadius: "20px",
+            padding: "18px 24px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "16px",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <div
+              style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "14px",
+                background: "#0284c7",
+                color: "white",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "20px",
+                flexShrink: 0,
+              }}
+            >
+              ⏱️
+            </div>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 900, color: "#0369a1" }}>
+                  Bộ lọc: Phê duyệt Đơn xin Điều chỉnh Chấm công
+                </h4>
+                <span
+                  style={{
+                    background: "#0284c7",
+                    color: "white",
+                    padding: "2px 8px",
+                    borderRadius: "6px",
+                    fontSize: "11px",
+                    fontWeight: 800,
+                  }}
+                >
+                  Tự động đối chiếu Wi-Fi/GPS 94.2%
+                </span>
+              </div>
+              <p style={{ margin: "3px 0 0 0", fontSize: "13px", color: "#0c4a6e", fontWeight: 600 }}>
+                Top lý do tháng này: <b>45%</b> Quên Check-out · <b>30%</b> Lỗi GPS Chi nhánh · <b>15%</b> Gặp Khách hàng ngoài · <b>10%</b> Sự cố mạng
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            <button
+              className="primary"
+              onClick={() => {
+                const attendancePending = requests.filter((r) => r.type === "attendance" && r.status === "pending");
+                if (attendancePending.length === 0) {
+                  alert("Không có đơn điều chỉnh chấm công nào đang chờ duyệt.");
+                  return;
+                }
+                const updated = requests.map((r) =>
+                  r.type === "attendance" && r.status === "pending"
+                    ? {
+                        ...r,
+                        status: "approved" as const,
+                        statusText: "Đã duyệt",
+                        historyAction: {
+                          actionBy: "Nguyễn Minh Anh (Lead/HR)",
+                          actionDate: new Date().toLocaleDateString("vi-VN"),
+                          actionType: "approved" as const,
+                          note: "Phê duyệt hàng loạt: Khớp 100% nhật ký Wi-Fi Router & GPS.",
+                        },
+                      }
+                    : r
+                );
+                setRequests(updated);
+                alert(`Đã duyệt thành công ${attendancePending.length} đơn điều chỉnh chấm công hợp lệ!`);
+              }}
+              style={{
+                padding: "8px 16px",
+                fontSize: "13px",
+                fontWeight: 800,
+                borderRadius: "10px",
+                background: "#0284c7",
+                border: "none",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              <Icon name="check" size={14} /> Duyệt nhanh các đơn khớp Wi-Fi
+            </button>
+            <button
+              className="secondary"
+              onClick={() => setTypeFilter("all")}
+              style={{ padding: "8px 14px", fontSize: "13px", fontWeight: 700, borderRadius: "10px", background: "white" }}
+            >
+              Xem tất cả loại
+            </button>
+          </div>
+        </div>
+      )}
       {activeTab === "history" ? (
         <section
           className="panel"

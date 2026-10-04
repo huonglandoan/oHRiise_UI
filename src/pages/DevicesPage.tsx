@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { PageHeader } from "../components/PageHeader";
 import { Icon, Status } from "../components/UI";
 
 export interface DeviceItem {
@@ -115,46 +116,29 @@ export default function DevicesPage() {
 
   return (
     <div className="page inner-page" style={{ gap: "28px" }}>
-      {/* PAGE HEADER */}
-      <div
-        className="page-heading"
-        style={{
-          marginBottom: "24px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-end",
-          flexWrap: "wrap",
-          gap: "16px",
-        }}
-      >
-        <div>
-          <p style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-sub)", letterSpacing: "0.8px" }}>
-            QUẢN LÝ TÀI SẢN CÔNG TY
-          </p>
-          <h1 style={{ fontSize: "32px", fontWeight: 900, color: "var(--text-main)", margin: "4px 0" }}>
-            Thiết bị được cấp
-          </h1>
-          <span style={{ fontSize: "16px", color: "var(--text-sub)", fontWeight: 500 }}>
-            Danh sách đầy đủ các thiết bị công ty bàn giao: mã thiết bị, tên đầy đủ, ngày cấp, số serial và trạng thái.
-          </span>
-        </div>
-
-        <button
-          className="primary"
-          onClick={() => setIsRequestNewOpen(true)}
-          style={{
-            padding: "15px 28px",
-            fontSize: "16px",
-            fontWeight: 800,
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            borderRadius: "14px",
-          }}
-        >
-          <Icon name="plus" size={20} /> Đề xuất cấp / Đổi thiết bị
-        </button>
-      </div>
+      <PageHeader
+        group="QUẢN LÝ TÀI SẢN CÔNG TY"
+        title="Thiết bị được cấp"
+        description="Danh sách đầy đủ các thiết bị công ty bàn giao: mã thiết bị, tên đầy đủ, ngày cấp, số serial và trạng thái."
+        icon="monitor"
+        rightContent={
+          <button
+            className="primary"
+            onClick={() => setIsRequestNewOpen(true)}
+            style={{
+              padding: "15px 28px",
+              fontSize: "14px",
+              fontWeight: 800,
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              borderRadius: "14px",
+            }}
+          >
+            <Icon name="plus" size={18} /> Đề xuất cấp / Đổi thiết bị
+          </button>
+        }
+      />
 
 
 

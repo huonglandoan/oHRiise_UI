@@ -49,9 +49,6 @@ export default function ProfilePage() {
     },
   ]);
 
-  // Subtabs state
-  const [activeTab, setActiveTab] = useState<"all" | "personal" | "job" | "contract">("all");
-
   // Edit Profile Modal State
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editForm, setEditForm] = useState({ ...profileData });
@@ -126,43 +123,10 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* MINIMAL NAVIGATION SUB-TABS */}
-        <div className="profile-tabs-minimal">
-          <button
-            className={activeTab === "all" ? "active" : ""}
-            onClick={() => setActiveTab("all")}
-          >
-            <Icon name="user" size={16} />
-            <span>Tất cả thông tin</span>
-          </button>
-          <button
-            className={activeTab === "personal" ? "active" : ""}
-            onClick={() => setActiveTab("personal")}
-          >
-            <Icon name="user" size={16} />
-            <span>Cá nhân & Liên hệ</span>
-          </button>
-          <button
-            className={activeTab === "job" ? "active" : ""}
-            onClick={() => setActiveTab("job")}
-          >
-            <Icon name="briefcase" size={16} />
-            <span>Công việc & Tổ chức</span>
-          </button>
-          <button
-            className={activeTab === "contract" ? "active" : ""}
-            onClick={() => setActiveTab("contract")}
-          >
-            <Icon name="file" size={16} />
-            <span>Hợp đồng & Chứng chỉ</span>
-          </button>
-        </div>
-
         {/* UNIFIED MINIMAL CONTENT SHEET */}
         <div className="profile-content-minimal">
           {/* SECTION 1: CÁ NHÂN & LIÊN HỆ */}
-          {(activeTab === "all" || activeTab === "personal") && (
-            <div className="profile-section-minimal">
+          <div className="profile-section-minimal">
               <div className="profile-section-top">
                 <h2 className="profile-section-heading">
                   <Icon name="user" size={20} />
@@ -223,11 +187,9 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
-          )}
 
           {/* SECTION 2: CÔNG VIỆC & TỔ CHỨC */}
-          {(activeTab === "all" || activeTab === "job") && (
-            <div className="profile-section-minimal">
+          <div className="profile-section-minimal">
               <div className="profile-section-top">
                 <h2 className="profile-section-heading">
                   <Icon name="briefcase" size={20} />
@@ -275,11 +237,9 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
-          )}
 
           {/* SECTION 3: HỢP ĐỒNG & CHỨNG CHỈ */}
-          {(activeTab === "all" || activeTab === "contract") && (
-            <div className="profile-section-minimal">
+          <div className="profile-section-minimal">
               <div className="profile-section-top">
                 <h2 className="profile-section-heading">
                   <Icon name="file" size={20} />
@@ -327,7 +287,6 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
-          )}
         </div>
       </div>
 

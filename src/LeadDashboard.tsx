@@ -348,7 +348,7 @@ export default function LeadDashboard() {
               className={tab === "wfh" ? "active" : ""}
               onClick={() => setTab("wfh")}
             >
-              <Icon name="laptop" size={14} /> Chờ duyệt WFH
+              Chờ duyệt WFH
               {wfhReqs.length > 0 && <em>{wfhReqs.length}</em>}
             </button>
 
@@ -357,7 +357,7 @@ export default function LeadDashboard() {
               className={tab === "adjust" ? "active" : ""}
               onClick={() => setTab("adjust")}
             >
-              <Icon name="clock" size={14} /> Chờ duyệt Điều chỉnh công
+              Chờ duyệt Điều chỉnh công
               {adjReqs.length > 0 && <em>{adjReqs.length}</em>}
             </button>
 
@@ -366,7 +366,7 @@ export default function LeadDashboard() {
               className={tab === "shift" ? "active" : ""}
               onClick={() => setTab("shift")}
             >
-              <Icon name="calendar" size={14} /> Chờ duyệt Đổi ca (Shift Swap)
+              Chờ duyệt Đổi ca (Shift Swap)
               {shiftReqs.length > 0 && <em>{shiftReqs.length}</em>}
             </button>
           </div>

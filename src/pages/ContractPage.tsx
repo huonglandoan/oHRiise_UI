@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { PageHeader } from "../components/PageHeader";
 import { Icon, Status } from "../components/UI";
 
 export interface SimpleContract {
@@ -67,20 +68,12 @@ export default function ContractPage() {
   return (
     <div className="page inner-page" style={{ gap: "28px" }}>
       {/* PAGE HEADER - MINIMAL & CLEAN */}
-      <div className="page-heading" style={{ marginBottom: "24px" }}>
-        <div>
-          <p style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-sub)", letterSpacing: "0.8px" }}>
-            HỒ SƠ LẠO ĐỘNG
-          </p>
-          <h1 style={{ fontSize: "32px", fontWeight: 900, color: "var(--text-main)", margin: "4px 0" }}>
-            Hợp đồng
-          </h1>
-          <span style={{ fontSize: "16px", color: "var(--text-sub)", fontWeight: 500 }}>
-            Danh sách hợp đồng lao động cá nhân. Nhấn "Xem chi tiết" để mở bản PDF hợp đồng.
-          </span>
-        </div>
-      </div>
-
+      <PageHeader
+        group="HỒ SƠ LẠO ĐỘNG"
+        title="Hợp đồng"
+        description='Danh sách hợp đồng lao động cá nhân. Nhấn "Xem chi tiết" để mở bản PDF hợp đồng.'
+        icon="file"
+      />
       {/* SIMPLE CONTRACTS LIST PANEL */}
       <section
         className="panel"

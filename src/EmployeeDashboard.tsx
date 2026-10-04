@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Icon, Status } from "./App";
+import { PageHeader } from "./components/PageHeader";
 
 // ─── Types ───────────────────────────────────────────────────────
 type WorkMode = "office" | "wfh";
@@ -104,16 +105,17 @@ export default function EmployeeDashboard() {
     <div className="page emp-dash">
 
       {/* Page heading */}
-      <div className="page-heading">
-        <div>
-          <p>NHÂN VIÊN · HỒ CHÍ MINH</p>
-          <h1>Tổng quan của tôi</h1>
-          <span>{fmtFull(now)}</span>
-        </div>
-        <button className="secondary" onClick={()=>setCalOpen(true)} type="button">
-          <Icon name="calendar"/> Xem lịch tháng
-        </button>
-      </div>
+      <PageHeader
+        group="NHÂN VIÊN · HỒ CHÍ MINH"
+        title="Tổng quan của tôi"
+        description={fmtFull(now)}
+        icon="home"
+        rightContent={
+          <button className="secondary" onClick={()=>setCalOpen(true)} type="button">
+            <Icon name="calendar"/> Xem lịch tháng
+          </button>
+        }
+      />
 
       {/* ── SECTION 1: CHECK-IN ──────────────────────── */}
       <section className="ci-section">
@@ -206,6 +208,54 @@ export default function EmployeeDashboard() {
               <div className={`cs-track cs-${s.color}`}><i style={{width:`${s.pct}%`}}/></div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ── SECTION 1.5: PRIORITY TASKS ───────────────── */}
+      <section className="panel mb-6 priority-panel">
+        <div className="panel-title">
+          <div><p>CẦN XỬ LÝ</p><h2>Công việc ưu tiên</h2></div>
+          <span className="list-tag">3 việc cần hoàn thành</span>
+        </div>
+        <div className="priority-list">
+          <div className="priority-task">
+            <div className="task-checkbox bg-indigo-50 text-indigo-500 border border-indigo-200">
+              <Icon name="check" size={14} />
+            </div>
+            <div className="task-info">
+              <h4>Hoàn thành đánh giá KPI Quý 3</h4>
+              <p>Điền form tự đánh giá trên cổng nội bộ trước hạn chót.</p>
+            </div>
+            <div className="task-meta">
+              <span className="task-due text-red-500 font-bold bg-red-50 px-2 py-1 rounded-md text-[11px]"><Icon name="clock" size={11} /> Hôm nay</span>
+            </div>
+          </div>
+          
+          <div className="priority-task">
+            <div className="task-checkbox bg-slate-50 text-slate-300 border border-slate-200">
+              <Icon name="check" size={14} />
+            </div>
+            <div className="task-info">
+              <h4>Báo cáo chi phí công tác tháng 9</h4>
+              <p>Cập nhật hóa đơn và nộp qua phân hệ Chi phí.</p>
+            </div>
+            <div className="task-meta">
+              <span className="task-due text-amber-600 font-bold bg-amber-50 px-2 py-1 rounded-md text-[11px]"><Icon name="clock" size={11} /> 12/10/2026</span>
+            </div>
+          </div>
+
+          <div className="priority-task">
+            <div className="task-checkbox bg-emerald-500 text-white border border-emerald-500">
+              <Icon name="check" size={14} />
+            </div>
+            <div className="task-info task-done opacity-60">
+              <h4 className="line-through text-slate-500">Hoàn tất khóa học Security Awareness</h4>
+              <p>Đã nộp chứng chỉ qua hệ thống đào tạo.</p>
+            </div>
+            <div className="task-meta opacity-60">
+              <span className="task-due text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded-md text-[11px]">Đã xong</span>
+            </div>
+          </div>
         </div>
       </section>
 

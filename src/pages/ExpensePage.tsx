@@ -195,50 +195,20 @@ export default function ExpensePage({ open }: { open?: () => void }) {
       </div>
 
       {/* SUB-TABS NAVIGATION BAR: TẠO PHIẾU FIRST, LỊCH SỬ BỒI HOÀN AT THE END */}
-      <div className="page-sub-tabs" style={{ marginBottom: "28px", borderBottom: "2px solid var(--border-soft)" }}>
-        <div style={{ display: "flex", gap: "12px" }}>
-          {/* TAB 1: TẠO PHIẾU BỒI HOÀN (FIRST) */}
-          <button
-            onClick={() => setActiveTab("form")}
-            style={{
-              padding: "16px 28px",
-              fontSize: "18px",
-              fontWeight: 800,
-              border: "none",
-              background: "transparent",
-              cursor: "pointer",
-              color: activeTab === "form" ? "var(--brand)" : "var(--text-sub)",
-              borderBottom: activeTab === "form" ? "3.5px solid var(--brand)" : "3.5px solid transparent",
-              marginBottom: "-2px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            <Icon name="plus" size={22} /> Tạo phiếu bồi hoàn
-          </button>
+      <div className="approval-tabs mb-6">
+        <button
+          onClick={() => setActiveTab("form")}
+          className={activeTab === "form" ? "active" : ""}
+        >
+          Tạo phiếu bồi hoàn
+        </button>
 
-          {/* TAB 2: LỊCH SỬ BỒI HOÀN (AT THE END) */}
-          <button
-            onClick={() => setActiveTab("history")}
-            style={{
-              padding: "16px 28px",
-              fontSize: "18px",
-              fontWeight: 800,
-              border: "none",
-              background: "transparent",
-              cursor: "pointer",
-              color: activeTab === "history" ? "var(--brand)" : "var(--text-sub)",
-              borderBottom: activeTab === "history" ? "3.5px solid var(--brand)" : "3.5px solid transparent",
-              marginBottom: "-2px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            <Icon name="receipt" size={22} /> Lịch sử bồi hoàn
-          </button>
-        </div>
+        <button
+          onClick={() => setActiveTab("history")}
+          className={activeTab === "history" ? "active" : ""}
+        >
+          Lịch sử bồi hoàn
+        </button>
       </div>
 
       {/* SUB-TAB 1: TẠO PHIẾU BỒI HOÀN */}

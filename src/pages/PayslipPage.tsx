@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Icon, Status } from "../components/UI";
+import { PageHeader } from "../components/PageHeader";
 
 interface SalaryDetail {
   month: string;
@@ -103,76 +104,60 @@ export default function PayslipPage() {
   return (
     <div className="page inner-page">
       {/* PAGE HEADER & FILTERS */}
-      <div
-        className="page-heading"
-        style={{
-          marginBottom: "24px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-end",
-          flexWrap: "wrap",
-          gap: "16px",
-        }}
-      >
-        <div>
-          <p style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-sub)", letterSpacing: "0.8px" }}>
-            THU NHẬP CỦA TÔI
-          </p>
-          <h1 style={{ fontSize: "32px", fontWeight: 900, color: "var(--text-main)", margin: "4px 0" }}>
-            Phiếu lương
-          </h1>
-          <span style={{ fontSize: "16px", color: "var(--text-sub)", fontWeight: 500 }}>
-            Thông tin thu nhập cá nhân riêng tư, được mã hóa bảo mật theo chính sách công ty.
-          </span>
-        </div>
+      {/* PAGE HEADER & FILTERS */}
+      <PageHeader
+        group="THU NHẬP CỦA TÔI"
+        title="Phiếu lương"
+        description="Thông tin thu nhập cá nhân riêng tư, được mã hóa bảo mật theo chính sách công ty."
+        icon="receipt"
+        rightContent={
+          <>
+            <div>
+              <label style={{ fontSize: "13px", fontWeight: 800, color: "var(--text-sub)", display: "block", marginBottom: "4px" }}>
+                CHỌN PHIẾU LƯƠNG THÁNG
+              </label>
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                style={{
+                  padding: "13px 20px",
+                  borderRadius: "12px",
+                  border: "2px solid var(--brand)",
+                  fontSize: "16px",
+                  fontWeight: 800,
+                  color: "var(--brand)",
+                  background: "white",
+                  cursor: "pointer",
+                  boxShadow: "0 2px 8px rgba(37, 99, 235, 0.1)",
+                }}
+              >
+                <option value="09/2026">Tháng 09 / 2026</option>
+                <option value="08/2026">Tháng 08 / 2026</option>
+                <option value="07/2026">Tháng 07 / 2026</option>
+                <option value="06/2026">Tháng 06 / 2026</option>
+              </select>
+            </div>
 
-        {/* Action Controls: Month Filter & PDF Download Button */}
-        <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
-          <div>
-            <label style={{ fontSize: "13px", fontWeight: 800, color: "var(--text-sub)", display: "block", marginBottom: "4px" }}>
-              CHỌN PHIẾU LƯƠNG THÁNG
-            </label>
-            <select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
+            <button
+              className="primary"
+              onClick={handleDownloadPdf}
+              disabled={isDownloading}
               style={{
-                padding: "13px 20px",
-                borderRadius: "12px",
-                border: "2px solid var(--brand)",
+                padding: "15px 28px",
                 fontSize: "16px",
                 fontWeight: 800,
-                color: "var(--brand)",
-                background: "white",
-                cursor: "pointer",
-                boxShadow: "0 2px 8px rgba(37, 99, 235, 0.1)",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                marginTop: "20px",
               }}
             >
-              <option value="09/2026">Tháng 09 / 2026</option>
-              <option value="08/2026">Tháng 08 / 2026</option>
-              <option value="07/2026">Tháng 07 / 2026</option>
-              <option value="06/2026">Tháng 06 / 2026</option>
-            </select>
-          </div>
-
-          <button
-            className="primary"
-            onClick={handleDownloadPdf}
-            disabled={isDownloading}
-            style={{
-              padding: "15px 28px",
-              fontSize: "16px",
-              fontWeight: 800,
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              marginTop: "20px",
-            }}
-          >
-            <Icon name="file" size={20} />
-            {isDownloading ? "Đang xuất PDF..." : "Tải xuống dạng PDF"}
-          </button>
-        </div>
-      </div>
+              <Icon name="file" size={20} />
+              {isDownloading ? "Đang xuất PDF..." : "Tải xuống dạng PDF"}
+            </button>
+          </>
+        }
+      />
 
       {/* PRIVACY SECURITY BANNER */}
       <div
