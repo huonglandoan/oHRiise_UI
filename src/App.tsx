@@ -3,22 +3,25 @@ import logo from "./imports/oHRiise_icon.png";
 import { Icon, IconName, Status } from "./components/UI";
 import { UserProfilePermissions, DYNAMIC_PROFILES, Page } from "./types";
 import { AdminTab } from "./admin/types";
+import { Sidebar } from "./components/Layout/Sidebar";
+import { Header } from "./components/Layout/Header";
+import { AppShell } from "@mantine/core";
 
 // Extracted Page Components
-import EmployeeDashboard from "./EmployeeDashboard";
-import LeadDashboard from "./LeadDashboard";
-import HrDashboard from "./HrDashboard";
-import PolicyPage from "./PolicyPage";
-import AdminPage from "./AdminPage";
-import AiAssistantDrawer from "./AiAssistantDrawer";
+import PolicyPage from "./pages/PolicyPage";
+import AdminConsole from "./features/admin/AdminConsole";
+import AiAssistantDrawer from "./components/AiAssistantDrawer";
 
-import DashboardPage from "./pages/DashboardPage";
+import DynamicDashboard from "./features/dashboard/DynamicDashboard";
 import AttendancePage from "./pages/AttendancePage";
+import OvertimePage from "./pages/OvertimePage";
 import WfhPage from "./pages/WfhPage";
 import LeavePage from "./pages/LeavePage";
 import ExpensePage from "./pages/ExpensePage";
 import PayslipPage from "./pages/PayslipPage";
 import TeamCalendarPage from "./pages/TeamCalendarPage";
+import LeaveApprovalPage from "./pages/LeaveApprovalPage";
+import WfhApprovalPage from "./pages/WfhApprovalPage";
 import ProfilePage from "./pages/ProfilePage";
 import ContractPage from "./pages/ContractPage";
 import DevicesPage from "./pages/DevicesPage";
@@ -46,380 +49,7 @@ const coreNav: { page: Page; label: string; icon: IconName }[] = [
   { page: "leave", label: "Nghỉ phép", icon: "calendar" },
   { page: "expense", label: "Chi phí", icon: "receipt" },
   { page: "payslip", label: "Phiếu lương", icon: "wallet" },
-  { page: "team", label: "Lịch team", icon: "users" },
 ];
-
-function Sidebar({
-  page,
-  setPage,
-  currentProfile,
-  adminTab,
-  setAdminTab,
-}: {
-  page: Page;
-  setPage: (p: Page) => void;
-  currentProfile: UserProfilePermissions;
-  adminTab: AdminTab;
-  setAdminTab: (tab: AdminTab) => void;
-}) {
-  const perms = currentProfile.permissions;
-  const isSysAdmin = currentProfile.id === "system_admin";
-
-  // Specialized System Admin Sidebar View
-  if (isSysAdmin) {
-    return (
-      <aside className="sidebar">
-        <div className="brand">
-          <div className="logo-crop">
-            <img src={logo} alt="oHRiise" />
-          </div>
-          <div>
-            <b>oHRiise</b>
-            <span>Admin Console</span>
-          </div>
-        </div>
-        <nav>
-          <p className="nav-label">GIÁM SÁT & BÁO CÁO</p>
-          <button
-            className={page === "admin" && adminTab === "dash" ? "active" : ""}
-            onClick={() => {
-              setAdminTab("dash");
-              setPage("admin");
-            }}
-          >
-            <Icon name="home" />
-            <span>Tổng quan Console</span>
-          </button>
-          <button
-            className={page === "admin" && adminTab === "lg" ? "active" : ""}
-            onClick={() => {
-              setAdminTab("lg");
-              setPage("admin");
-            }}
-          >
-            <Icon name="file" />
-            <span>Nhật ký & cảnh báo</span>
-            <em>4</em>
-          </button>
-
-          <p className="nav-label">TỔ CHỨC & TÀI KHOẢN</p>
-          <button
-            className={page === "admin" && adminTab === "us" ? "active" : ""}
-            onClick={() => {
-              setAdminTab("us");
-              setPage("admin");
-            }}
-          >
-            <Icon name="users" />
-            <span>Tài khoản người dùng</span>
-            <em>60</em>
-          </button>
-          <button
-            className={page === "admin" && adminTab === "org" ? "active" : ""}
-            onClick={() => {
-              setAdminTab("org");
-              setPage("admin");
-            }}
-          >
-            <Icon name="briefcase" />
-            <span>Phòng ban & cơ cấu</span>
-          </button>
-          <button
-            className={page === "admin" && adminTab === "br" ? "active" : ""}
-            onClick={() => {
-              setAdminTab("br");
-              setPage("admin");
-            }}
-          >
-            <Icon name="clock" />
-            <span>Chi nhánh & GPS</span>
-          </button>
-
-          <p className="nav-label">PHÂN QUYỀN & BẢO MẬT</p>
-          <button
-            className={page === "admin" && adminTab === "pm" ? "active" : ""}
-            onClick={() => {
-              setAdminTab("pm");
-              setPage("admin");
-            }}
-          >
-            <Icon name="settings" />
-            <span>Phân quyền tài khoản</span>
-          </button>
-          <button
-            className={page === "admin" && adminTab === "tp" ? "active" : ""}
-            onClick={() => {
-              setAdminTab("tp");
-              setPage("admin");
-            }}
-          >
-            <Icon name="shield" />
-            <span>Template quyền</span>
-          </button>
-          <button
-            className={page === "admin" && adminTab === "dg" ? "active" : ""}
-            onClick={() => {
-              setAdminTab("dg");
-              setPage("admin");
-            }}
-          >
-            <Icon name="check" />
-            <span>Ủy quyền & quy tắc</span>
-          </button>
-          <button
-            className={page === "admin" && adminTab === "rv" ? "active" : ""}
-            onClick={() => {
-              setAdminTab("rv");
-              setPage("admin");
-            }}
-          >
-            <Icon name="check" />
-            <span>Rà soát & duyệt quyền</span>
-            <em>2</em>
-          </button>
-
-          <p className="nav-label">HỆ THỐNG & DỮ LIỆU NỀN</p>
-          <button
-            className={page === "admin" && adminTab === "st" ? "active" : ""}
-            onClick={() => {
-              setAdminTab("st");
-              setPage("admin");
-            }}
-          >
-            <Icon name="wallet" />
-            <span>Danh mục nền</span>
-          </button>
-          <button
-            className={page === "admin" && adminTab === "sy" ? "active" : ""}
-            onClick={() => {
-              setAdminTab("sy");
-              setPage("admin");
-            }}
-          >
-            <Icon name="settings" />
-            <span>Cấu hình hệ thống</span>
-          </button>
-          <button
-            className={page === "admin" && adminTab === "em" ? "active" : ""}
-            onClick={() => {
-              setAdminTab("em");
-              setPage("admin");
-            }}
-          >
-            <Icon name="file" />
-            <span>Email & Hộp thư</span>
-            <em>3</em>
-          </button>
-          <button
-            className={page === "admin" && adminTab === "nt" ? "active" : ""}
-            onClick={() => {
-              setAdminTab("nt");
-              setPage("admin");
-            }}
-          >
-            <Icon name="bell" />
-            <span>Thông báo Admin</span>
-            <em>5</em>
-          </button>
-
-          <p className="nav-label">TRÍ TUỆ NHÂN TẠO (AI)</p>
-          <button
-            className={page === "admin" && adminTab === "ai" ? "active" : ""}
-            onClick={() => {
-              setAdminTab("ai");
-              setPage("admin");
-            }}
-          >
-            <Icon name="sparkles" />
-            <span>Hệ thống AI</span>
-          </button>
-        </nav>
-        <button className="profile-link" onClick={() => setPage("profile")}>
-          <span className="avatar sm">{currentProfile.initials}</span>
-          <div>
-            <b>{currentProfile.name}</b>
-            <small>{currentProfile.title}</small>
-          </div>
-          <Icon name="more" />
-        </button>
-      </aside>
-    );
-  }
-
-  // Standard user nav
-  const dynamicNav: { page: Page; label: string; icon: IconName; badge?: number }[] = [];
-
-  if (perms.canApproveRequests) {
-    dynamicNav.push({ page: "approvals", label: "Trung tâm phê duyệt", icon: "check", badge: 8 });
-  }
-  if (perms.canMonitorAttendanceLive) {
-    dynamicNav.push({ page: "live_attendance", label: "Giám sát chấm công Live", icon: "clock" });
-  }
-  if (perms.canManageEmployees) {
-    dynamicNav.push({ page: "employees", label: "Hồ sơ nhân sự", icon: "users" });
-  }
-  if (perms.canManageRecruitment) {
-    dynamicNav.push({ page: "recruitment", label: "Tuyển dụng Kanban", icon: "briefcase" });
-  }
-  if (perms.canManagePayroll) {
-    dynamicNav.push({ page: "payroll", label: "Đồng bộ bảng lương", icon: "wallet" });
-  }
-  if (perms.canViewAnalytics) {
-    dynamicNav.push({ page: "analytics", label: "Phân tích nhân sự", icon: "chart" });
-  }
-  if (perms.canManagePolicies) {
-    dynamicNav.push({ page: "policies", label: "Cấu hình chính sách", icon: "shield" });
-  }
-  if (perms.canManageAdmin) {
-    dynamicNav.push({ page: "admin", label: "Quản trị hệ thống & RBAC", icon: "settings" });
-  }
-
-  const userCoreNav = coreNav.filter((item) => {
-    if (item.page === "team" && !perms.canApproveRequests) {
-      return false;
-    }
-    return true;
-  });
-
-  return (
-    <aside className="sidebar">
-      <div className="brand">
-        <div className="logo-crop">
-          <img src={logo} alt="oHRiise" />
-        </div>
-        <div>
-          <b>oHRiise</b>
-          <span>People rise together</span>
-        </div>
-      </div>
-      <nav>
-        <p className="nav-label">CÔNG VIỆC CỦA TÔI</p>
-        {userCoreNav.map((item) => (
-          <button
-            key={item.page}
-            className={page === item.page ? "active" : ""}
-            onClick={() => setPage(item.page)}
-          >
-            <Icon name={item.icon} />
-            <span>{item.label}</span>
-            {item.page === "leave" && <em>2</em>}
-          </button>
-        ))}
-        <p className="nav-label">HỒ SƠ CÁ NHÂN</p>
-        <button
-          className={page === "profile" ? "active" : ""}
-          onClick={() => setPage("profile")}
-        >
-          <Icon name="user" />
-          <span>Hồ sơ của tôi</span>
-        </button>
-        <button
-          className={page === "contracts" ? "active" : ""}
-          onClick={() => setPage("contracts")}
-        >
-          <Icon name="file" />
-          <span>Hợp đồng</span>
-        </button>
-        <button
-          className={page === "devices" ? "active" : ""}
-          onClick={() => setPage("devices")}
-        >
-          <Icon name="laptop" />
-          <span>Thiết bị được cấp</span>
-        </button>
-        <button
-          className={page === "resignation" ? "active" : ""}
-          onClick={() => setPage("resignation")}
-        >
-          <Icon name="logout" />
-          <span>Thôi việc</span>
-        </button>
-        <p className="nav-label">AI THÔNG MINH</p>
-        <button
-          className={page === "ai" ? "active" : ""}
-          onClick={() => setPage("ai")}
-        >
-          <Icon name="sparkles" />
-          <span>AI WFH Monitoring</span>
-        </button>
-
-        {dynamicNav.length > 0 && (
-          <p className="nav-label">TÍNH NĂNG QUẢN LÝ ĐƯỢC CẤP</p>
-        )}
-        {dynamicNav.map((item) => (
-          <button
-            key={item.page}
-            className={page === item.page ? "active" : ""}
-            onClick={() => setPage(item.page)}
-          >
-            <Icon name={item.icon} />
-            <span>{item.label}</span>
-            {item.badge && <em>{item.badge}</em>}
-          </button>
-        ))}
-      </nav>
-      <button className="profile-link" onClick={() => setPage("profile")}>
-        <span className="avatar sm">{currentProfile.initials}</span>
-        <div>
-          <b>{currentProfile.name}</b>
-          <small>{currentProfile.title}</small>
-        </div>
-        <Icon name="more" />
-      </button>
-    </aside>
-  );
-}
-
-function Header({
-  profileKey,
-  setProfileKey,
-  profiles,
-  onMenu,
-  onNotifications,
-  onLogout,
-}: {
-  profileKey: string;
-  setProfileKey: (pk: string) => void;
-  profiles: Record<string, UserProfilePermissions>;
-  onMenu: () => void;
-  onNotifications: () => void;
-  onLogout: () => void;
-}) {
-  const activeProfile = profiles[profileKey] || profiles.emp_standard;
-
-  return (
-    <header>
-      <button className="icon-btn menu-btn" onClick={onMenu} aria-label="Mở menu">
-        <Icon name="menu" />
-      </button>
-      <div className="global-search">
-        <Icon name="search" />
-        <input placeholder="Tìm nhân viên, yêu cầu, tài liệu..." />
-        <kbd>⌘ K</kbd>
-      </div>
-      <div className="header-actions">
-        <div className="role-switch">
-          <span>Tập quyền Động:</span>
-          <select value={profileKey} onChange={(e) => setProfileKey(e.target.value)}>
-            {Object.values(profiles).map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name} ({p.customRoleName})
-              </option>
-            ))}
-          </select>
-        </div>
-        <button className="icon-btn has-badge" aria-label="Thông báo" onClick={onNotifications}>
-          <Icon name="bell" />
-          <i>3</i>
-        </button>
-        <span className="avatar">{activeProfile.initials}</span>
-        <button className="icon-btn desktop-logout" aria-label="Đăng xuất" onClick={onLogout}>
-          <Icon name="logout" />
-        </button>
-      </div>
-    </header>
-  );
-}
 
 function RequestModal({ type, close }: { type: "wfh" | "leave" | "expense"; close: () => void }) {
   const [submitted, setSubmitted] = useState(false);
@@ -427,8 +57,8 @@ function RequestModal({ type, close }: { type: "wfh" | "leave" | "expense"; clos
     type === "wfh"
       ? ["Đăng ký làm việc từ xa", "laptop"]
       : type === "leave"
-      ? ["Tạo đơn nghỉ phép", "calendar"]
-      : ["Gửi bồi hoàn chi phí", "receipt"];
+        ? ["Tạo đơn nghỉ phép", "calendar"]
+        : ["Gửi bồi hoàn chi phí", "receipt"];
 
   if (submitted)
     return (
@@ -594,153 +224,107 @@ export default function App() {
   };
 
   return (
-    <div className="app-shell">
-      {/* Desktop sidebar — hidden on mobile via CSS */}
-      <Sidebar
-        page={page}
-        setPage={setPage}
-        currentProfile={currentProfile}
-        adminTab={adminTab}
-        setAdminTab={setAdminTab}
-      />
-
-      {/* Mobile sidebar overlay */}
-      <div
-        className={`mobile-drawer-overlay${mobileMenu ? " open" : ""}`}
-        onClick={() => setMobileMenu(false)}
-      >
-        <aside
-          className={`mobile-drawer-sidebar${mobileMenu ? " open" : ""}`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="mobile-drawer-head">
-            <div className="brand">
-              <div className="logo-crop">
-                <img src={logo} alt="oHRiise" />
-              </div>
-              <div>
-                <b>oHRiise</b>
-                <span>People rise together</span>
-              </div>
-            </div>
-            <button className="icon-btn" onClick={() => setMobileMenu(false)} aria-label="Đóng menu">
-              <Icon name="close" />
-            </button>
-          </div>
-
-          <div className="mobile-drawer-role">
-            <span>Tập quyền Động:</span>
-            <select value={profileKey} onChange={(e) => handleProfileSwitch(e.target.value)}>
-              {Object.values(DYNAMIC_PROFILES).map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name} ({p.customRoleName})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <Sidebar
-            page={page}
-            setPage={handleMobileNav}
-            currentProfile={currentProfile}
-            adminTab={adminTab}
-            setAdminTab={setAdminTab}
-          />
-
-          <div className="mobile-drawer-footer">
-            <button
-              className="primary"
-              style={{ width: "100%" }}
-              onClick={() => setAuthenticated(false)}
-            >
-              <Icon name="logout" /> Đăng xuất
-            </button>
-          </div>
-        </aside>
-      </div>
-
-      <div className="main-content">
+    <AppShell
+      header={{ height: 60 }}
+      navbar={{
+        width: 256,
+        breakpoint: 'sm',
+        collapsed: { mobile: !mobileMenu }
+      }}
+      bg="gray.0"
+    >
+      <AppShell.Header>
         <Header
           profileKey={profileKey}
           setProfileKey={handleProfileSwitch}
           profiles={DYNAMIC_PROFILES}
-          onMenu={() => setMobileMenu(true)}
+          onMenu={() => setMobileMenu((m) => !m)}
           onNotifications={() => setPage("notifications")}
           onLogout={() => setAuthenticated(false)}
         />
+      </AppShell.Header>
 
-        <main>
-          {page === "dashboard" && (
-            <DashboardPage
-              personName={currentProfile.name.split(" ").slice(-2).join(" ")}
-              checkedIn={checkedIn}
-              onCheck={() => setCheckedIn(!checkedIn)}
-              openRequest={(t) => setRequest(t)}
-              navigate={setPage}
-              currentProfile={currentProfile}
-            />
-          )}
+      <AppShell.Navbar>
+        <Sidebar
+          page={page}
+          setPage={handleMobileNav}
+          currentProfile={currentProfile}
+        />
+      </AppShell.Navbar>
 
-          {page === "attendance" && <AttendancePage />}
-          {page === "wfh" && <WfhPage open={() => setRequest("wfh")} />}
-          {page === "leave" && <LeavePage open={() => setRequest("leave")} />}
-          {page === "expense" && <ExpensePage open={() => setRequest("expense")} />}
-          {page === "payslip" && <PayslipPage />}
-          {page === "team" && (
-            currentProfile.permissions.canApproveRequests ? (
-              <TeamCalendarPage />
-            ) : (
-              <div className="panel" style={{ textAlign: "center", padding: "40px" }}>
-                <h2 style={{ color: "#e11d48", marginBottom: "12px" }}>Không có quyền truy cập</h2>
-                <p style={{ color: "var(--text-sub)" }}>
-                  Trang theo dõi trạng thái / vị trí làm việc của nhân sự khác chỉ dành cho Quản lý / Ban giám đốc.
-                </p>
-              </div>
-            )
-          )}
+      <AppShell.Main>
+        {page === "dashboard" && (
+          <DynamicDashboard
+            personName={currentProfile.name.split(" ").slice(-2).join(" ")}
+            checkedIn={checkedIn}
+            onCheck={() => setCheckedIn(!checkedIn)}
+            openRequest={(t) => setRequest(t)}
+            navigate={setPage}
+            currentProfile={currentProfile}
+          />
+        )}
 
-          {page === "profile" && <ProfilePage />}
-          {page === "contracts" && <ContractPage />}
-          {page === "devices" && <DevicesPage />}
-          {page === "resignation" && <ResignationPage />}
+        {page === "attendance" && <AttendancePage />}
+        {page === "overtime" && <OvertimePage />}
+        {page === "wfh" && <WfhPage open={() => setRequest("wfh")} />}
+        {page === "leave" && <LeavePage open={() => setRequest("leave")} />}
+        {page === "expense" && <ExpensePage open={() => setRequest("expense")} />}
+        {page === "payslip" && <PayslipPage />}
+        {page === "team" && (
+          currentProfile.permissions.canApproveRequests ? (
+            <TeamCalendarPage />
+          ) : (
+            <div className="panel" style={{ textAlign: "center", padding: "40px" }}>
+              <h2 style={{ color: "#e11d48", marginBottom: "12px" }}>Không có quyền truy cập</h2>
+              <p style={{ color: "var(--text-sub)" }}>
+                Trang theo dõi trạng thái / vị trí làm việc của nhân sự khác chỉ dành cho Quản lý / Ban giám đốc.
+              </p>
+            </div>
+          )
+        )}
+        {page === "leave_approval" && <LeaveApprovalPage />}
+        {page === "wfh_approval" && <WfhApprovalPage />}
 
-          {page === "notifications" && <NotificationsPage navigate={setPage} />}
-          {page === "ai" && <AIPage />}
+        {page === "profile" && <ProfilePage />}
+        {page === "contracts" && <ContractPage />}
+        {page === "devices" && <DevicesPage />}
+        {page === "resignation" && <ResignationPage />}
 
-          {/* Dynamic Feature Authorized Pages */}
-          {page === "approvals" && (
-            <ApprovalPage role={currentProfile.permissions.canApproveRequests ? "lead" : "emp"} />
-          )}
-          {page === "live_attendance" && (
-            currentProfile.permissions.canMonitorAttendanceLive ? (
-              <HRAttendanceMonitor />
-            ) : (
-              <div className="panel" style={{ textAlign: "center", padding: "40px" }}>
-                <h2 style={{ color: "#e11d48", marginBottom: "12px" }}>Không có quyền truy cập</h2>
-                <p style={{ color: "var(--text-sub)" }}>
-                  Tính năng Giám sát Chấm công Realtime chỉ dành riêng cho vai trò Quản trị Nhân sự (HR).
-                </p>
-              </div>
-            )
-          )}
-          {page === "employees" && <EmployeeManagementPage />}
-          {page === "recruitment" && <RecruitmentPage />}
-          {page === "payroll" && <PayrollPage />}
-          {page === "analytics" && <AnalyticsPage />}
-          {page === "policies" && <PolicyPage />}
-          {page === "admin" && (
-            <AdminPage
-              activeAdminTab={adminTab}
-              onTabChange={setAdminTab}
-              hideSubNav={currentProfile.id === "system_admin"}
-            />
-          )}
-        </main>
-      </div>
+        {page === "notifications" && <NotificationsPage navigate={setPage} />}
+        {page === "ai" && <AIPage />}
 
-      <MobileNav page={page} setPage={setPage} onMore={() => setMobileMenu(true)} />
+        {/* Dynamic Feature Authorized Pages */}
+        {page === "approvals" && (
+          <ApprovalPage role={currentProfile.permissions.canApproveRequests ? "lead" : "emp"} />
+        )}
+        {page === "live_attendance" && (
+          currentProfile.permissions.canMonitorAttendanceLive ? (
+            <HRAttendanceMonitor />
+          ) : (
+            <div className="panel" style={{ textAlign: "center", padding: "40px" }}>
+              <h2 style={{ color: "#e11d48", marginBottom: "12px" }}>Không có quyền truy cập</h2>
+              <p style={{ color: "var(--text-sub)" }}>
+                Tính năng Giám sát Chấm công Realtime chỉ dành riêng cho vai trò Quản trị Nhân sự (HR).
+              </p>
+            </div>
+          )
+        )}
+        {page === "employees" && <EmployeeManagementPage />}
+        {page === "recruitment" && <RecruitmentPage />}
+        {page === "payroll" && <PayrollPage />}
+        {page === "analytics" && <AnalyticsPage />}
+        {page === "policies" && <PolicyPage />}
+        {page === "admin" && (
+          <AdminConsole
+            activeAdminTab={adminTab}
+            onTabChange={setAdminTab}
+            hideSubNav={currentProfile.id === "system_admin"}
+          />
+        )}
+      </AppShell.Main>
+
       {request && <RequestModal type={request} close={() => setRequest(null)} />}
       <AiAssistantDrawer />
-    </div>
+    </AppShell>
   );
 }

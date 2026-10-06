@@ -1163,6 +1163,8 @@ export default function AttendanceApprovalCenter() {
                                   background: "#dcfce7",
                                   padding: "2px 6px",
                                   borderRadius: "4px",
+                                  textTransform: "uppercase",
+                                  letterSpacing: "0.5px",
                                 }}
                               >
                                 <ApprovalIcon name="check" size={11} /> Lead: Đã duyệt
@@ -1180,6 +1182,8 @@ export default function AttendanceApprovalCenter() {
                                     background: "#fef9c3",
                                     padding: "2px 6px",
                                     borderRadius: "4px",
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.5px",
                                   }}
                                 >
                                   <ApprovalIcon name="clock" size={11} /> HR: Chờ xử lý
@@ -1198,6 +1202,8 @@ export default function AttendanceApprovalCenter() {
                                     background: "#bbf7d0",
                                     padding: "2px 6px",
                                     borderRadius: "4px",
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.5px",
                                   }}
                                 >
                                   <ApprovalIcon name="check" size={11} /> HR: Đã duyệt
@@ -1216,6 +1222,8 @@ export default function AttendanceApprovalCenter() {
                                     background: "#fee2e2",
                                     padding: "2px 6px",
                                     borderRadius: "4px",
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.5px",
                                   }}
                                 >
                                   <ApprovalIcon name="close" size={11} /> HR: Đã từ chối

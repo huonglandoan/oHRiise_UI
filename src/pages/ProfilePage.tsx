@@ -1,736 +1,682 @@
 import React, { useState } from "react";
-import { Icon, Status } from "../components/UI";
-
-interface CertificateItem {
-  id: string;
-  name: string;
-  issuer: string;
-  year: string;
-  type: string;
-  link?: string;
-}
+import {
+  Box, Group, Stack, Text, Title, Card, Grid, Avatar, Button,
+  ActionIcon, Tabs, Table, Timeline, Breadcrumbs, Anchor, Modal,
+  TextInput, Select, Divider, Menu, Badge
+} from "@mantine/core";
+import {
+  IconEdit, IconDotsVertical, IconCheck, IconTrash, IconPlus,
+  IconExternalLink, IconSend
+} from "@tabler/icons-react";
 
 export default function ProfilePage() {
-  // Editable profile state
-  const [profileData, setProfileData] = useState({
-    name: "Nguyễn Minh Anh",
-    code: "OH-2024-018",
-    title: "Senior UI/UX Product Designer",
-    department: "Phòng Phát triển Sản phẩm (Product Development)",
-    dob: "12/08/1996",
-    gender: "Nữ",
-    cccd: "079196888999",
-    companyEmail: "minhanh@ohriise.vn",
-    personalEmail: "minhanh.design@gmail.com",
-    phone: "090 123 4567",
-    address: "128 Thảo Điền, TP. Thủ Đức, TP. Hồ Chí Minh",
-    emergencyContact: "Nguyễn Văn Hùng (Bố) · 091 234 5678",
-    bankName: "Techcombank (TMCP Kỹ Thương VN)",
+  const [activeTab, setActiveTab] = useState<string | null>("profile");
+
+  // Profile Information State (Vietnamese localized)
+  const [profile, setProfile] = useState({
+    name: "Nguyễn Văn An",
+    department: "Phòng Thiết kế UI/UX",
+    designation: "Chuyên viên Thiết kế Web",
+    employeeId: "FT-0001",
+    dateOfJoin: "01/01/2013",
+    phone: "0987 654 321",
+    email: "an.nguyen@example.com",
+    birthday: "24/07/1992",
+    address: "1861 Bayonne Ave, Manchester Township, TP. Hồ Chí Minh",
+    gender: "Nam",
+    reportsToName: "Trần Minh Quang",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250",
+    reportsToAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120",
+
+    // Personal Info
+    passportNo: "079192008899",
+    passportExp: "24/07/2032",
+    tel: "0987 654 321",
+    nationality: "Việt Nam",
+    religion: "Không",
+    maritalStatus: "Đã kết hôn",
+    employmentOfSpouse: "Có việc làm",
+    noOfChildren: "2",
+
+    // Emergency Contact
+    primaryEmergencyName: "Nguyễn Văn Hùng",
+    primaryEmergencyRelation: "Bố",
+    primaryEmergencyPhone: "0912 345 678, 0987 654 321",
+    secondaryEmergencyName: "Lê Hoàng Nam",
+    secondaryEmergencyRelation: "Anh trai",
+    secondaryEmergencyPhone: "0909 888 777, 0987 654 321",
+
+    // Bank Info
+    bankName: "Techcombank (TMCP Kỹ Thương Việt Nam)",
     bankAccountNo: "1903 8888 999 018",
-    bankAccountName: "NGUYEN MINH ANH",
+    ifscCode: "TCB-HCM01",
+    panNo: "8039281920",
   });
 
-  // Certificate items state
-  const [certificates, setCertificates] = useState<CertificateItem[]>([
+  // Family members list
+  const [familyMembers, setFamilyMembers] = useState([
     {
-      id: "cert-1",
-      name: "Google UX Design Professional Certificate",
-      issuer: "Google / Coursera",
-      year: "2025",
-      type: "Chuyên môn UI/UX",
-      link: "https://coursera.org/verify/google-ux",
-    },
-    {
-      id: "cert-2",
-      name: "TOEIC 850 / 990 (IELTS 7.0 Equivalent)",
-      issuer: "ETS Global",
-      year: "2024",
-      type: "Ngoại ngữ",
-    },
+      id: "fam-1",
+      name: "Nguyễn Tuấn Kiệt",
+      relationship: "Em trai",
+      dob: "16/02/2019",
+      phone: "0987 654 321",
+    }
   ]);
 
-  // Edit Profile Modal State
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editForm, setEditForm] = useState({ ...profileData });
+  // Modals state
+  const [editModalOpened, setEditModalOpened] = useState(false);
+  const [editSection, setEditSection] = useState<string>("personal");
+  const [editFormData, setEditFormData] = useState({ ...profile });
 
-  // Update Certificate Modal State
-  const [isCertModalOpen, setIsCertModalOpen] = useState(false);
-  const [certForm, setCertForm] = useState({
-    name: "",
-    issuer: "",
-    year: "2026",
-    type: "Chuyên môn UI/UX",
-    link: "",
-  });
-
-  const handleOpenEditModal = () => {
-    setEditForm({ ...profileData });
-    setIsEditModalOpen(true);
-  };
-
-  const handleSaveProfile = (e: React.FormEvent) => {
-    e.preventDefault();
-    setProfileData({ ...editForm });
-    setIsEditModalOpen(false);
-    alert("Đã cập nhật thông tin hồ sơ cá nhân thành công!");
-  };
-
-  const handleSaveCertificate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!certForm.name.trim()) {
-      alert("Vui lòng nhập tên chứng chỉ chuyên môn / bằng cấp.");
-      return;
+  const getSectionTitle = (sec: string) => {
+    switch (sec) {
+      case "contact": return "Thông tin liên hệ";
+      case "personal": return "Thông tin cá nhân";
+      case "emergency": return "Người liên hệ khẩn cấp";
+      case "bank": return "Thông tin tài khoản ngân hàng";
+      default: return "Thông tin";
     }
-    const newCert: CertificateItem = {
-      id: `cert-${Date.now()}`,
-      name: certForm.name,
-      issuer: certForm.issuer || "Tổ chức cấp",
-      year: certForm.year,
-      type: certForm.type,
-      link: certForm.link || undefined,
-    };
-    setCertificates([...certificates, newCert]);
-    setIsCertModalOpen(false);
-    setCertForm({ name: "", issuer: "", year: "2026", type: "Chuyên môn UI/UX", link: "" });
-    alert("Đã cập nhật chứng chỉ chuyên môn mới thành công!");
+  };
+
+  const handleOpenEdit = (section: string) => {
+    setEditSection(section);
+    setEditFormData({ ...profile });
+    setEditModalOpened(true);
+  };
+
+  const handleSaveEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setProfile({ ...editFormData });
+    setEditModalOpened(false);
   };
 
   return (
-    <div className="page inner-page">
-      <div className="profile-minimal-container">
-        {/* MINIMAL PROFILE HERO HEADER */}
-        <div className="profile-header-minimal">
-          <div className="profile-header-main">
-            <div className="profile-avatar-minimal">
-              MA
-            </div>
-            <div className="profile-header-info">
-              <div className="profile-badge-row">
-                <span className="profile-code-badge">MÃ NV: {profileData.code}</span>
-                <Status tone="green">Đang làm việc</Status>
-                <Status tone="blue">Chính thức (Full-time)</Status>
-              </div>
-              <h1 className="profile-name">{profileData.name}</h1>
-              <p className="profile-title">{profileData.title} · {profileData.department}</p>
-            </div>
-          </div>
+    <Box>
+      {/* Tiêu đề trang & Đường dẫn Breadcrumbs */}
+      <Box mb="lg">
+        <Title order={2} fw={600} mb={4}>Hồ sơ của tôi</Title>
+        <Breadcrumbs separator="/" fz="sm">
+          <Anchor href="#" c="dimmed">Tổng quan</Anchor>
+          <Text c="dimmed">Hồ sơ cá nhân</Text>
+        </Breadcrumbs>
+      </Box>
 
-          <div className="profile-header-actions">
-            <button className="primary profile-edit-btn" onClick={handleOpenEditModal}>
-              <Icon name="edit" size={18} />
-              <span>Chỉnh sửa thông tin</span>
-            </button>
-          </div>
-        </div>
+      {/* Thẻ chính Hồ sơ cá nhân (Profile Header) */}
+      <Card withBorder radius="lg" p="xl" mb="xl" shadow="sm">
+        <Grid gutter="xl" align="center">
+          {/* Cột trái: Ảnh đại diện + Tên + Chức danh + Nút hành động */}
+          <Grid.Col span={{ base: 12, md: 5 }}>
+            <Group align="flex-start" gap="lg" wrap="nowrap">
+              <Avatar
+                src={profile.avatar}
+                alt={profile.name}
+                size={110}
+                radius="100%"
+                style={{ border: "3px solid #f1f5f9" }}
+              />
+              <Stack gap={4}>
+                <Title order={3} fw={700} c="dark.9">{profile.name}</Title>
+                <Text fz="sm" c="dimmed">{profile.department}</Text>
+                <Text fz="sm" fw={600} c="dark.7" mt={2}>{profile.designation}</Text>
+                <Text fz="xs" c="dimmed">Mã nhân viên : {profile.employeeId}</Text>
+                <Text fz="xs" c="dimmed">Ngày vào làm : {profile.dateOfJoin}</Text>
+              </Stack>
+            </Group>
+          </Grid.Col>
 
-        {/* UNIFIED MINIMAL CONTENT SHEET */}
-        <div className="profile-content-minimal">
-          {/* SECTION 1: CÁ NHÂN & LIÊN HỆ */}
-          <div className="profile-section-minimal">
-              <div className="profile-section-top">
-                <h2 className="profile-section-heading">
-                  <Icon name="user" size={20} />
-                  <span>Thông tin cá nhân & Liên hệ</span>
-                </h2>
-                <button className="profile-link-btn" onClick={handleOpenEditModal}>
-                  <Icon name="edit" size={15} /> <span>Chỉnh sửa</span>
-                </button>
-              </div>
-
-              <div className="profile-list-minimal">
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Họ và tên khai sinh</span>
-                  <span className="profile-row-val">{profileData.name}</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Ngày sinh</span>
-                  <span className="profile-row-val">{profileData.dob}</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Giới tính</span>
-                  <span className="profile-row-val">{profileData.gender}</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Số CCCD / CMND</span>
-                  <span className="profile-row-val">{profileData.cccd}</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Email công ty</span>
-                  <span className="profile-row-val highlight">{profileData.companyEmail}</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Email cá nhân</span>
-                  <span className="profile-row-val">{profileData.personalEmail}</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Số điện thoại di động</span>
-                  <span className="profile-row-val">{profileData.phone}</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Địa chỉ thường trú</span>
-                  <span className="profile-row-val">{profileData.address}</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Liên hệ khẩn cấp</span>
-                  <span className="profile-row-val">{profileData.emergencyContact}</span>
-                </div>
-                <div className="profile-row-item full-width-row">
-                  <span className="profile-row-label">Ngân hàng nhận lương</span>
-                  <div className="profile-row-val-group">
-                    <span className="profile-bank-text">
-                      <strong>{profileData.bankName}</strong> — STK: <code className="bank-acc">{profileData.bankAccountNo}</code> ({profileData.bankAccountName})
-                    </span>
-                    <button className="profile-mini-edit-btn" onClick={handleOpenEditModal}>
-                      <Icon name="edit" size={14} /> Sửa STK
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          {/* SECTION 2: CÔNG VIỆC & TỔ CHỨC */}
-          <div className="profile-section-minimal">
-              <div className="profile-section-top">
-                <h2 className="profile-section-heading">
-                  <Icon name="briefcase" size={20} />
-                  <span>Thông tin công việc & Tổ chức</span>
-                </h2>
-                <Status tone="blue">Chính thức</Status>
-              </div>
-
-              <div className="profile-list-minimal">
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Mã nhân viên</span>
-                  <span className="profile-row-val font-mono">{profileData.code}</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Phòng ban</span>
-                  <span className="profile-row-val">Product & Design</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Chức danh chuyên môn</span>
-                  <span className="profile-row-val">{profileData.title}</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Nhóm chuyên môn (Team)</span>
-                  <span className="profile-row-val">Product Development</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Quản lý trực tiếp (Lead)</span>
-                  <span className="profile-row-val">Trần Hoàng Nam (Product Lead)</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Chi nhánh làm việc</span>
-                  <span className="profile-row-val">Văn phòng TP. Hồ Chí Minh</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Loại hình nhân sự</span>
-                  <span className="profile-row-val">Chính thức (Full-time)</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Ngày gia nhập công ty</span>
-                  <span className="profile-row-val">15/04/2024</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Thâm niên làm việc</span>
-                  <span className="profile-row-val">2 năm 5 tháng</span>
-                </div>
-              </div>
-            </div>
-
-          {/* SECTION 3: HỢP ĐỒNG & CHỨNG CHỈ */}
-          <div className="profile-section-minimal">
-              <div className="profile-section-top">
-                <h2 className="profile-section-heading">
-                  <Icon name="file" size={20} />
-                  <span>Hợp đồng & Chứng chỉ</span>
-                </h2>
-                <button className="profile-link-btn" onClick={() => setIsCertModalOpen(true)}>
-                  <Icon name="plus" size={15} /> <span>Thêm chứng chỉ</span>
-                </button>
-              </div>
-
-              <div className="profile-list-minimal">
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Loại hợp đồng lao động</span>
-                  <span className="profile-row-val">Hợp đồng Không xác định thời hạn</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Mã hợp đồng</span>
-                  <span className="profile-row-val font-mono">HDLD-2024-018/OH</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Ngày hiệu lực</span>
-                  <span className="profile-row-val">15/04/2024</span>
-                </div>
-                <div className="profile-row-item">
-                  <span className="profile-row-label">Trình độ học vấn</span>
-                  <span className="profile-row-val">Cử nhân Thiết kế Đồ họa - ĐH Kiến trúc TP.HCM</span>
-                </div>
-              </div>
-
-              <div className="profile-certs-minimal">
-                <h3 className="profile-subheading">Chứng chỉ & Bằng cấp đã xác minh ({certificates.length})</h3>
-                <div className="profile-cert-rows">
-                  {certificates.map((c) => (
-                    <div key={c.id} className="profile-cert-row-item">
-                      <div className="profile-cert-info">
-                        <div className="profile-cert-title-line">
-                          <span className="cert-type-tag">{c.type}</span>
-                          <strong className="cert-name">{c.name}</strong>
-                        </div>
-                        <span className="cert-issuer">Cấp bởi {c.issuer} · Năm {c.year}</span>
-                      </div>
-                      <Status tone="green">Đã duyệt</Status>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-        </div>
-      </div>
-
-      {/* DIRECT EDIT PROFILE MODAL */}
-      {isEditModalOpen && (
-        <div
-          className="modal-overlay"
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(15, 23, 42, 0.55)",
-            backdropFilter: "blur(6px)",
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "20px",
-          }}
-          onClick={() => setIsEditModalOpen(false)}
-        >
-          <div
-            className="modal-card"
+          {/* Cột phải: Thông tin liên hệ & Người quản lý */}
+          <Grid.Col
+            span={{ base: 12, md: 7 }}
             style={{
-              background: "white",
-              borderRadius: "24px",
-              padding: "32px",
-              width: "100%",
-              maxWidth: "640px",
-              maxHeight: "90vh",
-              overflowY: "auto",
-              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+              borderLeft: "1px dashed var(--mantine-color-gray-3)",
+              paddingLeft: "24px"
             }}
-            onClick={(e) => e.stopPropagation()}
           >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                borderBottom: "2px solid var(--border-soft)",
-                paddingBottom: "16px",
-                marginBottom: "20px",
-              }}
-            >
-              <div>
-                <p style={{ fontSize: "13px", fontWeight: 800, color: "var(--text-sub)", letterSpacing: "0.5px" }}>
-                  CHỈNH SỬA HỒ SƠ
-                </p>
-                <h3 style={{ fontSize: "22px", fontWeight: 900, color: "var(--text-main)", margin: 0 }}>
-                  Cập nhật thông tin cá nhân
-                </h3>
-              </div>
-              <button
-                className="secondary"
-                onClick={() => setIsEditModalOpen(false)}
-                style={{ padding: "8px", borderRadius: "10px" }}
+            <Group justify="flex-end" mb="xs">
+              <ActionIcon
+                radius="xl"
+                variant="subtle"
+                color="gray"
+                size="md"
+                onClick={() => handleOpenEdit("contact")}
+                title="Chỉnh sửa liên hệ"
               >
-                <Icon name="close" size={20} />
-              </button>
-            </div>
+                <IconEdit size={16} />
+              </ActionIcon>
+            </Group>
 
-            <form onSubmit={handleSaveProfile} style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-              <div className="profile-modal-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                <div>
-                  <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                    Họ và tên
-                  </label>
-                  <input
-                    type="text"
-                    value={editForm.name}
-                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                    style={{
-                      width: "100%",
-                      padding: "12px 14px",
-                      borderRadius: "10px",
-                      border: "1px solid var(--border-soft)",
-                      fontSize: "15px",
-                      fontWeight: 700,
-                    }}
-                  />
-                </div>
+            <Grid gutter={{ base: "xs", sm: "sm" }}>
+              <Grid.Col span={{ base: 12, sm: 6 }}>
+                <Group gap="xs" align="baseline">
+                  <Text fz="sm" fw={500} c="dimmed" w={110}>Số điện thoại:</Text>
+                  <Anchor href={`tel:${profile.phone}`} fz="sm" fw={500} c="blue">
+                    {profile.phone}
+                  </Anchor>
+                </Group>
+              </Grid.Col>
 
-                <div>
-                  <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                    Ngày sinh
-                  </label>
-                  <input
-                    type="text"
-                    value={editForm.dob}
-                    onChange={(e) => setEditForm({ ...editForm, dob: e.target.value })}
-                    style={{
-                      width: "100%",
-                      padding: "12px 14px",
-                      borderRadius: "10px",
-                      border: "1px solid var(--border-soft)",
-                      fontSize: "15px",
-                    }}
-                  />
-                </div>
-              </div>
+              <Grid.Col span={{ base: 12, sm: 6 }}>
+                <Group gap="xs" align="baseline">
+                  <Text fz="sm" fw={500} c="dimmed" w={110}>Email:</Text>
+                  <Anchor href={`mailto:${profile.email}`} fz="sm" fw={500} c="blue">
+                    {profile.email}
+                  </Anchor>
+                </Group>
+              </Grid.Col>
 
-              <div className="profile-modal-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                <div>
-                  <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                    Số điện thoại di động
-                  </label>
-                  <input
-                    type="text"
-                    value={editForm.phone}
-                    onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                    style={{
-                      width: "100%",
-                      padding: "12px 14px",
-                      borderRadius: "10px",
-                      border: "1px solid var(--border-soft)",
-                      fontSize: "15px",
-                      fontWeight: 700,
-                    }}
-                  />
-                </div>
+              <Grid.Col span={{ base: 12, sm: 6 }}>
+                <Group gap="xs" align="baseline">
+                  <Text fz="sm" fw={500} c="dimmed" w={110}>Ngày sinh:</Text>
+                  <Text fz="sm" c="dark.8">{profile.birthday}</Text>
+                </Group>
+              </Grid.Col>
 
-                <div>
-                  <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                    Email cá nhân
-                  </label>
-                  <input
-                    type="email"
-                    value={editForm.personalEmail}
-                    onChange={(e) => setEditForm({ ...editForm, personalEmail: e.target.value })}
-                    style={{
-                      width: "100%",
-                      padding: "12px 14px",
-                      borderRadius: "10px",
-                      border: "1px solid var(--border-soft)",
-                      fontSize: "15px",
-                    }}
-                  />
-                </div>
-              </div>
+              <Grid.Col span={{ base: 12, sm: 6 }}>
+                <Group gap="xs" align="baseline">
+                  <Text fz="sm" fw={500} c="dimmed" w={110}>Địa chỉ:</Text>
+                  <Text fz="sm" c="dark.8" style={{ wordBreak: "break-word" }}>{profile.address}</Text>
+                </Group>
+              </Grid.Col>
 
-              <div>
-                <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                  Địa chỉ thường trú
-                </label>
-                <input
-                  type="text"
-                  value={editForm.address}
-                  onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
-                  style={{
-                    width: "100%",
-                    padding: "12px 14px",
-                    borderRadius: "10px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "15px",
-                  }}
+              <Grid.Col span={{ base: 12, sm: 6 }}>
+                <Group gap="xs" align="baseline">
+                  <Text fz="sm" fw={500} c="dimmed" w={110}>Giới tính:</Text>
+                  <Text fz="sm" c="dark.8">{profile.gender}</Text>
+                </Group>
+              </Grid.Col>
+
+              <Grid.Col span={{ base: 12, sm: 6 }}>
+                <Group gap="xs" align="center">
+                  <Text fz="sm" fw={500} c="dimmed" w={110}>Quản lý trực tiếp:</Text>
+                  <Group gap={6} align="center">
+                    <Avatar src={profile.reportsToAvatar} size="xs" radius="xl" />
+                    <Anchor href="#" fz="sm" fw={500} c="blue">
+                      {profile.reportsToName}
+                    </Anchor>
+                  </Group>
+                </Group>
+              </Grid.Col>
+            </Grid>
+          </Grid.Col>
+        </Grid>
+      </Card>
+
+      {/* Điều hướng Subtabs */}
+      <Tabs value={activeTab} onChange={setActiveTab} variant="default" mb="xl">
+        <Tabs.List mb="xl">
+          <Tabs.Tab value="profile">Hồ sơ</Tabs.Tab>
+          <Tabs.Tab value="projects">Dự án</Tabs.Tab>
+          <Tabs.Tab value="bank">Ngân hàng & Pháp lý</Tabs.Tab>
+        </Tabs.List>
+
+        {/* TAB 1: HỒ SƠ CHI TIẾT (6 THẺ THEO GIAO DIỆN) */}
+        <Tabs.Panel value="profile">
+          <Grid gutter="xl">
+            {/* THẺ 1: Thông tin cá nhân */}
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Card withBorder radius="lg" p="lg" h="100%">
+                <Group justify="space-between" align="center" mb="md">
+                  <Title order={5} fw={700} c="dark.9">Thông tin cá nhân</Title>
+                  <ActionIcon
+                    radius="xl"
+                    variant="light"
+                    size="sm"
+                    color="gray"
+                    onClick={() => handleOpenEdit("personal")}
+                    title="Chỉnh sửa"
+                  >
+                    <IconEdit size={14} />
+                  </ActionIcon>
+                </Group>
+
+                <Stack gap="xs">
+                  <Group justify="space-between">
+                    <Text fz="sm" c="dimmed">Số CCCD / Hộ chiếu</Text>
+                    <Text fz="sm" fw={500}>{profile.passportNo}</Text>
+                  </Group>
+                  <Group justify="space-between">
+                    <Text fz="sm" c="dimmed">Ngày hết hạn</Text>
+                    <Text fz="sm" fw={500}>{profile.passportExp}</Text>
+                  </Group>
+                  <Group justify="space-between">
+                    <Text fz="sm" c="dimmed">Điện thoại liên hệ</Text>
+                    <Anchor href={`tel:${profile.tel}`} fz="sm" fw={500} c="blue">
+                      {profile.tel}
+                    </Anchor>
+                  </Group>
+                  <Group justify="space-between">
+                    <Text fz="sm" c="dimmed">Quốc tịch</Text>
+                    <Text fz="sm" fw={500}>{profile.nationality}</Text>
+                  </Group>
+                  <Group justify="space-between">
+                    <Text fz="sm" c="dimmed">Tôn giáo</Text>
+                    <Text fz="sm" fw={500}>{profile.religion}</Text>
+                  </Group>
+                  <Group justify="space-between">
+                    <Text fz="sm" c="dimmed">Tình trạng hôn nhân</Text>
+                    <Text fz="sm" fw={500}>{profile.maritalStatus}</Text>
+                  </Group>
+                  <Group justify="space-between">
+                    <Text fz="sm" c="dimmed">Tình trạng việc làm của vợ/chồng</Text>
+                    <Text fz="sm" fw={500}>{profile.employmentOfSpouse}</Text>
+                  </Group>
+                  <Group justify="space-between">
+                    <Text fz="sm" c="dimmed">Số con</Text>
+                    <Text fz="sm" fw={500}>{profile.noOfChildren}</Text>
+                  </Group>
+                </Stack>
+              </Card>
+            </Grid.Col>
+
+            {/* THẺ 2: Người liên hệ khẩn cấp */}
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Card withBorder radius="lg" p="lg" h="100%">
+                <Group justify="space-between" align="center" mb="md">
+                  <Title order={5} fw={700} c="dark.9">Liên hệ khẩn cấp</Title>
+                  <ActionIcon
+                    radius="xl"
+                    variant="light"
+                    size="sm"
+                    color="gray"
+                    onClick={() => handleOpenEdit("emergency")}
+                    title="Chỉnh sửa"
+                  >
+                    <IconEdit size={14} />
+                  </ActionIcon>
+                </Group>
+
+                <Box mb="md">
+                  <Text fz="sm" fw={700} c="dark.7" mb="xs">Người liên hệ chính</Text>
+                  <Stack gap={6}>
+                    <Group justify="space-between">
+                      <Text fz="sm" c="dimmed">Họ và tên</Text>
+                      <Text fz="sm" fw={500}>{profile.primaryEmergencyName}</Text>
+                    </Group>
+                    <Group justify="space-between">
+                      <Text fz="sm" c="dimmed">Mối quan hệ</Text>
+                      <Text fz="sm" fw={500}>{profile.primaryEmergencyRelation}</Text>
+                    </Group>
+                    <Group justify="space-between">
+                      <Text fz="sm" c="dimmed">Số điện thoại</Text>
+                      <Text fz="sm" fw={500}>{profile.primaryEmergencyPhone}</Text>
+                    </Group>
+                  </Stack>
+                </Box>
+
+                <Divider my="sm" />
+
+                <Box>
+                  <Text fz="sm" fw={700} c="dark.7" mb="xs">Người liên hệ phụ</Text>
+                  <Stack gap={6}>
+                    <Group justify="space-between">
+                      <Text fz="sm" c="dimmed">Họ và tên</Text>
+                      <Text fz="sm" fw={500}>{profile.secondaryEmergencyName}</Text>
+                    </Group>
+                    <Group justify="space-between">
+                      <Text fz="sm" c="dimmed">Mối quan hệ</Text>
+                      <Text fz="sm" fw={500}>{profile.secondaryEmergencyRelation}</Text>
+                    </Group>
+                    <Group justify="space-between">
+                      <Text fz="sm" c="dimmed">Số điện thoại</Text>
+                      <Text fz="sm" fw={500}>{profile.secondaryEmergencyPhone}</Text>
+                    </Group>
+                  </Stack>
+                </Box>
+              </Card>
+            </Grid.Col>
+
+            {/* THẺ 3: Thông tin tài khoản ngân hàng */}
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Card withBorder radius="lg" p="lg" h="100%">
+                <Group justify="space-between" align="center" mb="md">
+                  <Title order={5} fw={700} c="dark.9">Tài khoản ngân hàng</Title>
+                  <ActionIcon
+                    radius="xl"
+                    variant="light"
+                    size="sm"
+                    color="gray"
+                    onClick={() => handleOpenEdit("bank")}
+                    title="Chỉnh sửa"
+                  >
+                    <IconEdit size={14} />
+                  </ActionIcon>
+                </Group>
+
+                <Stack gap="xs">
+                  <Group justify="space-between">
+                    <Text fz="sm" c="dimmed">Tên ngân hàng</Text>
+                    <Text fz="sm" fw={500}>{profile.bankName}</Text>
+                  </Group>
+                  <Group justify="space-between">
+                    <Text fz="sm" c="dimmed">Số tài khoản</Text>
+                    <Text fz="sm" fw={500}>{profile.bankAccountNo}</Text>
+                  </Group>
+                  <Group justify="space-between">
+                    <Text fz="sm" c="dimmed">Mã chi nhánh / Swift Code</Text>
+                    <Text fz="sm" fw={500}>{profile.ifscCode}</Text>
+                  </Group>
+                  <Group justify="space-between">
+                    <Text fz="sm" c="dimmed">Mã số thuế cá nhân</Text>
+                    <Text fz="sm" fw={500}>{profile.panNo}</Text>
+                  </Group>
+                </Stack>
+              </Card>
+            </Grid.Col>
+
+            {/* THẺ 4: Thông tin gia đình & Người phụ thuộc */}
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Card withBorder radius="lg" p="lg" h="100%">
+                <Group justify="space-between" align="center" mb="md">
+                  <Title order={5} fw={700} c="dark.9">Thông tin người thân</Title>
+                  <ActionIcon
+                    radius="xl"
+                    variant="light"
+                    size="sm"
+                    color="gray"
+                    onClick={() => handleOpenEdit("family")}
+                    title="Chỉnh sửa"
+                  >
+                    <IconEdit size={14} />
+                  </ActionIcon>
+                </Group>
+
+                <Table verticalSpacing="sm" horizontalSpacing="sm">
+                  <Table.Thead>
+                    <Table.Tr bg="gray.0">
+                      <Table.Th fw={600} fz="xs">Họ và tên</Table.Th>
+                      <Table.Th fw={600} fz="xs">Mối quan hệ</Table.Th>
+                      <Table.Th fw={600} fz="xs">Ngày sinh</Table.Th>
+                      <Table.Th fw={600} fz="xs">Số điện thoại</Table.Th>
+                      <Table.Th fw={600} fz="xs" ta="right"></Table.Th>
+                    </Table.Tr>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {familyMembers.map((fam) => (
+                      <Table.Tr key={fam.id}>
+                        <Table.Td fz="sm" fw={500}>{fam.name}</Table.Td>
+                        <Table.Td fz="sm" c="dimmed">{fam.relationship}</Table.Td>
+                        <Table.Td fz="sm" c="dimmed">{fam.dob}</Table.Td>
+                        <Table.Td fz="sm">{fam.phone}</Table.Td>
+                        <Table.Td ta="right">
+                          <ActionIcon variant="subtle" color="gray" size="sm">
+                            <IconDotsVertical size={16} />
+                          </ActionIcon>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))}
+                  </Table.Tbody>
+                </Table>
+              </Card>
+            </Grid.Col>
+
+            {/* THẺ 5: Thông tin học vấn & Bằng cấp */}
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Card withBorder radius="lg" p="lg" h="100%">
+                <Group justify="space-between" align="center" mb="md">
+                  <Title order={5} fw={700} c="dark.9">Học vấn & Bằng cấp</Title>
+                  <ActionIcon
+                    radius="xl"
+                    variant="light"
+                    size="sm"
+                    color="gray"
+                    onClick={() => handleOpenEdit("education")}
+                    title="Chỉnh sửa"
+                  >
+                    <IconEdit size={14} />
+                  </ActionIcon>
+                </Group>
+
+                <Timeline active={1} bulletSize={12} lineWidth={2} color="gray">
+                  <Timeline.Item title={<Text fw={600} fz="sm">Đại học Khoa học Tự nhiên TP.HCM (Đại học)</Text>}>
+                    <Text c="dimmed" fz="xs">Cử nhân Công nghệ Thông tin & Đồ họa số</Text>
+                    <Text c="dimmed" fz="xs">Năm 2008 - 2012</Text>
+                  </Timeline.Item>
+
+                  <Timeline.Item title={<Text fw={600} fz="sm">Viện Công nghệ & Thiết kế Quốc tế (Sau Đại học)</Text>}>
+                    <Text c="dimmed" fz="xs">Thạc sĩ Thiết kế Trải nghiệm Người dùng (UX Master)</Text>
+                    <Text c="dimmed" fz="xs">Năm 2013 - 2015</Text>
+                  </Timeline.Item>
+                </Timeline>
+              </Card>
+            </Grid.Col>
+
+            {/* THẺ 6: Kinh nghiệm làm việc */}
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Card withBorder radius="lg" p="lg" h="100%">
+                <Group justify="space-between" align="center" mb="md">
+                  <Title order={5} fw={700} c="dark.9">Kinh nghiệm làm việc</Title>
+                  <ActionIcon
+                    radius="xl"
+                    variant="light"
+                    size="sm"
+                    color="gray"
+                    onClick={() => handleOpenEdit("experience")}
+                    title="Chỉnh sửa"
+                  >
+                    <IconEdit size={14} />
+                  </ActionIcon>
+                </Group>
+
+                <Timeline active={2} bulletSize={12} lineWidth={2} color="gray">
+                  <Timeline.Item title={<Text fw={600} fz="sm">Chuyên viên Thiết kế UI/UX tại Zen Corporation</Text>}>
+                    <Text c="dimmed" fz="xs">01/2013 - Hiện tại (5 năm 2 tháng)</Text>
+                  </Timeline.Item>
+
+                  <Timeline.Item title={<Text fw={600} fz="sm">Thiết kế Sản phẩm số tại Ron-tech</Text>}>
+                    <Text c="dimmed" fz="xs">06/2011 - 12/2012 (1 năm 6 tháng)</Text>
+                  </Timeline.Item>
+
+                  <Timeline.Item title={<Text fw={600} fz="sm">Thiết kế Web tại Dalt Technology</Text>}>
+                    <Text c="dimmed" fz="xs">01/2010 - 05/2011 (1 năm 4 tháng)</Text>
+                  </Timeline.Item>
+                </Timeline>
+              </Card>
+            </Grid.Col>
+          </Grid>
+        </Tabs.Panel>
+
+        {/* TAB 2: DỰ ÁN THAM GIA */}
+        <Tabs.Panel value="projects">
+          <Card withBorder radius="lg" p="lg">
+            <Group justify="space-between" align="center" mb="md">
+              <Title order={4}>Dự án được phân công</Title>
+              <Badge color="blue" size="md">3 Dự án đang hoạt động</Badge>
+            </Group>
+            <Table verticalSpacing="md" horizontalSpacing="md" striped highlightOnHover>
+              <Table.Thead>
+                <Table.Tr bg="gray.0">
+                  <Table.Th fw={600} fz="sm">Tên dự án</Table.Th>
+                  <Table.Th fw={600} fz="sm">Vai trò</Table.Th>
+                  <Table.Th fw={600} fz="sm">Hạn chót</Table.Th>
+                  <Table.Th fw={600} fz="sm">Trạng thái</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                <Table.Tr>
+                  <Table.Td fw={600} c="dark.9">HRMS Portal v2.0</Table.Td>
+                  <Table.Td>Trưởng nhóm Thiết kế UI/UX</Table.Td>
+                  <Table.Td>15/11/2026</Table.Td>
+                  <Table.Td><Badge color="green" variant="light">Đang thực hiện</Badge></Table.Td>
+                </Table.Tr>
+                <Table.Tr>
+                  <Table.Td fw={600} c="dark.9">Chuẩn hóa Design System Token</Table.Td>
+                  <Table.Td>Chuyên gia Design System</Table.Td>
+                  <Table.Td>30/10/2026</Table.Td>
+                  <Table.Td><Badge color="indigo" variant="light">Đang review</Badge></Table.Td>
+                </Table.Tr>
+                <Table.Tr>
+                  <Table.Td fw={600} c="dark.9">Ứng dụng di động Nhân viên (Mobile Hub)</Table.Td>
+                  <Table.Td>Thiết kế Sản phẩm</Table.Td>
+                  <Table.Td>20/12/2026</Table.Td>
+                  <Table.Td><Badge color="blue" variant="light">Lên kế hoạch</Badge></Table.Td>
+                </Table.Tr>
+              </Table.Tbody>
+            </Table>
+          </Card>
+        </Tabs.Panel>
+
+        {/* TAB 3: NGÂN HÀNG & PHÁP LÝ */}
+        <Tabs.Panel value="bank">
+          <Card withBorder radius="lg" p="lg">
+            <Title order={4} mb="md">Thông tin Ngân hàng & Chế độ pháp lý</Title>
+            <Grid gutter="md">
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Card withBorder p="md" radius="md">
+                  <Text fw={600} fz="sm" mb="xs">Thông tin Thuế & Bảo hiểm xã hội</Text>
+                  <Stack gap="xs">
+                    <Group justify="space-between">
+                      <Text fz="sm" c="dimmed">Mã số thuế cá nhân</Text>
+                      <Text fz="sm" fw={500}>{profile.panNo}</Text>
+                    </Group>
+                    <Group justify="space-between">
+                      <Text fz="sm" c="dimmed">Số sổ Bảo hiểm xã hội</Text>
+                      <Text fz="sm" fw={500}>BHXH-79182910</Text>
+                    </Group>
+                    <Group justify="space-between">
+                      <Text fz="sm" c="dimmed">Loại hợp đồng lao động</Text>
+                      <Text fz="sm" fw={500}>HĐLĐ-2013-001 (Không xác định thời hạn)</Text>
+                    </Group>
+                  </Stack>
+                </Card>
+              </Grid.Col>
+
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Card withBorder p="md" radius="md">
+                  <Text fw={600} fz="sm" mb="xs">Tài khoản chi trả lương</Text>
+                  <Stack gap="xs">
+                    <Group justify="space-between">
+                      <Text fz="sm" c="dimmed">Tên ngân hàng</Text>
+                      <Text fz="sm" fw={500}>{profile.bankName}</Text>
+                    </Group>
+                    <Group justify="space-between">
+                      <Text fz="sm" c="dimmed">Số tài khoản nhận lương</Text>
+                      <Text fz="sm" fw={500}>{profile.bankAccountNo}</Text>
+                    </Group>
+                    <Group justify="space-between">
+                      <Text fz="sm" c="dimmed">Chi nhánh ngân hàng</Text>
+                      <Text fz="sm" fw={500}>{profile.ifscCode}</Text>
+                    </Group>
+                  </Stack>
+                </Card>
+              </Grid.Col>
+            </Grid>
+          </Card>
+        </Tabs.Panel>
+      </Tabs>
+
+      {/* MODAL CẬP NHẬT THÔNG TIN */}
+      <Modal
+        opened={editModalOpened}
+        onClose={() => setEditModalOpened(false)}
+        title={<Text fw={600} fz="lg">Cập nhật {getSectionTitle(editSection)}</Text>}
+        size="md"
+        radius="md"
+      >
+        <form onSubmit={handleSaveEdit}>
+          <Stack gap="md">
+            {editSection === "contact" && (
+              <>
+                <TextInput
+                  label="Số điện thoại"
+                  value={editFormData.phone}
+                  onChange={(e) => setEditFormData({ ...editFormData, phone: e.currentTarget.value })}
                 />
-              </div>
-
-              <div>
-                <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                  Liên hệ khẩn cấp (Tên & SĐT người thân)
-                </label>
-                <input
-                  type="text"
-                  value={editForm.emergencyContact}
-                  onChange={(e) => setEditForm({ ...editForm, emergencyContact: e.target.value })}
-                  style={{
-                    width: "100%",
-                    padding: "12px 14px",
-                    borderRadius: "10px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "15px",
-                  }}
+                <TextInput
+                  label="Email liên hệ"
+                  value={editFormData.email}
+                  onChange={(e) => setEditFormData({ ...editFormData, email: e.currentTarget.value })}
                 />
-              </div>
-
-              <div style={{ borderTop: "2px solid var(--border-soft)", paddingTop: "16px", marginTop: "4px" }}>
-                <h4 style={{ fontSize: "16px", fontWeight: 800, color: "var(--brand)", marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
-                  <Icon name="wallet" size={18} /> Thông tin ngân hàng nhận lương
-                </h4>
-                <div className="profile-modal-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "12px" }}>
-                  <div>
-                    <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                      Ngân hàng thụ hưởng
-                    </label>
-                    <input
-                      type="text"
-                      value={editForm.bankName}
-                      onChange={(e) => setEditForm({ ...editForm, bankName: e.target.value })}
-                      placeholder="Techcombank, Vietcombank, MB Bank..."
-                      style={{
-                        width: "100%",
-                        padding: "12px 14px",
-                        borderRadius: "10px",
-                        border: "1px solid var(--border-soft)",
-                        fontSize: "15px",
-                        fontWeight: 700,
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                      Số tài khoản (STK)
-                    </label>
-                    <input
-                      type="text"
-                      value={editForm.bankAccountNo}
-                      onChange={(e) => setEditForm({ ...editForm, bankAccountNo: e.target.value })}
-                      placeholder="1903 8888 999 018"
-                      style={{
-                        width: "100%",
-                        padding: "12px 14px",
-                        borderRadius: "10px",
-                        border: "1px solid var(--border-soft)",
-                        fontSize: "15px",
-                        fontWeight: 700,
-                      }}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                    Tên chủ tài khoản (In hoa không dấu)
-                  </label>
-                  <input
-                    type="text"
-                    value={editForm.bankAccountName}
-                    onChange={(e) => setEditForm({ ...editForm, bankAccountName: e.target.value })}
-                    placeholder="NGUYEN MINH ANH"
-                    style={{
-                      width: "100%",
-                      padding: "12px 14px",
-                      borderRadius: "10px",
-                      border: "1px solid var(--border-soft)",
-                      fontSize: "15px",
-                      fontWeight: 700,
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "10px" }}>
-                <button
-                  type="button"
-                  className="secondary"
-                  onClick={() => setIsEditModalOpen(false)}
-                  style={{ padding: "12px 20px", fontSize: "15px", fontWeight: 700 }}
-                >
-                  Hủy
-                </button>
-                <button
-                  type="submit"
-                  className="primary"
-                  style={{ padding: "12px 24px", fontSize: "15px", fontWeight: 900 }}
-                >
-                  <Icon name="check" size={18} /> Lưu thay đổi hồ sơ
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* UPDATE CERTIFICATE MODAL */}
-      {isCertModalOpen && (
-        <div
-          className="modal-overlay"
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(15, 23, 42, 0.55)",
-            backdropFilter: "blur(6px)",
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "20px",
-          }}
-          onClick={() => setIsCertModalOpen(false)}
-        >
-          <div
-            className="modal-card"
-            style={{
-              background: "white",
-              borderRadius: "24px",
-              padding: "32px",
-              width: "100%",
-              maxWidth: "540px",
-              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                borderBottom: "2px solid var(--border-soft)",
-                paddingBottom: "16px",
-                marginBottom: "20px",
-              }}
-            >
-              <div>
-                <p style={{ fontSize: "13px", fontWeight: 800, color: "var(--text-sub)", letterSpacing: "0.5px" }}>
-                  BẰNG CẤP & CHỨNG CHỈ
-                </p>
-                <h3 style={{ fontSize: "22px", fontWeight: 900, color: "var(--text-main)", margin: 0 }}>
-                  Cập nhật chứng chỉ chuyên môn
-                </h3>
-              </div>
-              <button
-                className="secondary"
-                onClick={() => setIsCertModalOpen(false)}
-                style={{ padding: "8px", borderRadius: "10px" }}
-              >
-                <Icon name="close" size={20} />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveCertificate} style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-              <div>
-                <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                  Tên chứng chỉ / Bằng cấp chuyên môn <span style={{ color: "#dc2626" }}>*</span>
-                </label>
-                <input
-                  type="text"
-                  value={certForm.name}
-                  onChange={(e) => setCertForm({ ...certForm, name: e.target.value })}
-                  placeholder="Ví dụ: AWS Certified Solutions Architect, Google UX..."
-                  style={{
-                    width: "100%",
-                    padding: "12px 14px",
-                    borderRadius: "10px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "15px",
-                    fontWeight: 700,
-                  }}
+                <TextInput
+                  label="Địa chỉ cư trú"
+                  value={editFormData.address}
+                  onChange={(e) => setEditFormData({ ...editFormData, address: e.currentTarget.value })}
                 />
-              </div>
+              </>
+            )}
 
-              <div className="profile-modal-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                <div>
-                  <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                    Tổ chức cấp
-                  </label>
-                  <input
-                    type="text"
-                    value={certForm.issuer}
-                    onChange={(e) => setCertForm({ ...certForm, issuer: e.target.value })}
-                    placeholder="Ví dụ: Google, ETS, PMI..."
-                    style={{
-                      width: "100%",
-                      padding: "12px 14px",
-                      borderRadius: "10px",
-                      border: "1px solid var(--border-soft)",
-                      fontSize: "15px",
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                    Năm cấp
-                  </label>
-                  <input
-                    type="text"
-                    value={certForm.year}
-                    onChange={(e) => setCertForm({ ...certForm, year: e.target.value })}
-                    placeholder="2026"
-                    style={{
-                      width: "100%",
-                      padding: "12px 14px",
-                      borderRadius: "10px",
-                      border: "1px solid var(--border-soft)",
-                      fontSize: "15px",
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                  Phân loại chứng chỉ
-                </label>
-                <select
-                  value={certForm.type}
-                  onChange={(e) => setCertForm({ ...certForm, type: e.target.value })}
-                  style={{
-                    width: "100%",
-                    padding: "12px 14px",
-                    borderRadius: "10px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "15px",
-                    fontWeight: 700,
-                    background: "white",
-                  }}
-                >
-                  <option value="Chuyên môn UI/UX">Chuyên môn UI/UX & Design</option>
-                  <option value="Công nghệ & Lập trình">Công nghệ & Lập trình</option>
-                  <option value="Ngoại ngữ">Ngoại ngữ (IELTS, TOEIC, JLPT...)</option>
-                  <option value="Quản lý dự án">Quản lý dự án (PMP, Agile...)</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{ fontSize: "14px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                  Link đính kèm file chứng chỉ (Drive / Dropbox)
-                </label>
-                <input
-                  type="text"
-                  value={certForm.link}
-                  onChange={(e) => setCertForm({ ...certForm, link: e.target.value })}
-                  placeholder="https://drive.google.com/..."
-                  style={{
-                    width: "100%",
-                    padding: "12px 14px",
-                    borderRadius: "10px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "15px",
-                  }}
+            {editSection === "personal" && (
+              <>
+                <TextInput
+                  label="Số CCCD / Hộ chiếu"
+                  value={editFormData.passportNo}
+                  onChange={(e) => setEditFormData({ ...editFormData, passportNo: e.currentTarget.value })}
                 />
-              </div>
+                <TextInput
+                  label="Điện thoại liên hệ"
+                  value={editFormData.tel}
+                  onChange={(e) => setEditFormData({ ...editFormData, tel: e.currentTarget.value })}
+                />
+                <TextInput
+                  label="Quốc tịch"
+                  value={editFormData.nationality}
+                  onChange={(e) => setEditFormData({ ...editFormData, nationality: e.currentTarget.value })}
+                />
+                <TextInput
+                  label="Tình trạng hôn nhân"
+                  value={editFormData.maritalStatus}
+                  onChange={(e) => setEditFormData({ ...editFormData, maritalStatus: e.currentTarget.value })}
+                />
+                <TextInput
+                  label="Số con"
+                  value={editFormData.noOfChildren}
+                  onChange={(e) => setEditFormData({ ...editFormData, noOfChildren: e.currentTarget.value })}
+                />
+              </>
+            )}
 
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "10px" }}>
-                <button
-                  type="button"
-                  className="secondary"
-                  onClick={() => setIsCertModalOpen(false)}
-                  style={{ padding: "12px 20px", fontSize: "15px", fontWeight: 700 }}
-                >
-                  Hủy
-                </button>
-                <button
-                  type="submit"
-                  className="primary"
-                  style={{ padding: "12px 24px", fontSize: "15px", fontWeight: 900 }}
-                >
-                  <Icon name="check" size={18} /> Lưu chứng chỉ
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+            {editSection === "emergency" && (
+              <>
+                <TextInput
+                  label="Tên người liên hệ chính"
+                  value={editFormData.primaryEmergencyName}
+                  onChange={(e) => setEditFormData({ ...editFormData, primaryEmergencyName: e.currentTarget.value })}
+                />
+                <TextInput
+                  label="Mối quan hệ"
+                  value={editFormData.primaryEmergencyRelation}
+                  onChange={(e) => setEditFormData({ ...editFormData, primaryEmergencyRelation: e.currentTarget.value })}
+                />
+                <TextInput
+                  label="Số điện thoại"
+                  value={editFormData.primaryEmergencyPhone}
+                  onChange={(e) => setEditFormData({ ...editFormData, primaryEmergencyPhone: e.currentTarget.value })}
+                />
+              </>
+            )}
+
+            {editSection === "bank" && (
+              <>
+                <TextInput
+                  label="Tên ngân hàng"
+                  value={editFormData.bankName}
+                  onChange={(e) => setEditFormData({ ...editFormData, bankName: e.currentTarget.value })}
+                />
+                <TextInput
+                  label="Số tài khoản"
+                  value={editFormData.bankAccountNo}
+                  onChange={(e) => setEditFormData({ ...editFormData, bankAccountNo: e.currentTarget.value })}
+                />
+                <TextInput
+                  label="Mã chi nhánh / Swift Code"
+                  value={editFormData.ifscCode}
+                  onChange={(e) => setEditFormData({ ...editFormData, ifscCode: e.currentTarget.value })}
+                />
+                <TextInput
+                  label="Mã số thuế cá nhân"
+                  value={editFormData.panNo}
+                  onChange={(e) => setEditFormData({ ...editFormData, panNo: e.currentTarget.value })}
+                />
+              </>
+            )}
+
+            <Group justify="flex-end" mt="md">
+              <Button variant="default" onClick={() => setEditModalOpened(false)}>Hủy</Button>
+              <Button type="submit" color="blue" leftSection={<IconCheck size={16} />}>Lưu thay đổi</Button>
+            </Group>
+          </Stack>
+        </form>
+      </Modal>
+    </Box>
   );
 }

@@ -1,6 +1,15 @@
 import React, { useState } from "react";
-import { PageHeader } from "../components/PageHeader";
-import { Icon, Status } from "../components/UI";
+import {
+  Box, Group, Text, Card, Grid, Table, Modal, ScrollArea,
+  Menu, ActionIcon, Pagination, Button, Badge, Avatar, Tooltip,
+  TextInput, Select, Textarea, Title
+} from "@mantine/core";
+import {
+  IconSearch, IconPlus, IconDotsVertical, IconEye,
+  IconAlertCircle, IconChevronUp, IconChevronDown, IconSelector, IconCheck,
+  IconClock, IconX, IconTool
+} from "@tabler/icons-react";
+import { StatusBadge } from "../components/UI";
 
 export interface DeviceItem {
   id: string;
@@ -16,6 +25,8 @@ export interface DeviceItem {
   value: string;
   warrantyUntil: string;
   notes: string;
+  managerName: string;
+  managerAvatar: string;
 }
 
 const INITIAL_DEVICES: DeviceItem[] = [
@@ -24,71 +35,111 @@ const INITIAL_DEVICES: DeviceItem[] = [
     code: "#EQ-2024-089",
     name: 'MacBook Pro 16"',
     fullName: 'MacBook Pro 16" M3 Max (36GB RAM / 1TB SSD) - Space Black',
-    category: "Laptop / Máy tính làm việc",
+    category: "Laptop",
     issuedDate: "15/04/2024",
     serialNumber: "C02GX088Q05N",
     status: "active",
     statusText: "Đang sử dụng",
     condition: "Mới 100% nguyên seal bàn giao kèm Sạc Magsafe 140W",
-    value: "68.500.000 ₫",
+    value: "68.500.000 đ",
     warrantyUntil: "14/04/2027 (AppleCare+)",
     notes: "Thiết bị chính dùng thiết kế UI/UX & render đồ họa.",
+    managerName: "Nguyễn Văn A",
+    managerAvatar: "NV"
   },
   {
     id: "d2",
     code: "#EQ-2024-090",
     name: 'Màn hình Dell 27" 4K',
     fullName: 'Màn hình hiển thị Dell UltraSharp 27" 4K USB-C (U2723QE)',
-    category: "Màn hình mở rộng",
+    category: "Màn hình",
     issuedDate: "20/04/2024",
     serialNumber: "CN-0TY789-74445",
     status: "active",
     statusText: "Đang sử dụng",
     condition: "Mới 100% bàn giao kèm cáp Type-C & cáp nguồn",
-    value: "11.200.000 ₫",
+    value: "11.200.000 đ",
     warrantyUntil: "19/04/2027 (Bảo hành 3 năm Dell)",
     notes: "Màn hình đồ họa chuẩn màu 98% DCI-P3 đặt tại bàn làm việc công ty.",
+    managerName: "Nguyễn Văn A",
+    managerAvatar: "NV"
   },
   {
     id: "d3",
     code: "#EQ-2024-112",
     name: "Tai nghe Sony WH-1000XM5",
     fullName: "Tai nghe không dây chống ồn Sony WH-1000XM5 Black",
-    category: "Thiết bị âm thanh",
+    category: "Âm thanh",
     issuedDate: "05/05/2024",
     serialNumber: "SN-8823192003",
     status: "active",
     statusText: "Đang sử dụng",
     condition: "Mới 100% kèm hộp đựng và cáp sạc USB-C",
-    value: "6.800.000 ₫",
+    value: "6.800.000 đ",
     warrantyUntil: "04/05/2025 (Bảo hành 1 năm)",
     notes: "Trang bị tập trung công việc và họp trực tuyến từ xa WFH.",
+    managerName: "Nguyễn Văn B",
+    managerAvatar: "NV"
   },
   {
     id: "d4",
     code: "#EQ-2024-150",
     name: "Bàn phím Keychron & Chuột Master 3S",
     fullName: "Bộ bàn phím cơ Keychron K2 Pro & Chuột Logitech MX Master 3S",
-    category: "Phụ kiện ngoại vi",
+    category: "Phụ kiện",
     issuedDate: "01/09/2024",
     serialNumber: "SN-998811234",
     status: "active",
     statusText: "Đang sử dụng",
     condition: "Mới 100% bàn giao kèm cáp sạc",
-    value: "3.500.000 ₫",
+    value: "3.500.000 đ",
     warrantyUntil: "31/08/2025",
     notes: "Bộ chuột phím thái công học chuyên dùng thiết kế.",
+    managerName: "Nguyễn Văn B",
+    managerAvatar: "NV"
   },
 ];
 
 export default function DevicesPage() {
-  const [devices, setDevices] = useState<DeviceItem[]>(INITIAL_DEVICES);
+  const [devices] = useState<DeviceItem[]>(INITIAL_DEVICES);
   const [selectedDevice, setSelectedDevice] = useState<DeviceItem | null>(null);
   const [reportModalDevice, setReportModalDevice] = useState<DeviceItem | null>(null);
   const [reportIssueText, setReportIssueText] = useState("");
   const [isRequestNewOpen, setIsRequestNewOpen] = useState(false);
   const [newRequestType, setNewRequestType] = useState("Thay thế thiết bị hỏng");
   const [newRequestNote, setNewRequestNote] = useState("");
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+
+  const [sortConfig, setSortConfig] = useState<{ key: keyof DeviceItem | null, direction: 'asc' | 'desc' }>({ key: null, direction: 'asc' });
+
+  const handleSort = (key: keyof DeviceItem) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') direction = 'desc';
+    setSortConfig({ key, direction });
+  };
+
+  let processedRecords = [...devices].filter(d => {
+    const matchSearch = d.code.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                        d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        d.serialNumber.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchStatus = statusFilter === "all" || d.status === statusFilter;
+    const matchCategory = categoryFilter === "all" || d.category === categoryFilter;
+    return matchSearch && matchStatus && matchCategory;
+  });
+
+  if (sortConfig.key) {
+    processedRecords.sort((a, b) => {
+      let aValue = a[sortConfig.key!];
+      let bValue = b[sortConfig.key!];
+
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
 
   const handleReportIssueSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,497 +165,332 @@ export default function DevicesPage() {
     setNewRequestNote("");
   };
 
+  const total = devices.length;
+  const active = devices.filter(d => d.status === "active").length;
+  const maintenance = devices.filter(d => d.status === "maintenance").length;
+  const replaced = devices.filter(d => d.status === "replaced").length;
+
+  const Th = ({ children, columnKey }: { children: React.ReactNode, columnKey: keyof DeviceItem }) => {
+    const isSorted = sortConfig.key === columnKey;
+    const isAsc = isSorted && sortConfig.direction === 'asc';
+    const isDesc = isSorted && sortConfig.direction === 'desc';
+
+    return (
+      <Table.Th style={{ padding: "12px 16px" }}>
+        <Group justify="space-between" align="center" wrap="nowrap" style={{ cursor: "pointer" }} onClick={() => handleSort(columnKey)}>
+          <Text fw={700} fz="sm" c="dark.9">{children}</Text>
+          <Group gap={0}>
+            {isAsc ? (
+              <IconChevronUp size={14} color="var(--mantine-color-blue-6)" />
+            ) : isDesc ? (
+              <IconChevronDown size={14} color="var(--mantine-color-blue-6)" />
+            ) : (
+              <IconSelector size={14} color="gray" opacity={0.5} />
+            )}
+          </Group>
+        </Group>
+      </Table.Th>
+    )
+  }
+
+  const renderStatusBadge = (status: string, statusText: string) => {
+    return <StatusBadge status={status} statusText={statusText} />;
+  }
+
   return (
-    <div className="page inner-page" style={{ gap: "28px" }}>
-      <PageHeader
-        group="QUẢN LÝ TÀI SẢN CÔNG TY"
-        title="Thiết bị được cấp"
-        description="Danh sách đầy đủ các thiết bị công ty bàn giao: mã thiết bị, tên đầy đủ, ngày cấp, số serial và trạng thái."
-        icon="monitor"
-        rightContent={
-          <button
-            className="primary"
-            onClick={() => setIsRequestNewOpen(true)}
-            style={{
-              padding: "15px 28px",
-              fontSize: "14px",
-              fontWeight: 800,
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              borderRadius: "14px",
-            }}
-          >
-            <Icon name="plus" size={18} /> Đề xuất cấp / Đổi thiết bị
-          </button>
-        }
-      />
+    <Box>
+      <Group justify="space-between" align="center" mb="xl">
+        <Box>
+          <Title order={2} fw={700} c="dark.9">Thiết bị</Title>
+        </Box>
+        <Button color="blue" radius="xl" leftSection={<IconPlus size={16} />} onClick={() => setIsRequestNewOpen(true)}>
+          Đề xuất thiết bị
+        </Button>
+      </Group>
 
+      {/* Summary Cards */}
+      <Grid mb="xl">
+        {[
+          { label: "TỔNG SỐ", value: total },
+          { label: "ĐANG SỬ DỤNG", value: active },
+          { label: "ĐANG BẢO HÀNH", value: maintenance },
+          { label: "ĐÃ THU HỒI", value: replaced }
+        ].map((item, index) => (
+          <Grid.Col span={{ base: 12, sm: 6, md: 3 }} key={index}>
+            <Card withBorder radius="lg" padding="lg" ta="center">
+              <Text fw={700} fz="sm" c="dimmed" tt="uppercase" style={{ letterSpacing: "0.5px" }}>{item.label}</Text>
+              <Group justify="center" align="baseline" gap={4} mt="xs">
+                <Text fw={700} fz={24} c="dark.9">{item.value}</Text>
+              </Group>
+            </Card>
+          </Grid.Col>
+        ))}
+      </Grid>
 
+      {/* Table Section */}
+      <Card withBorder radius="lg" p={0} shadow="sm">
+        {/* Bộ lọc */}
+        <Box p="md" className="filter-section">
+          <Group justify="flex-start" wrap="wrap" gap="sm">
+            <TextInput
+              placeholder="Tìm kiếm thiết bị..."
+              leftSection={<IconSearch size={14} />}
+              size="sm"
+              radius="md"
+              w={{ base: "100%", sm: 260 }}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.currentTarget.value)}
+            />
+            <Select
+              placeholder="Tất cả loại"
+              size="sm"
+              radius="md"
+              w={180}
+              data={[
+                { value: "all", label: "Tất cả loại" },
+                { value: "Laptop", label: "Laptop" },
+                { value: "Màn hình", label: "Màn hình" },
+                { value: "Âm thanh", label: "Âm thanh" },
+                { value: "Phụ kiện", label: "Phụ kiện" },
+              ]}
+              value={categoryFilter}
+              onChange={(v) => v && setCategoryFilter(v)}
+              allowDeselect={false}
+            />
+            <Select
+              placeholder="Tất cả trạng thái"
+              size="sm"
+              radius="md"
+              w={180}
+              data={[
+                { value: "all", label: "Tất cả trạng thái" },
+                { value: "active", label: "Đang sử dụng" },
+                { value: "maintenance", label: "Đang bảo hành" },
+                { value: "replaced", label: "Đã thu hồi" },
+              ]}
+              value={statusFilter}
+              onChange={(v) => v && setStatusFilter(v)}
+              allowDeselect={false}
+            />
+          </Group>
+        </Box>
 
-      {/* MAIN DEVICES LIST TABLE & CARDS PANEL */}
-      <section
-        className="panel"
-        style={{
-          background: "white",
-          borderRadius: "28px",
-          padding: "32px",
-          border: "1px solid var(--border-soft)",
-          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.03)",
-        }}
-      >
-        <div style={{ marginBottom: "24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div>
-            <p style={{ fontSize: "13px", fontWeight: 800, color: "var(--text-sub)", letterSpacing: "0.8px" }}>
-              DANH SÁCH BÀN GIAO
-            </p>
-            <h2 style={{ fontSize: "24px", fontWeight: 900, color: "var(--text-main)", margin: "2px 0" }}>
-              Các thiết bị đang quản lý ({devices.length})
-            </h2>
-          </div>
+        <ScrollArea>
+          <Table className="ohriise-table" verticalSpacing="md" horizontalSpacing="md" highlightOnHover striped={false}>
+            <Table.Thead>
+              <Table.Tr bg="transparent">
+                <Th columnKey="category">Loại thiết bị</Th>
+                <Th columnKey="code">Mã thiết bị</Th>
+                <Th columnKey="name">Tên thiết bị</Th>
+                <Th columnKey="issuedDate">Ngày cấp</Th>
+                <Th columnKey="statusText">Trạng thái</Th>
+                <Th columnKey="managerName">Người quản lý</Th>
+                <Table.Th style={{ textAlign: "right" }}></Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {processedRecords.length === 0 ? (
+                <Table.Tr>
+                  <Table.Td colSpan={7} ta="center" py="xl">
+                    <Text c="dimmed">Không tìm thấy kết quả nào</Text>
+                  </Table.Td>
+                </Table.Tr>
+              ) : (
+                processedRecords.map((item) => (
+                  <Table.Tr key={item.id}>
+                    <Table.Td fw={700} fz="sm">{item.category}</Table.Td>
+                    <Table.Td>
+                      <Tooltip label="Nhấn để xem chi tiết" withArrow position="top-start">
+                        <Text
+                          component="button"
+                          type="button"
+                          fw={500}
+                          c="dark.9"
+                          fz="sm"
+                          onClick={() => setSelectedDevice(item)}
+                          style={{ cursor: "pointer", background: "none", border: "none", padding: 0 }}
+                        >
+                          {item.code}
+                        </Text>
+                      </Tooltip>
+                    </Table.Td>
+                    <Table.Td fz="sm">{item.name}</Table.Td>
+                    <Table.Td fz="sm">{item.issuedDate}</Table.Td>
+                    <Table.Td>
+                      {renderStatusBadge(item.status, item.statusText)}
+                    </Table.Td>
+                    <Table.Td>
+                      <Group gap="xs">
+                        <Avatar size="sm" color="teal" radius="xl">{item.managerAvatar}</Avatar>
+                        <Text fw={700} fz="sm" c="dark.9">{item.managerName}</Text>
+                      </Group>
+                    </Table.Td>
+                    <Table.Td ta="right">
+                      <Menu position="bottom-end" withinPortal shadow="sm" radius="md">
+                        <Menu.Target>
+                          <ActionIcon variant="transparent" color="gray">
+                            <IconDotsVertical size={18} />
+                          </ActionIcon>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                          <Menu.Item leftSection={<IconEye size={14} />} onClick={() => setSelectedDevice(item)}>Chi tiết</Menu.Item>
+                          <Menu.Item leftSection={<IconAlertCircle size={14} />} color="red" onClick={() => setReportModalDevice(item)}>Báo hỏng / IT</Menu.Item>
+                        </Menu.Dropdown>
+                      </Menu>
+                    </Table.Td>
+                  </Table.Tr>
+                )))}
+            </Table.Tbody>
+          </Table>
+        </ScrollArea>
 
-          <Status tone="green">
-            <Icon name="check" size={16} /> Đã kiểm kê 2026
-          </Status>
-        </div>
+        <Box p="md">
+          <Group justify="space-between" align="center">
+            <Text fz="sm" c="dimmed">Hiển thị 1 tới {processedRecords.length} của {processedRecords.length} kết quả</Text>
+            <Pagination total={1} value={1} size="sm" radius="sm" color="blue" />
+          </Group>
+        </Box>
+      </Card>
 
-        {/* Devices Table */}
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "16px" }}>
-            <thead>
-              <tr style={{ borderBottom: "2px solid var(--border-soft)", color: "var(--text-sub)", fontSize: "14px" }}>
-                <th style={{ padding: "16px 18px", fontWeight: 800 }}>MÃ THIẾT BỊ</th>
-                <th style={{ padding: "16px 18px", fontWeight: 800 }}>TÊN THIẾT BỊ</th>
-                <th style={{ padding: "16px 18px", fontWeight: 800 }}>LOẠI THIẾT BỊ</th>
-                <th style={{ padding: "16px 18px", fontWeight: 800 }}>NGÀY CẤP</th>
-                <th style={{ padding: "16px 18px", fontWeight: 800 }}>SỐ SERIAL</th>
-                <th style={{ padding: "16px 18px", fontWeight: 800 }}>TRẠNG THÁI</th>
-                <th style={{ padding: "16px 18px", fontWeight: 800, textAlign: "right" }}>THAO TÁC</th>
-              </tr>
-            </thead>
-            <tbody>
-              {devices.map((d) => (
-                <tr key={d.id} style={{ borderBottom: "1px solid var(--border-soft)" }}>
-                  <td style={{ padding: "18px 18px", fontWeight: 900, color: "var(--brand)", fontSize: "16px" }}>
-                    {d.code}
-                  </td>
-                  <td style={{ padding: "18px 18px", color: "var(--text-main)" }}>
-                    <b style={{ fontSize: "17px", fontWeight: 900, color: "var(--text-main)" }}>
-                      {d.name}
-                    </b>
-                  </td>
-                  <td style={{ padding: "18px 18px", fontWeight: 700, color: "var(--text-main)" }}>
-                    {d.category}
-                  </td>
-                  <td style={{ padding: "18px 18px", fontWeight: 800, color: "#1e40af" }}>
-                    {d.issuedDate}
-                  </td>
-                  <td style={{ padding: "18px 18px", fontWeight: 700, fontFamily: "monospace", fontSize: "15px", color: "#475569" }}>
-                    {d.serialNumber}
-                  </td>
-                  <td style={{ padding: "18px 18px" }}>
-                    <Status tone={d.status === "active" ? "green" : "amber"}>
-                      {d.statusText}
-                    </Status>
-                  </td>
-                  <td style={{ padding: "18px 18px", textAlign: "right" }}>
-                    <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
-                      <button
-                        className="secondary"
-                        onClick={() => setSelectedDevice(d)}
-                        style={{ padding: "8px 14px", fontSize: "14px", fontWeight: 800, borderRadius: "10px" }}
-                      >
-                        Chi tiết
-                      </button>
-
-                      <button
-                        className="secondary"
-                        onClick={() => setReportModalDevice(d)}
-                        style={{
-                          padding: "8px 14px",
-                          fontSize: "14px",
-                          fontWeight: 800,
-                          borderRadius: "10px",
-                          color: "#dc2626",
-                          borderColor: "#fca5a5",
-                        }}
-                      >
-                        Báo hỏng / IT
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* DEVICE DETAIL MODAL */}
+      {/* DETAIL MODAL */}
       {selectedDevice && (
-        <div
-          className="modal-overlay"
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(15, 23, 42, 0.6)",
-            backdropFilter: "blur(6px)",
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "20px",
-          }}
-          onClick={() => setSelectedDevice(null)}
+        <Modal
+          opened={!!selectedDevice}
+          onClose={() => setSelectedDevice(null)}
+          title={<Text fw={700} fz="lg">Chi tiết thiết bị</Text>}
+          size="lg"
+          radius="md"
         >
-          <div
-            className="modal-card"
-            style={{
-              background: "white",
-              borderRadius: "28px",
-              padding: "36px",
-              width: "100%",
-              maxWidth: "620px",
-              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                borderBottom: "2px solid var(--border-soft)",
-                paddingBottom: "18px",
-                marginBottom: "24px",
-              }}
-            >
-              <div>
-                <span
-                  style={{
-                    fontSize: "13px",
-                    fontWeight: 900,
-                    color: "var(--brand)",
-                    background: "#eff6ff",
-                    padding: "4px 12px",
-                    borderRadius: "8px",
-                    letterSpacing: "0.5px",
-                  }}
-                >
-                  SỔ TÀI SẢN THIẾT BỊ {selectedDevice.code}
-                </span>
-                <h3 style={{ fontSize: "22px", fontWeight: 900, color: "var(--text-main)", margin: "8px 0 2px 0" }}>
-                  {selectedDevice.name}
-                </h3>
-              </div>
-              <button
-                className="secondary"
-                onClick={() => setSelectedDevice(null)}
-                style={{ padding: "8px", borderRadius: "10px" }}
-              >
-                <Icon name="close" size={20} />
-              </button>
-            </div>
+          <Box mb="md">
+            <Badge color="blue" variant="light" mb="xs">SỔ TÀI SẢN: {selectedDevice.code}</Badge>
+            <Title order={3}>{selectedDevice.name}</Title>
+          </Box>
 
-            {/* Full Name & Specs Card */}
-            <div style={{ background: "#eff6ff", padding: "16px 20px", borderRadius: "14px", border: "1px solid #bfdbfe", marginBottom: "20px" }}>
-              <span style={{ fontSize: "13px", color: "#1e40af", fontWeight: 800, display: "block", marginBottom: "4px", textTransform: "uppercase" }}>
-                Tên đầy đủ & Cấu hình thiết bị
-              </span>
-              <b style={{ fontSize: "17px", color: "#1e3a8a", fontWeight: 900, display: "block" }}>
-                {selectedDevice.fullName}
-              </b>
-            </div>
+          <Card withBorder bg="blue.0" mb="md" p="md" radius="md">
+            <Text fz="xs" fw={700} c="blue.8" tt="uppercase">Tên đầy đủ & cấu hình thiết bị</Text>
+            <Text fz="md" fw={700} c="blue.9">{selectedDevice.fullName}</Text>
+          </Card>
 
-            {/* Grid details */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "20px" }}>
-              <div style={{ background: "#f8fafc", padding: "14px 18px", borderRadius: "14px", border: "1px solid var(--border-soft)" }}>
-                <span style={{ fontSize: "13px", color: "var(--text-sub)", fontWeight: 700, display: "block" }}>Loại thiết bị</span>
-                <b style={{ fontSize: "16px", fontWeight: 800 }}>{selectedDevice.category}</b>
-              </div>
+          <Grid mb="md">
+            <Grid.Col span={6}>
+              <Card withBorder bg="gray.0" radius="md" p="sm">
+                <Text fz="xs" fw={700} c="dimmed">Loại thiết bị</Text>
+                <Text fz="sm" fw={700}>{selectedDevice.category}</Text>
+              </Card>
+            </Grid.Col>
+            <Grid.Col span={6}>
+              <Card withBorder bg="gray.0" radius="md" p="sm">
+                <Text fz="xs" fw={700} c="dimmed">Giá trị tài sản</Text>
+                <Text fz="sm" fw={700} c="green.7">{selectedDevice.value}</Text>
+              </Card>
+            </Grid.Col>
+            <Grid.Col span={6}>
+              <Card withBorder bg="gray.0" radius="md" p="sm">
+                <Text fz="xs" fw={700} c="dimmed">Ngày cấp</Text>
+                <Text fz="sm" fw={700} c="blue.7">{selectedDevice.issuedDate}</Text>
+              </Card>
+            </Grid.Col>
+            <Grid.Col span={6}>
+              <Card withBorder bg="gray.0" radius="md" p="sm">
+                <Text fz="xs" fw={700} c="dimmed">Số Serial Number</Text>
+                <Text fz="sm" fw={700} ff="monospace">{selectedDevice.serialNumber}</Text>
+              </Card>
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Card withBorder bg="gray.0" radius="md" p="sm">
+                <Text fz="xs" fw={700} c="dimmed">Hạn bảo hành</Text>
+                <Text fz="sm" fw={700} c="green.8">{selectedDevice.warrantyUntil}</Text>
+              </Card>
+            </Grid.Col>
+          </Grid>
 
-              <div style={{ background: "#f8fafc", padding: "14px 18px", borderRadius: "14px", border: "1px solid var(--border-soft)" }}>
-                <span style={{ fontSize: "13px", color: "var(--text-sub)", fontWeight: 700, display: "block" }}>Giá trị tài sản</span>
-                <b style={{ fontSize: "16px", fontWeight: 900, color: "#059669" }}>{selectedDevice.value}</b>
-              </div>
+          <Card withBorder bg="gray.0" mb="xl" p="md" radius="md">
+            <Text fz="xs" fw={700} c="dimmed" mb={4} tt="uppercase">TÌNH TRẠNG KHI BÀN GIAO</Text>
+            <Text fz="sm" fw={600} mb="sm">{selectedDevice.condition}</Text>
+            <Box style={{ borderTop: "1px dashed var(--mantine-color-gray-4)", paddingTop: "8px" }}>
+              <Text fz="xs"><Text span fw={700}>Mục đích sử dụng & Ghi chú:</Text> {selectedDevice.notes}</Text>
+            </Box>
+          </Card>
 
-              <div style={{ background: "#f8fafc", padding: "14px 18px", borderRadius: "14px", border: "1px solid var(--border-soft)" }}>
-                <span style={{ fontSize: "13px", color: "var(--text-sub)", fontWeight: 700, display: "block" }}>Ngày cấp bàn giao</span>
-                <b style={{ fontSize: "16px", fontWeight: 800, color: "#1e40af" }}>{selectedDevice.issuedDate}</b>
-              </div>
-
-              <div style={{ background: "#f8fafc", padding: "14px 18px", borderRadius: "14px", border: "1px solid var(--border-soft)" }}>
-                <span style={{ fontSize: "13px", color: "var(--text-sub)", fontWeight: 700, display: "block" }}>Số Serial Number</span>
-                <b style={{ fontSize: "15px", fontWeight: 800, fontFamily: "monospace" }}>{selectedDevice.serialNumber}</b>
-              </div>
-
-              <div style={{ background: "#f8fafc", padding: "14px 18px", borderRadius: "14px", border: "1px solid var(--border-soft)", gridColumn: "span 2" }}>
-                <span style={{ fontSize: "13px", color: "var(--text-sub)", fontWeight: 700, display: "block" }}>Hạn bảo hành</span>
-                <b style={{ fontSize: "16px", fontWeight: 800, color: "#166534" }}>{selectedDevice.warrantyUntil}</b>
-              </div>
-            </div>
-
-            {/* Condition & Notes */}
-            <div style={{ background: "#f8fafc", padding: "16px 20px", borderRadius: "14px", border: "1px solid var(--border-soft)", marginBottom: "24px" }}>
-              <span style={{ fontSize: "13px", color: "var(--text-sub)", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                TÌNH TRẠNG KHI BÀN GIAO & GHI CHÚ
-              </span>
-              <p style={{ fontSize: "15px", color: "var(--text-main)", margin: "0 0 6px 0", fontWeight: 600 }}>
-                {selectedDevice.condition}
-              </p>
-              <small style={{ fontSize: "14px", color: "var(--text-sub)", display: "block", marginTop: "6px", borderTop: "1px dashed var(--border-soft)", paddingTop: "6px" }}>
-                <b>Mục đích sử dụng & Ghi chú:</b> {selectedDevice.notes}
-              </small>
-            </div>
-
-            {/* Actions */}
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
-              <button
-                className="secondary"
-                onClick={() => setSelectedDevice(null)}
-                style={{ padding: "12px 20px", fontSize: "15px", fontWeight: 700, borderRadius: "12px" }}
-              >
-                Đóng
-              </button>
-              <button
-                className="primary"
-                onClick={() => {
-                  setReportModalDevice(selectedDevice);
-                  setSelectedDevice(null);
-                }}
-                style={{ padding: "12px 24px", fontSize: "15px", fontWeight: 900, borderRadius: "12px", background: "#dc2626", borderColor: "#dc2626" }}
-              >
-                Báo hỏng / Cần IT hỗ trợ
-              </button>
-            </div>
-          </div>
-        </div>
+          <Group justify="flex-end">
+            <Button variant="default" onClick={() => setSelectedDevice(null)}>Đóng</Button>
+            <Button color="red" leftSection={<IconAlertCircle size={16} />} onClick={() => {
+              setReportModalDevice(selectedDevice);
+              setSelectedDevice(null);
+            }}>
+              Báo hỏng / Cần IT hỗ trợ
+            </Button>
+          </Group>
+        </Modal>
       )}
 
-      {/* REPORT ISSUE / IT SUPPORT MODAL */}
-      {reportModalDevice && (
-        <div
-          className="modal-overlay"
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(15, 23, 42, 0.6)",
-            backdropFilter: "blur(6px)",
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "20px",
-          }}
-          onClick={() => setReportModalDevice(null)}
-        >
-          <div
-            className="modal-card"
-            style={{
-              background: "white",
-              borderRadius: "28px",
-              padding: "32px",
-              width: "100%",
-              maxWidth: "540px",
-              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                borderBottom: "2px solid var(--border-soft)",
-                paddingBottom: "16px",
-                marginBottom: "20px",
-              }}
-            >
-              <div>
-                <p style={{ fontSize: "13px", fontWeight: 800, color: "#dc2626", letterSpacing: "0.5px" }}>
-                  BÁO SỰ CỐ THIẾT BỊ IT
-                </p>
-                <h3 style={{ fontSize: "22px", fontWeight: 900, color: "var(--text-main)", margin: 0 }}>
-                  Báo hỏng {reportModalDevice.code}
-                </h3>
-              </div>
-              <button
-                className="secondary"
-                onClick={() => setReportModalDevice(null)}
-                style={{ padding: "8px", borderRadius: "10px" }}
-              >
-                <Icon name="close" size={20} />
-              </button>
-            </div>
+      {/* REPORT ISSUE MODAL */}
+      <Modal
+        opened={!!reportModalDevice}
+        onClose={() => setReportModalDevice(null)}
+        title={<Text fw={700} fz="lg" c="red.7">Báo hỏng {reportModalDevice?.code}</Text>}
+        size="md"
+        radius="md"
+      >
+        <form onSubmit={handleReportIssueSubmit}>
+          <Card withBorder bg="red.0" mb="md" p="sm" radius="md" style={{ borderColor: "var(--mantine-color-red-2)" }}>
+            <Text fw={700} c="red.9">{reportModalDevice?.name}</Text>
+            <Text fz="xs" c="red.8">Số Serial: {reportModalDevice?.serialNumber}</Text>
+          </Card>
 
-            <form onSubmit={handleReportIssueSubmit} style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-              <div style={{ background: "#fef2f2", padding: "14px 18px", borderRadius: "14px", border: "1px solid #fecaca" }}>
-                <b style={{ fontSize: "16px", color: "#991b1b", display: "block" }}>{reportModalDevice.name}</b>
-                <small style={{ fontSize: "13px", color: "#b91c1c" }}>Số Serial: {reportModalDevice.serialNumber}</small>
-              </div>
+          <Textarea
+            label={<Text fw={700} fz="sm">Mô tả tình trạng sự cố / hỏng hóc <Text span c="red">*</Text></Text>}
+            placeholder="Ví dụ: Màn hình bị giật sọc, pin chai..."
+            value={reportIssueText}
+            onChange={(e) => setReportIssueText(e.currentTarget.value)}
+            minRows={4}
+            mb="xl"
+          />
 
-              <div>
-                <label style={{ fontSize: "15px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                  Mô tả tình trạng sự cố / hỏng hóc <span style={{ color: "#dc2626" }}>*</span>
-                </label>
-                <textarea
-                  rows={4}
-                  value={reportIssueText}
-                  onChange={(e) => setReportIssueText(e.target.value)}
-                  placeholder="Ví dụ: Màn hình bị giật sọc, pin chai không tích điện, bàn phím kẹt nút..."
-                  style={{
-                    width: "100%",
-                    padding: "14px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "15px",
-                  }}
-                />
-              </div>
+          <Group justify="flex-end">
+            <Button variant="default" onClick={() => setReportModalDevice(null)}>Hủy</Button>
+            <Button type="submit" color="red">Gửi báo hỏng cho IT Helpdesk</Button>
+          </Group>
+        </form>
+      </Modal>
 
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "10px" }}>
-                <button
-                  type="button"
-                  className="secondary"
-                  onClick={() => setReportModalDevice(null)}
-                  style={{ padding: "12px 20px", fontSize: "15px", fontWeight: 700 }}
-                >
-                  Quay lại
-                </button>
-                <button
-                  type="submit"
-                  className="primary"
-                  style={{ padding: "12px 24px", fontSize: "15px", fontWeight: 900, background: "#dc2626", borderColor: "#dc2626" }}
-                >
-                  Gửi báo hỏng cho IT Helpdesk
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* REQUEST NEW MODAL */}
+      <Modal
+        opened={isRequestNewOpen}
+        onClose={() => setIsRequestNewOpen(false)}
+        title={<Text fw={700} fz="lg">Đề xuất bổ sung / Đổi thiết bị</Text>}
+        size="md"
+        radius="md"
+      >
+        <form onSubmit={handleNewRequestSubmit}>
+          <Select
+            label={<Text fw={700} fz="sm" mb={4}>Hình thức đề xuất</Text>}
+            data={[
+              { value: "Thay thế thiết bị hỏng", label: "Thay thế thiết bị hỏng / Cũ" },
+              { value: "Cấp mới phục vụ dự án", label: "Cấp bổ sung thiết bị phục vụ dự án mới" },
+              { value: "Nâng cấp cấu hình", label: "Nâng cấp cấu hình (RAM / SSD)" }
+            ]}
+            value={newRequestType}
+            onChange={(v) => v && setNewRequestType(v)}
+            allowDeselect={false}
+            mb="md"
+          />
 
-      {/* REQUEST NEW / REPLACEMENT DEVICE MODAL */}
-      {isRequestNewOpen && (
-        <div
-          className="modal-overlay"
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(15, 23, 42, 0.6)",
-            backdropFilter: "blur(6px)",
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "20px",
-          }}
-          onClick={() => setIsRequestNewOpen(false)}
-        >
-          <div
-            className="modal-card"
-            style={{
-              background: "white",
-              borderRadius: "28px",
-              padding: "32px",
-              width: "100%",
-              maxWidth: "540px",
-              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                borderBottom: "2px solid var(--border-soft)",
-                paddingBottom: "16px",
-                marginBottom: "20px",
-              }}
-            >
-              <div>
-                <p style={{ fontSize: "13px", fontWeight: 800, color: "var(--text-sub)", letterSpacing: "0.5px" }}>
-                  ĐỀ XUẤT TÀI SẢN
-                </p>
-                <h3 style={{ fontSize: "22px", fontWeight: 900, color: "var(--text-main)", margin: 0 }}>
-                  Đề xuất cấp bổ sung / Đổi mới thiết bị
-                </h3>
-              </div>
-              <button
-                className="secondary"
-                onClick={() => setIsRequestNewOpen(false)}
-                style={{ padding: "8px", borderRadius: "10px" }}
-              >
-                <Icon name="close" size={20} />
-              </button>
-            </div>
+          <Textarea
+            label={<Text fw={700} fz="sm" mb={4}>Lý do đề xuất & Tên thiết bị mong muốn <Text span c="red">*</Text></Text>}
+            placeholder="Ghi rõ lý do nhu cầu công việc và thiết bị cần trang bị..."
+            value={newRequestNote}
+            onChange={(e) => setNewRequestNote(e.currentTarget.value)}
+            minRows={4}
+            mb="xl"
+          />
 
-            <form onSubmit={handleNewRequestSubmit} style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-              <div>
-                <label style={{ fontSize: "15px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                  Hình thức đề xuất
-                </label>
-                <select
-                  value={newRequestType}
-                  onChange={(e) => setNewRequestType(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "12px 14px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "15px",
-                    fontWeight: 700,
-                    background: "white",
-                  }}
-                >
-                  <option value="Thay thế thiết bị hỏng">Thay thế thiết bị hỏng / Cũ</option>
-                  <option value="Cấp mới phục vụ dự án">Cấp bổ sung thiết bị phục vụ dự án mới</option>
-                  <option value="Nâng cấp cấu hình">Nâng cấp cấu hình (RAM / SSD)</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{ fontSize: "15px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                  Lý do đề xuất & Tên thiết bị mong muốn <span style={{ color: "#dc2626" }}>*</span>
-                </label>
-                <textarea
-                  rows={4}
-                  value={newRequestNote}
-                  onChange={(e) => setNewRequestNote(e.target.value)}
-                  placeholder="Ghi rõ lý do nhu cầu công việc và thiết bị cần trang bị..."
-                  style={{
-                    width: "100%",
-                    padding: "14px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "15px",
-                  }}
-                />
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "10px" }}>
-                <button
-                  type="button"
-                  className="secondary"
-                  onClick={() => setIsRequestNewOpen(false)}
-                  style={{ padding: "12px 20px", fontSize: "15px", fontWeight: 700 }}
-                >
-                  Hủy
-                </button>
-                <button
-                  type="submit"
-                  className="primary"
-                  style={{ padding: "12px 24px", fontSize: "15px", fontWeight: 900 }}
-                >
-                  <Icon name="check" size={18} /> Gửi đề xuất tới HR & IT
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+          <Group justify="flex-end">
+            <Button variant="default" onClick={() => setIsRequestNewOpen(false)}>Hủy</Button>
+            <Button type="submit" color="blue" leftSection={<IconCheck size={16} />}>Gửi đề xuất tới HR & IT</Button>
+          </Group>
+        </form>
+      </Modal>
+    </Box>
   );
 }

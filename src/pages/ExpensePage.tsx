@@ -1,5 +1,15 @@
 import React, { useState } from "react";
-import { Icon, Status } from "../components/UI";
+import { StatusBadge, Icon } from "../components/UI";
+import {
+  Box, Stack, Group, Text, Title, Card, Grid,
+  Select, TextInput, Textarea, Button, Table, Badge, Modal, ScrollArea,
+  Menu, ActionIcon, Pagination, Breadcrumbs, Anchor, Tooltip
+} from "@mantine/core";
+import {
+  IconPlus, IconDotsVertical, IconTrash, IconCheck, IconEdit,
+  IconChevronUp, IconChevronDown, IconPaperclip, IconSearch, IconX,
+  IconFileUpload, IconEye, IconSelector
+} from "@tabler/icons-react";
 
 export interface ExpenseRecord {
   id: string;
@@ -16,7 +26,7 @@ export interface ExpenseRecord {
 
 const INITIAL_EXPENSE_RECORDS: ExpenseRecord[] = [
   {
-    id: "#BH-2026-0922",
+    id: "#CP-2026-0922",
     category: "Phần mềm & công cụ",
     title: "Figma Professional · Tháng 9/2026",
     amount: 1850000,
@@ -24,11 +34,11 @@ const INITIAL_EXPENSE_RECORDS: ExpenseRecord[] = [
     department: "Product & Design Team",
     description: "Gói bản quyền hàng tháng cho 3 nhân sự UI/UX Designer.",
     status: "pending",
-    statusText: "Chờ Team Lead duyệt",
+    statusText: "Chờ duyệt",
     attachment: "Invoice_Figma_Sep2026.pdf",
   },
   {
-    id: "#BH-2026-0910",
+    id: "#CP-2026-0910",
     category: "Chứng chỉ chuyên môn",
     title: "Google UX Design Certificate",
     amount: 1420000,
@@ -40,7 +50,7 @@ const INITIAL_EXPENSE_RECORDS: ExpenseRecord[] = [
     attachment: "Coursera_Receipt_GoogleUX.pdf",
   },
   {
-    id: "#BH-2026-0904",
+    id: "#CP-2026-0904",
     category: "Team bonding",
     title: "Bữa trưa gắn kết Product Team",
     amount: 1200000,
@@ -48,11 +58,11 @@ const INITIAL_EXPENSE_RECORDS: ExpenseRecord[] = [
     department: "Product & Design Team",
     description: "Tiệc gắn kết nội bộ hàng tháng theo ngân sách phòng ban.",
     status: "hr_review",
-    statusText: "HR / Kế toán xử lý",
+    statusText: "Đang xử lý",
     attachment: "HoaDon_Manwah_0409.jpg",
   },
   {
-    id: "#BH-2026-0901",
+    id: "#CP-2026-0901",
     category: "Thiết bị làm việc",
     title: "Bàn phím không dây Bluetooth Keychron K2",
     amount: 350000,
@@ -61,76 +71,72 @@ const INITIAL_EXPENSE_RECORDS: ExpenseRecord[] = [
     description: "Hỗ trợ 50% chi phí thiết bị ngoại vi cá nhân theo chính sách.",
     status: "paid",
     statusText: "Đã thanh toán",
+    attachment: "Receipt_Keychron_Store.pdf",
   },
 ];
 
 export default function ExpensePage({ open }: { open?: () => void }) {
-  // Sub-tabs: "form" comes first, "history" is second (at the end)
-  const [activeTab, setActiveTab] = useState<"form" | "history">("form");
   const [records, setRecords] = useState<ExpenseRecord[]>(INITIAL_EXPENSE_RECORDS);
 
-  // Form States
+  // Modals
+  const [addModalOpened, setAddModalOpened] = useState(false);
+  const [viewDetailRecord, setViewDetailRecord] = useState<ExpenseRecord | null>(null);
+  const [cancelModalRecord, setCancelModalRecord] = useState<ExpenseRecord | null>(null);
+
+  // Add Form States
   const [category, setCategory] = useState("Phần mềm & công cụ");
   const [title, setTitle] = useState("");
-  const [amount, setAmount] = useState<string>("");
-  const [date, setDate] = useState("2026-09-25");
+  const [amount, setAmount] = useState("");
+  const [date, setDate] = useState("");
   const [department, setDepartment] = useState("Product & Design Team");
   const [description, setDescription] = useState("");
-  const [attachment, setAttachment] = useState("");
+  const [attachmentName, setAttachmentName] = useState("");
 
-  // History Filter States
-  const [filterStartDate, setFilterStartDate] = useState("2026-09-01");
-  const [filterEndDate, setFilterEndDate] = useState("2026-09-30");
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+  // Filters & Sort States
+  const [search, setSearch] = useState("");
+  const [filterCategory, setFilterCategory] = useState<string | null>("all");
+  const [filterStatus, setFilterStatus] = useState<string | null>("all");
+  const [sortConfig, setSortConfig] = useState<{ key: keyof ExpenseRecord | null; direction: "asc" | "desc" }>({ key: null, direction: "asc" });
 
-  // Modal Cancel State
-  const [cancelModalRecord, setCancelModalRecord] = useState<ExpenseRecord | null>(null);
-  const [cancelReason, setCancelReason] = useState("");
-
-  // Format currency helper
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(val);
   };
 
-  // Submit Expense Form
-  const handleSubmitForm = (e: React.FormEvent) => {
+  const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
-      alert("Vui lòng nhập tên khoản chi / nội dung bồi hoàn.");
+      alert("Vui lòng nhập tên khoản chi.");
       return;
     }
-    const numAmount = Number(amount);
-    if (!numAmount || numAmount <= 0) {
-      alert("Vui lòng nhập số tiền hợp lệ lớn hơn 0.");
+    const num = Number(amount.replace(/[^0-9]/g, ""));
+    if (!num || num <= 0) {
+      alert("Vui lòng nhập số tiền hợp lệ.");
       return;
     }
 
-    const dateFormatted = date.split("-").reverse().join("/");
-
+    const formattedDate = date ? date.split("-").reverse().join("/") : "Hôm nay";
     const newRecord: ExpenseRecord = {
-      id: `#BH-2026-09${Math.floor(Math.random() * 90 + 10)}`,
+      id: `#CP-2026-10${Math.floor(Math.random() * 90 + 10)}`,
       category,
       title,
-      amount: numAmount,
-      date: dateFormatted,
+      amount: num,
+      date: formattedDate,
       department,
       description: description || title,
       status: "pending",
-      statusText: "Chờ Team Lead duyệt",
-      attachment: attachment ? attachment : undefined,
+      statusText: "Chờ duyệt",
+      attachment: attachmentName || "ChungTu_DinhKem.pdf",
     };
 
     setRecords([newRecord, ...records]);
-    alert("Đã gửi phiếu đề nghị bồi hoàn chi phí thành công! Phiếu đang chờ Team Lead duyệt.");
+    setAddModalOpened(false);
     setTitle("");
     setAmount("");
     setDescription("");
-    setAttachment("");
-    setActiveTab("history");
+    setDate("");
+    setAttachmentName("");
   };
 
-  // Confirm Cancel Expense
   const handleConfirmCancel = () => {
     if (!cancelModalRecord) return;
     setRecords((prev) =>
@@ -140,525 +146,455 @@ export default function ExpensePage({ open }: { open?: () => void }) {
           : r
       )
     );
-    alert(`Đã hủy phiếu bồi hoàn chi phí ${cancelModalRecord.id} thành công.`);
     setCancelModalRecord(null);
-    setCancelReason("");
   };
 
-  // Date timestamp parser
-  const getRecordTimestamp = (dateStr: string) => {
-    const parts = dateStr.split("/");
-    if (parts.length === 3) {
-      return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`).getTime();
-    }
-    return 0;
+  const handleDeleteRecord = (id: string) => {
+    setRecords((prev) => prev.filter((r) => r.id !== id));
   };
 
-  // Filtered History Records
-  const filteredRecords = records
-    .filter((r) => {
-      // Filter status
-      if (filterStatus !== "all" && r.status !== filterStatus) return false;
-      // Filter date range
-      const parts = r.date.split("/");
-      if (parts.length === 3) {
-        const recIso = `${parts[2]}-${parts[1].padStart(2, "0")}-${parts[0].padStart(2, "0")}`;
-        if (filterStartDate && recIso < filterStartDate) return false;
-        if (filterEndDate && recIso > filterEndDate) return false;
-      }
-      return true;
-    })
-    .sort((a, b) => {
-      const timeA = getRecordTimestamp(a.date);
-      const timeB = getRecordTimestamp(b.date);
-      return sortOrder === "newest" ? timeB - timeA : timeA - timeB;
+  const handleSort = (key: keyof ExpenseRecord) => {
+    let direction: "asc" | "desc" = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") direction = "desc";
+    setSortConfig({ key, direction });
+  };
+
+  const Th = ({ children, columnKey }: { children: React.ReactNode; columnKey: keyof ExpenseRecord }) => {
+    const isSorted = sortConfig.key === columnKey;
+    const isAsc = isSorted && sortConfig.direction === "asc";
+    const isDesc = isSorted && sortConfig.direction === "desc";
+    return (
+      <Table.Th>
+        <Group justify="space-between" align="center" style={{ cursor: "pointer" }} onClick={() => handleSort(columnKey)} wrap="nowrap">
+          <Text fw={600} fz="sm">{children}</Text>
+          <Group gap={0}>
+            {isAsc ? <IconChevronUp size={14} color="var(--mantine-color-blue-6)" /> : isDesc ? <IconChevronDown size={14} color="var(--mantine-color-blue-6)" /> : <IconSelector size={14} color="gray" opacity={0.5} />}
+          </Group>
+        </Group>
+      </Table.Th>
+    );
+  };
+
+
+  // Filtered records
+  let processedRecords = records.filter((r) => {
+    const matchSearch =
+      r.id.toLowerCase().includes(search.toLowerCase()) ||
+      r.title.toLowerCase().includes(search.toLowerCase()) ||
+      r.description.toLowerCase().includes(search.toLowerCase()) ||
+      r.date.includes(search);
+    const matchCategory = filterCategory === "all" || !filterCategory || r.category === filterCategory;
+    const matchStatus = filterStatus === "all" || !filterStatus || r.status === filterStatus;
+    return matchSearch && matchCategory && matchStatus;
+  });
+
+  if (sortConfig.key) {
+    processedRecords.sort((a, b) => {
+      const aV = a[sortConfig.key!] ?? "";
+      const bV = b[sortConfig.key!] ?? "";
+      if (aV < bV) return sortConfig.direction === "asc" ? -1 : 1;
+      if (aV > bV) return sortConfig.direction === "asc" ? 1 : -1;
+      return 0;
     });
+  }
 
-  // Total amount summary
-  const totalAmountSubmitted = records.reduce((acc, cur) => acc + (cur.status !== "cancelled" ? cur.amount : 0), 0);
+  // Summary Metrics
+  const totalAmount = records.filter(r => r.status !== "cancelled").reduce((acc, c) => acc + c.amount, 0);
+  const paidAmount = records.filter(r => r.status === "paid").reduce((acc, c) => acc + c.amount, 0);
+  const pendingAmount = records.filter(r => r.status === "pending" || r.status === "hr_review").reduce((acc, c) => acc + c.amount, 0);
+  const remainingBudget = 20000000 - totalAmount;
+
+  const categories = Array.from(new Set(records.map(r => r.category)));
 
   return (
-    <div className="page inner-page">
-      {/* PAGE HEADER - LARGER FONTS */}
-      <div className="page-heading" style={{ marginBottom: "28px" }}>
-        <div>
-          <p style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-sub)", letterSpacing: "0.8px" }}>
-            CHI PHÍ CÔNG VIỆC
-          </p>
-          <h1 style={{ fontSize: "32px", fontWeight: 900, color: "var(--text-main)", margin: "4px 0" }}>
-            Bồi hoàn chi phí
-          </h1>
-          <span style={{ fontSize: "16px", color: "var(--text-sub)", fontWeight: 500 }}>
-            Theo dõi hóa đơn chứng từ, luồng phê duyệt và trạng thái thanh toán khoản chi.
-          </span>
-        </div>
-      </div>
-
-      {/* SUB-TABS NAVIGATION BAR: TẠO PHIẾU FIRST, LỊCH SỬ BỒI HOÀN AT THE END */}
-      <div className="approval-tabs mb-6">
-        <button
-          onClick={() => setActiveTab("form")}
-          className={activeTab === "form" ? "active" : ""}
+    <Box>
+      {/* Header */}
+      <Group justify="space-between" align="center" mb="xl">
+        <Box>
+          <Title order={2} fw={600} mb={4}>Chi phí</Title>
+          <Breadcrumbs separator="/" fz="sm">
+            <Anchor href="#" c="dimmed">Tổng quan</Anchor>
+            <Text c="dimmed">Bồi hoàn chi phí</Text>
+          </Breadcrumbs>
+        </Box>
+        <Button
+          color="blue"
+          radius="xl"
+          leftSection={<IconPlus size={16} />}
+          onClick={() => setAddModalOpened(true)}
         >
-          Tạo phiếu bồi hoàn
-        </button>
+          Tạo yêu cầu chi phí
+        </Button>
+      </Group>
 
-        <button
-          onClick={() => setActiveTab("history")}
-          className={activeTab === "history" ? "active" : ""}
-        >
-          Lịch sử bồi hoàn
-        </button>
-      </div>
+      {/* Summary Cards */}
+      <Grid mb="xl">
+        {[
+          { label: "Tổng chi phí tháng 9", value: formatCurrency(totalAmount) },
+          { label: "Đã thanh toán", value: formatCurrency(paidAmount) },
+          { label: "Chờ duyệt & Xử lý", value: formatCurrency(pendingAmount) },
+          { label: "Hạn mức còn lại", value: formatCurrency(remainingBudget > 0 ? remainingBudget : 0) },
+        ].map((item, index) => (
+          <Grid.Col span={{ base: 12, sm: 6, md: 3 }} key={index}>
+            <Card withBorder radius="lg" padding="lg" ta="center">
+              <Text fw={700} fz="sm" c="dimmed" tt="uppercase" style={{ letterSpacing: "0.5px" }}>{item.label}</Text>
+              <Text fw={700} fz={22} mt="xs" c="dark.9">{item.value}</Text>
+            </Card>
+          </Grid.Col>
+        ))}
+      </Grid>
 
-      {/* SUB-TAB 1: TẠO PHIẾU BỒI HOÀN */}
-      {activeTab === "form" && (
-        <section className="panel" style={{ padding: "32px", width: "100%" }}>
-          <div style={{ marginBottom: "26px" }}>
-            <p style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-sub)", letterSpacing: "0.5px" }}>
-              PHIẾU ĐỀ NGHỊ MỚI
-            </p>
-            <h2 style={{ fontSize: "26px", fontWeight: 900, color: "var(--text-main)", margin: "4px 0" }}>
-              Tạo phiếu đề nghị bồi hoàn chi phí
-            </h2>
-            <p style={{ fontSize: "16px", color: "var(--text-sub)", marginTop: "4px" }}>
-              Điền thông tin khoản chi công việc và đính kèm hóa đơn chứng từ hợp lệ.
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmitForm} style={{ display: "flex", flexDirection: "column", gap: "26px" }}>
-            {/* Row 1: Danh mục & Tên khoản chi */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "24px" }}>
-              <div>
-                <label style={{ fontSize: "16px", fontWeight: 800, display: "block", marginBottom: "10px" }}>
-                  Danh mục chi phí <span style={{ color: "#dc2626" }}>*</span>
-                </label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "14px 16px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "16px",
-                    fontWeight: 700,
-                    background: "white",
-                  }}
-                >
-                  <option value="Phần mềm & công cụ">Phần mềm & công cụ (Figma, ChatGPT, GitHub...)</option>
-                  <option value="Chứng chỉ chuyên môn">Học tập & Chứng chỉ chuyên môn</option>
-                  <option value="Team bonding">Tiếp khách & Team bonding</option>
-                  <option value="Thiết bị làm việc">Thiết bị & Đồ dùng làm việc</option>
-                  <option value="Công tác phí">Công tác phí & Di chuyển</option>
-                  <option value="Chi phí khác">Chi phí phát sinh khác</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{ fontSize: "16px", fontWeight: 800, display: "block", marginBottom: "10px" }}>
-                  Tên khoản chi / Nội dung bồi hoàn <span style={{ color: "#dc2626" }}>*</span>
-                </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Ví dụ: Bản quyền Figma Professional tháng 9/2026..."
-                  style={{
-                    width: "100%",
-                    padding: "14px 16px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "16px",
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Row 2: Số tiền, Ngày phát sinh & Phong ban */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "24px" }}>
-              <div>
-                <label style={{ fontSize: "16px", fontWeight: 800, display: "block", marginBottom: "10px" }}>
-                  Số tiền đề nghị (VNĐ) <span style={{ color: "#dc2626" }}>*</span>
-                </label>
-                <input
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="1850000"
-                  style={{
-                    width: "100%",
-                    padding: "14px 16px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "16px",
-                    fontWeight: 800,
-                    color: "var(--brand)",
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ fontSize: "16px", fontWeight: 800, display: "block", marginBottom: "10px" }}>
-                  Ngày phát sinh chi phí <span style={{ color: "#dc2626" }}>*</span>
-                </label>
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "14px 16px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "16px",
-                    fontWeight: 700,
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ fontSize: "16px", fontWeight: 800, display: "block", marginBottom: "10px" }}>
-                  Bộ phận / Phòng ban chịu chi phí
-                </label>
-                <select
-                  value={department}
-                  onChange={(e) => setDepartment(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "14px 16px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "16px",
-                    fontWeight: 700,
-                    background: "white",
-                  }}
-                >
-                  <option value="Product & Design Team">Product & Design Team</option>
-                  <option value="Engineering Team">Engineering Team</option>
-                  <option value="Marketing & Business">Marketing & Business</option>
-                  <option value="Vận hành & Nhân sự">Vận hành & HR</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Row 3: Description */}
-            <div>
-              <label style={{ fontSize: "16px", fontWeight: 800, display: "block", marginBottom: "10px" }}>
-                Mô tả chi tiết & Ghi chú mục đích sử dụng
-              </label>
-              <textarea
-                rows={3}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Ghi rõ thông tin chi tiết mục đích phục vụ công việc..."
-                style={{
-                  width: "100%",
-                  padding: "14px 16px",
-                  borderRadius: "12px",
-                  border: "1px solid var(--border-soft)",
-                  fontSize: "16px",
-                }}
+      {/* Table Section */}
+      <Card withBorder radius="lg" p={0} shadow="sm">
+        {/* Bộ lọc trên bảng */}
+        <Box p="md" style={{ borderBottom: "1px solid var(--mantine-color-gray-2)" }}>
+          <Group justify="space-between" wrap="wrap" gap="sm">
+            <Group gap="xs" wrap="wrap">
+              <TextInput
+                placeholder="Tìm theo nội dung, mã yêu cầu..."
+                leftSection={<IconSearch size={15} />}
+                size="xs"
+                w={220}
+                value={search}
+                onChange={(e) => setSearch(e.currentTarget.value)}
               />
-            </div>
-
-            {/* Row 4: Attachment Link */}
-            <div>
-              <label style={{ fontSize: "16px", fontWeight: 800, display: "block", marginBottom: "10px" }}>
-                Đính kèm Link hóa đơn VAT / Chứng từ biên lai <span style={{ color: "#dc2626" }}>*</span>
-              </label>
-              <input
-                type="text"
-                value={attachment}
-                onChange={(e) => setAttachment(e.target.value)}
-                placeholder="Link Google Drive, Dropbox hoặc ảnh biên lai hóa đơn chuyển khoản"
-                style={{
-                  width: "100%",
-                  padding: "14px 16px",
-                  borderRadius: "12px",
-                  border: "1px solid var(--border-soft)",
-                  fontSize: "16px",
-                }}
+              <Select
+                placeholder="Danh mục"
+                size="xs"
+                w={160}
+                data={[
+                  { value: "all", label: "Tất cả danh mục" },
+                  ...categories.map(c => ({ value: c, label: c }))
+                ]}
+                value={filterCategory}
+                onChange={setFilterCategory}
+                allowDeselect={false}
               />
-            </div>
+              <Select
+                placeholder="Trạng thái"
+                size="xs"
+                w={140}
+                data={[
+                  { value: "all", label: "Tất cả trạng thái" },
+                  { value: "pending", label: "Chờ duyệt" },
+                  { value: "hr_review", label: "Đang xử lý" },
+                  { value: "paid", label: "Đã thanh toán" },
+                  { value: "cancelled", label: "Đã hủy" },
+                ]}
+                value={filterStatus}
+                onChange={setFilterStatus}
+                allowDeselect={false}
+              />
+            </Group>
+          </Group>
+        </Box>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "12px" }}>
-              <button
-                className="primary"
-                type="submit"
-                style={{ padding: "16px 36px", fontSize: "17px", fontWeight: 900 }}
-              >
-                <Icon name="check" size={22} /> Gửi phiếu đề nghị bồi hoàn
-              </button>
-            </div>
-          </form>
-        </section>
-      )}
-
-      {/* SUB-TAB 2: LỊCH SỬ BỒI HOÀN (AT THE END) */}
-      {activeTab === "history" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "26px" }}>
-          {/* Filter Panel */}
-          <section className="panel" style={{ padding: "28px", width: "100%" }}>
-            <div style={{ marginBottom: "20px" }}>
-              <p style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-sub)", letterSpacing: "0.5px" }}>
-                BỘ LỌC TRA CỨU
-              </p>
-              <h2 style={{ fontSize: "24px", fontWeight: 900, color: "var(--text-main)", margin: "4px 0" }}>
-                Tra cứu lịch sử bồi hoàn chi phí
-              </h2>
-            </div>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                gap: "20px",
-                alignItems: "end",
-              }}
-            >
-              <div>
-                <label style={{ fontSize: "15px", fontWeight: 800, display: "block", marginBottom: "8px" }}>
-                  Từ ngày
-                </label>
-                <input
-                  type="date"
-                  value={filterStartDate}
-                  onChange={(e) => setFilterStartDate(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "13px 15px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "16px",
-                    fontWeight: 700,
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ fontSize: "15px", fontWeight: 800, display: "block", marginBottom: "8px" }}>
-                  Đến ngày
-                </label>
-                <input
-                  type="date"
-                  value={filterEndDate}
-                  onChange={(e) => setFilterEndDate(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "13px 15px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "16px",
-                    fontWeight: 700,
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ fontSize: "15px", fontWeight: 800, display: "block", marginBottom: "8px" }}>
-                  Trạng thái duyệt
-                </label>
-                <select
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "13px 15px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "16px",
-                    fontWeight: 800,
-                    background: "white",
-                  }}
-                >
-                  <option value="all">Tất cả trạng thái</option>
-                  <option value="pending">Chờ Team Lead duyệt</option>
-                  <option value="hr_review">HR / Kế toán xử lý</option>
-                  <option value="paid">Đã thanh toán</option>
-                  <option value="cancelled">Đã hủy</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{ fontSize: "15px", fontWeight: 800, display: "block", marginBottom: "8px" }}>
-                  Sắp xếp thời gian
-                </label>
-                <select
-                  value={sortOrder}
-                  onChange={(e) => setSortOrder(e.target.value as "newest" | "oldest")}
-                  style={{
-                    width: "100%",
-                    padding: "13px 15px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "16px",
-                    fontWeight: 800,
-                    background: "white",
-                  }}
-                >
-                  <option value="newest">Gần nhất (Mới nhất)</option>
-                  <option value="oldest">Xa nhất (Cũ nhất)</option>
-                </select>
-              </div>
-            </div>
-          </section>
-
-          {/* History Table */}
-          <section className="panel" style={{ padding: "28px", width: "100%" }}>
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "16px" }}>
-                <thead>
-                  <tr style={{ borderBottom: "2px solid var(--border-soft)", color: "var(--text-sub)", fontSize: "15px" }}>
-                    <th style={{ padding: "16px 18px", fontWeight: 800 }}>MÃ PHIẾU</th>
-                    <th style={{ padding: "16px 18px", fontWeight: 800 }}>DANH MỤC</th>
-                    <th style={{ padding: "16px 18px", fontWeight: 800 }}>NỘI DUNG CHI</th>
-                    <th style={{ padding: "16px 18px", fontWeight: 800 }}>SỐ TIỀN (VNĐ)</th>
-                    <th style={{ padding: "16px 18px", fontWeight: 800 }}>NGÀY PHÁT SINH</th>
-                    <th style={{ padding: "16px 18px", fontWeight: 800 }}>TRẠNG THÁI</th>
-                    <th style={{ padding: "16px 18px", fontWeight: 800, textAlign: "right" }}>THAO TÁC</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredRecords.map((r) => (
-                    <tr key={r.id} style={{ borderBottom: "1px solid var(--border-soft)" }}>
-                      <td style={{ padding: "18px 18px", fontWeight: 900, color: "var(--brand)", fontSize: "17px" }}>{r.id}</td>
-                      <td style={{ padding: "18px 18px", fontWeight: 700, color: "var(--text-main)" }}>
-                        {r.category}
-                      </td>
-                      <td style={{ padding: "18px 18px", color: "var(--text-main)" }}>
-                        <b style={{ fontSize: "16px", display: "block" }}>{r.title}</b>
-                        <small style={{ color: "var(--text-sub)", fontSize: "14px" }}>
-                          Phòng ban: {r.department}
-                        </small>
-                      </td>
-                      <td style={{ padding: "18px 18px", fontWeight: 900, color: "#166534", fontSize: "17px" }}>
-                        {formatCurrency(r.amount)}
-                      </td>
-                      <td style={{ padding: "18px 18px", fontWeight: 700, color: "#1e40af" }}>
-                        {r.date}
-                      </td>
-                      <td style={{ padding: "18px 18px" }}>
-                        <Status
-                          tone={
-                            r.status === "paid"
-                              ? "green"
-                              : r.status === "hr_review"
-                              ? "blue"
-                              : r.status === "pending"
-                              ? "amber"
-                              : "gray"
-                          }
+        <ScrollArea>
+          <Table verticalSpacing="md" horizontalSpacing="md" striped highlightOnHover>
+            <Table.Thead>
+              <Table.Tr bg="gray.0">
+                <Th columnKey="id">Mã yêu cầu</Th>
+                <Th columnKey="category">Danh mục</Th>
+                <Th columnKey="title">Nội dung chi phí</Th>
+                <Th columnKey="amount">Số tiền</Th>
+                <Th columnKey="date">Ngày chi</Th>
+                <Th columnKey="attachment">Chứng từ</Th>
+                <Th columnKey="statusText">Trạng thái</Th>
+                {/* Cột cuối không có tiêu đề, đúng format chuẩn */}
+                <Table.Th fw={600} fz="sm" ta="right"></Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {processedRecords.length === 0 ? (
+                <Table.Tr>
+                  <Table.Td colSpan={8} ta="center" py="xl">
+                    <Text c="dimmed">Không tìm thấy yêu cầu chi phí nào phù hợp</Text>
+                  </Table.Td>
+                </Table.Tr>
+              ) : (
+                processedRecords.map((r) => (
+                  <Table.Tr key={r.id}>
+                    <Table.Td>
+                      <Tooltip label="Nhấn để xem chi tiết" withArrow position="top-start">
+                        <Anchor
+                          component="button"
+                          type="button"
+                          fw={700}
+                          c="dark"
+                          fz="sm"
+                          onClick={() => setViewDetailRecord(r)}
+                          style={{ textDecoration: "none", cursor: "pointer" }}
                         >
-                          {r.statusText}
-                        </Status>
-                      </td>
-                      <td style={{ padding: "18px 18px", textAlign: "right" }}>
-                        {(r.status === "pending" || r.status === "hr_review") && (
-                          <button
-                            className="secondary"
-                            onClick={() => setCancelModalRecord(r)}
-                            style={{
-                              color: "#dc2626",
-                              borderColor: "#fca5a5",
-                              fontSize: "14px",
-                              fontWeight: 800,
-                              padding: "8px 16px",
-                            }}
+                          {r.id}
+                        </Anchor>
+                      </Tooltip>
+                    </Table.Td>
+                    <Table.Td>
+                      <Badge color="gray" variant="light" size="sm">
+                        {r.category}
+                      </Badge>
+                    </Table.Td>
+                    <Table.Td>
+                      <Text fw={600} fz="sm">{r.title}</Text>
+                      <Text fz="xs" c="dimmed" lineClamp={1}>{r.description}</Text>
+                    </Table.Td>
+                    <Table.Td fw={700} c="dark.9">
+                      {formatCurrency(r.amount)}
+                    </Table.Td>
+                    <Table.Td>{r.date}</Table.Td>
+                    <Table.Td>
+                      {r.attachment ? (
+                        <Badge
+                          color="blue"
+                          variant="light"
+                          size="sm"
+                          leftSection={<IconPaperclip size={11} />}
+                          style={{ cursor: "pointer" }}
+                          onClick={() => setViewDetailRecord(r)}
+                        >
+                          {r.attachment}
+                        </Badge>
+                      ) : (
+                        <Text fz="xs" c="dimmed">—</Text>
+                      )}
+                    </Table.Td>
+                    <Table.Td>{<StatusBadge status={r.status} statusText={r.statusText} />}</Table.Td>
+                    <Table.Td ta="right">
+                      <Menu position="bottom-end" shadow="sm">
+                        <Menu.Target>
+                          <ActionIcon variant="subtle" color="gray">
+                            <IconDotsVertical size={16} />
+                          </ActionIcon>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                          <Menu.Item
+                            leftSection={<IconEye size={14} />}
+                            onClick={() => setViewDetailRecord(r)}
                           >
-                            Hủy phiếu
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        </div>
-      )}
+                            Xem chi tiết
+                          </Menu.Item>
+                          {r.status === "pending" && (
+                            <Menu.Item
+                              leftSection={<IconX size={14} />}
+                              color="orange"
+                              onClick={() => setCancelModalRecord(r)}
+                            >
+                              Hủy yêu cầu
+                            </Menu.Item>
+                          )}
+                          <Menu.Item
+                            leftSection={<IconTrash size={14} />}
+                            color="red"
+                            onClick={() => handleDeleteRecord(r.id)}
+                          >
+                            Xóa
+                          </Menu.Item>
+                        </Menu.Dropdown>
+                      </Menu>
+                    </Table.Td>
+                  </Table.Tr>
+                ))
+              )}
+            </Table.Tbody>
+          </Table>
+        </ScrollArea>
 
-      {/* CANCEL MODAL */}
-      {cancelModalRecord && (
-        <div
-          className="modal-overlay"
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(15, 23, 42, 0.55)",
-            backdropFilter: "blur(6px)",
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "20px",
-          }}
-          onClick={() => setCancelModalRecord(null)}
-        >
-          <div
-            className="modal-card"
-            style={{
-              background: "white",
-              borderRadius: "22px",
-              padding: "32px",
-              width: "100%",
-              maxWidth: "520px",
-              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ fontSize: "22px", fontWeight: 900, color: "#dc2626", marginBottom: "12px" }}>
-              Xác nhận Hủy phiếu bồi hoàn {cancelModalRecord.id}?
-            </h3>
-            <p style={{ fontSize: "16px", color: "var(--text-sub)", marginBottom: "20px" }}>
-              Bạn đang yêu cầu hủy phiếu đề nghị bồi hoàn khoản chi <b>{cancelModalRecord.title}</b> ({formatCurrency(cancelModalRecord.amount)}).
-            </p>
+        <Box p="md" style={{ borderTop: "1px solid var(--mantine-color-gray-2)" }}>
+          <Group justify="space-between">
+            <Text fz="sm" c="dimmed">
+              Hiển thị 1 đến {processedRecords.length} của {records.length} kết quả
+            </Text>
+            <Pagination total={1} value={1} size="sm" color="blue" />
+          </Group>
+        </Box>
+      </Card>
 
-            <div style={{ marginBottom: "24px" }}>
-              <label style={{ fontSize: "15px", fontWeight: 800, display: "block", marginBottom: "8px" }}>
-                Lý do hủy phiếu
-              </label>
-              <textarea
-                rows={3}
-                value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
-                placeholder="Nhập lý do hủy phiếu bồi hoàn..."
-                style={{
-                  width: "100%",
-                  padding: "14px",
-                  borderRadius: "12px",
-                  border: "1px solid var(--border-soft)",
-                  fontSize: "15px",
-                }}
+      {/* Modal Tạo Yêu Cầu Chi Phí */}
+      <Modal
+        opened={addModalOpened}
+        onClose={() => setAddModalOpened(false)}
+        title={<Text fw={600} fz="lg">Tạo yêu cầu chi phí</Text>}
+        size="lg"
+        radius="md"
+      >
+        <form onSubmit={handleAddSubmit}>
+          <Grid>
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Select
+                label="Danh mục chi phí"
+                withAsterisk
+                data={[
+                  "Phần mềm & công cụ",
+                  "Chứng chỉ chuyên môn",
+                  "Team bonding",
+                  "Thiết bị làm việc",
+                  "Công tác phí",
+                  "Chi phí khác"
+                ]}
+                value={category}
+                onChange={(v) => v && setCategory(v)}
+                allowDeselect={false}
               />
-            </div>
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <TextInput
+                label="Phòng ban / Dự án"
+                value={department}
+                onChange={(e) => setDepartment(e.currentTarget.value)}
+              />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <TextInput
+                label="Nội dung khoản chi"
+                withAsterisk
+                placeholder="VD: Bản quyền phần mềm Figma tháng 9/2026..."
+                value={title}
+                onChange={(e) => setTitle(e.currentTarget.value)}
+              />
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <TextInput
+                label="Số tiền (VND)"
+                withAsterisk
+                placeholder="VD: 1,850,000"
+                value={amount}
+                onChange={(e) => setAmount(e.currentTarget.value)}
+              />
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <TextInput
+                type="date"
+                label="Ngày chi"
+                withAsterisk
+                value={date}
+                onChange={(e) => setDate(e.currentTarget.value)}
+              />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Textarea
+                label="Mục đích & Lý do chi tiết"
+                minRows={3}
+                placeholder="Mô tả cụ thể mục đích sử dụng khoản chi cho công việc..."
+                value={description}
+                onChange={(e) => setDescription(e.currentTarget.value)}
+              />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Text fw={500} fz="sm" mb={4}>Hóa đơn / Chứng từ bồi hoàn</Text>
+              <Card
+                withBorder
+                style={{ borderStyle: "dashed", cursor: "pointer" }}
+                p="md"
+                ta="center"
+                bg="gray.0"
+                onClick={() => setAttachmentName("HoaDon_DienTu_ChungTu.pdf")}
+              >
+                <IconFileUpload size={24} color="gray" style={{ margin: "0 auto", marginBottom: 4 }} />
+                <Text fz="sm" c="dimmed">
+                  Bấm vào đây để tải hóa đơn VAT hoặc ảnh chụp biên lai thanh toán{" "}
+                  <Text span c="blue" fw={600}>(Thêm chứng từ)</Text>
+                </Text>
+              </Card>
+              {attachmentName && (
+                <Badge mt="xs" color="blue" variant="light" size="md" leftSection={<IconPaperclip size={12} />}>
+                  {attachmentName}
+                </Badge>
+              )}
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Group justify="flex-end" mt="md">
+                <Button variant="default" onClick={() => setAddModalOpened(false)}>Hủy</Button>
+                <Button type="submit" color="blue" leftSection={<IconCheck size={16} />}>Gửi yêu cầu</Button>
+              </Group>
+            </Grid.Col>
+          </Grid>
+        </form>
+      </Modal>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: "14px" }}>
-              <button
-                className="secondary"
-                onClick={() => setCancelModalRecord(null)}
-                style={{ padding: "12px 20px", fontSize: "15px", fontWeight: 700 }}
-              >
-                Quay lại
-              </button>
-              <button
-                className="primary"
-                onClick={handleConfirmCancel}
-                style={{
-                  background: "#dc2626",
-                  borderColor: "#dc2626",
-                  padding: "12px 24px",
-                  fontSize: "15px",
-                  fontWeight: 800,
-                }}
-              >
-                Xác nhận Hủy phiếu
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      {/* Modal Xem Chi Tiết Khoản Chi */}
+      <Modal
+        opened={!!viewDetailRecord}
+        onClose={() => setViewDetailRecord(null)}
+        title={<Text fw={600} fz="lg">Chi tiết yêu cầu chi phí — {viewDetailRecord?.id}</Text>}
+        size="md"
+        radius="md"
+      >
+        {viewDetailRecord && (
+          <Stack gap="md">
+            <Card withBorder bg="gray.0" p="sm" radius="md">
+              <Grid>
+                <Grid.Col span={6}>
+                  <Text fz="xs" c="dimmed">Danh mục</Text>
+                  <Text fw={600} fz="sm">{viewDetailRecord.category}</Text>
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <Text fz="xs" c="dimmed">Ngày chi</Text>
+                  <Text fw={600} fz="sm">{viewDetailRecord.date}</Text>
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <Text fz="xs" c="dimmed">Số tiền</Text>
+                  <Text fw={700} fz="md" c="blue">{formatCurrency(viewDetailRecord.amount)}</Text>
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <Text fz="xs" c="dimmed">Trạng thái</Text>
+                  <Box mt={2}>{<StatusBadge status={viewDetailRecord.status} statusText={viewDetailRecord.statusText} />}</Box>
+                </Grid.Col>
+              </Grid>
+            </Card>
+
+            <Box>
+              <Text fw={600} fz="sm" mb={4}>Nội dung khoản chi:</Text>
+              <Text fz="sm">{viewDetailRecord.title}</Text>
+            </Box>
+
+            <Box>
+              <Text fw={600} fz="sm" mb={4}>Mục đích & Lý do:</Text>
+              <Card withBorder p="sm" radius="md">
+                <Text fz="sm">{viewDetailRecord.description}</Text>
+              </Card>
+            </Box>
+
+            <Box>
+              <Text fz="xs" c="dimmed">Phòng ban đề xuất</Text>
+              <Text fz="sm" fw={500}>{viewDetailRecord.department}</Text>
+            </Box>
+
+            {viewDetailRecord.attachment && (
+              <Box>
+                <Text fw={600} fz="sm" mb={4}>Chứng từ đính kèm:</Text>
+                <Badge color="blue" variant="outline" size="md" leftSection={<IconPaperclip size={12} />}>
+                  {viewDetailRecord.attachment}
+                </Badge>
+              </Box>
+            )}
+
+            <Group justify="flex-end" mt="xs">
+              <Button variant="default" onClick={() => setViewDetailRecord(null)}>Đóng</Button>
+            </Group>
+          </Stack>
+        )}
+      </Modal>
+
+      {/* Modal Hủy Yêu Cầu */}
+      <Modal
+        opened={!!cancelModalRecord}
+        onClose={() => setCancelModalRecord(null)}
+        title={<Text fw={600} fz="lg">Hủy yêu cầu chi phí</Text>}
+        size="sm"
+        radius="md"
+      >
+        <Stack gap="md">
+          <Text fz="sm">
+            Bạn có chắc chắn muốn hủy yêu cầu chi phí{" "}
+            <Text span fw={700} c="blue">{cancelModalRecord?.id}</Text> (
+            {cancelModalRecord?.title}) không?
+          </Text>
+          <Group justify="flex-end" mt="xs">
+            <Button variant="default" onClick={() => setCancelModalRecord(null)}>Không</Button>
+            <Button color="red" onClick={handleConfirmCancel}>Xác nhận hủy</Button>
+          </Group>
+        </Stack>
+      </Modal>
+    </Box>
   );
 }

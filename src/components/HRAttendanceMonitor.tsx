@@ -802,7 +802,7 @@ export default function HRAttendanceMonitor() {
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <span style={{ fontSize: "12px", fontWeight: 600, color: "#047857" }}>Đã Check-in</span>
+              <span style={{ fontSize: "12px", fontWeight: 700, color: "#047857", textTransform: "uppercase", letterSpacing: "0.5px" }}>Đã Check-in</span>
               <div style={{ fontSize: "24px", fontWeight: 800, color: "#065f46", margin: "4px 0 2px" }}>
                 {stats.checkedInCount} / {stats.total}
               </div>
@@ -872,7 +872,7 @@ export default function HRAttendanceMonitor() {
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <span style={{ fontSize: "12px", fontWeight: 600, color: "#b45309" }}>Đi trễ</span>
+              <span style={{ fontSize: "12px", fontWeight: 700, color: "#b45309", textTransform: "uppercase", letterSpacing: "0.5px" }}>Đi trễ</span>
               <div style={{ fontSize: "24px", fontWeight: 800, color: "#92400e", margin: "4px 0 2px" }}>
                 {stats.lateCount} <span style={{ fontSize: "13px", fontWeight: 500 }}>nhân viên</span>
               </div>
@@ -922,7 +922,7 @@ export default function HRAttendanceMonitor() {
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <span style={{ fontSize: "12px", fontWeight: 600, color: "#be123c" }}>Chưa Check-in</span>
+              <span style={{ fontSize: "12px", fontWeight: 700, color: "#be123c", textTransform: "uppercase", letterSpacing: "0.5px" }}>Chưa Check-in</span>
               <div style={{ fontSize: "24px", fontWeight: 800, color: "#9f1239", margin: "4px 0 2px" }}>
                 {stats.absentCount} <span style={{ fontSize: "13px", fontWeight: 500 }}>nhân viên</span>
               </div>
@@ -972,7 +972,7 @@ export default function HRAttendanceMonitor() {
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <span style={{ fontSize: "12px", fontWeight: 600, color: "#0f766e" }}>Đang WFH</span>
+              <span style={{ fontSize: "12px", fontWeight: 700, color: "#0f766e", textTransform: "uppercase", letterSpacing: "0.5px" }}>Đang WFH</span>
               <div style={{ fontSize: "24px", fontWeight: 800, color: "#115e59", margin: "4px 0 2px" }}>
                 {stats.wfhCount} <span style={{ fontSize: "13px", fontWeight: 500 }}>nhân viên</span>
               </div>
@@ -1019,7 +1019,7 @@ export default function HRAttendanceMonitor() {
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <span style={{ fontSize: "12px", fontWeight: 600, color: "#475569" }}>Nghỉ phép / Vắng</span>
+              <span style={{ fontSize: "12px", fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.5px" }}>Nghỉ phép / Vắng</span>
               <div style={{ fontSize: "24px", fontWeight: 800, color: "#334155", margin: "4px 0 2px" }}>
                 {stats.leaveCount} <span style={{ fontSize: "13px", fontWeight: 500 }}>nhân viên</span>
               </div>
@@ -1525,6 +1525,8 @@ export default function HRAttendanceMonitor() {
                               color: "#065f46",
                               fontWeight: 700,
                               fontSize: "12px",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.5px",
                             }}
                           >
                             <MonitorIcon name="checkCircle" size={14} /> {r.statusText}
@@ -1544,6 +1546,8 @@ export default function HRAttendanceMonitor() {
                               fontWeight: 700,
                               fontSize: "12px",
                               border: "1px solid #fde68a",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.5px",
                             }}
                           >
                             <MonitorIcon name="clockAlert" size={14} /> {r.statusText}
@@ -1563,6 +1567,8 @@ export default function HRAttendanceMonitor() {
                               fontWeight: 700,
                               fontSize: "12px",
                               border: "1px solid #fecdd3",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.5px",
                             }}
                           >
                             <MonitorIcon name="xCircle" size={14} /> {r.statusText}
@@ -1581,6 +1587,8 @@ export default function HRAttendanceMonitor() {
                               color: "#115e59",
                               fontWeight: 700,
                               fontSize: "12px",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.5px",
                             }}
                           >
                             <MonitorIcon name="laptop" size={14} /> {r.statusText}
@@ -1597,8 +1605,10 @@ export default function HRAttendanceMonitor() {
                               borderRadius: "20px",
                               background: "#f1f5f9",
                               color: "#475569",
-                              fontWeight: 600,
+                              fontWeight: 700,
                               fontSize: "12px",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.5px",
                             }}
                           >
                             <MonitorIcon name="calendarOff" size={14} /> {r.statusText}

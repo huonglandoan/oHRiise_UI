@@ -1,14 +1,52 @@
 import React, { useState } from "react";
-import { PageHeader } from "../components/PageHeader";
+import { StatusBadge } from "../components/UI";
+import {
+  Box, Stack, Group, Text, Title, Card, Grid,
+  Select, TextInput, Textarea, Button, Table, Badge, ScrollArea, Breadcrumbs, Anchor, Pagination, Menu, ActionIcon, Modal, Tabs
+} from "@mantine/core";
+import { IconPlus, IconCheck, IconFileUpload, IconChevronUp, IconChevronDown, IconDotsVertical, IconEdit, IconTrash, IconChevronLeft, IconChevronRight, IconSearch } from "@tabler/icons-react";
+
+// --- Static calendar data keyed by "YYYY-M" ---
+const CALENDAR_DATA: Record<string, any[][]> = {
+  "2026-9": [
+    [ { d: "31", gray: true }, { d: "01", ci: "08:30", co: "17:35", type: "office" }, { d: "02", ci: "08:25", co: "17:30", type: "office" }, { d: "03", ci: "08:32", co: "18:00", type: "office" }, { d: "04", ci: "08:29", co: "17:35", type: "office" }, { d: "05", ci: "08:30", co: "17:30", type: "wfh", wfhCode: "WFH-0905", wfhProject: "Hoàn thiện prototype UI" }, { d: "06", empty: true } ],
+    [ { d: "07", ci: "08:28", co: "17:40", type: "office" }, { d: "08", ci: "08:35", co: "17:35", type: "office" }, { d: "09", ci: "08:47", co: "17:30", type: "late" }, { d: "10", ci: "08:30", co: "17:30", type: "office" }, { d: "11", ci: "08:25", co: "17:30", type: "office" }, { d: "12", ci: "08:31", co: "17:35", type: "wfh", wfhCode: "WFH-0912", wfhProject: "Sprint review & planning" }, { d: "13", empty: true } ],
+    [ { d: "14", ci: "08:30", co: "17:35", type: "office" }, { d: "15", type: "leave" }, { d: "16", ci: "08:25", co: "17:30", type: "office" }, { d: "17", ci: "08:30", co: "17:40", type: "office" }, { d: "18", ci: "08:30", co: "17:35", type: "wfh", wfhCode: "WFH-0918", wfhProject: "Làm việc tại nhà - dự án HRMS" }, { d: "19", ci: "08:29", co: "17:30", type: "office" }, { d: "20", empty: true } ],
+    [ { d: "21", ci: "08:32", co: "17:30", type: "office" }, { d: "22", ci: "08:30", co: "", type: "missing" }, { d: "23", ci: "08:28", co: "17:35", type: "office" }, { d: "24", ci: "08:30", co: "17:30", type: "office" }, { d: "25", ci: "08:29", co: "20:30", type: "ot", ot: "2.5h" }, { d: "26", ci: "08:30", co: "12:00", type: "office" }, { d: "27", empty: true } ],
+    [ { d: "28", ci: "08:30", co: "17:35", type: "office" }, { d: "29", ci: "08:25", co: "17:30", type: "office" }, { d: "30", ci: "08:32", co: "17:45", type: "office" }, { d: "01", gray: true }, { d: "02", gray: true }, { d: "03", gray: true }, { d: "04", gray: true } ],
+  ],
+  "2026-10": [
+    [ { d: "28", gray: true }, { d: "29", gray: true }, { d: "30", gray: true }, { d: "01", ci: "08:30", co: "17:35", type: "office" }, { d: "02", ci: "08:29", co: "17:30", type: "office" }, { d: "03", empty: true }, { d: "04", empty: true } ],
+    [ { d: "05", ci: "08:31", co: "17:40", type: "office" }, { d: "06", ci: "08:28", co: "17:35", type: "office" }, { d: "07", ci: "08:30", co: "17:30", type: "wfh", wfhCode: "WFH-1007", wfhProject: "Dự án bàn giao Q4" }, { d: "08", ci: "08:35", co: "17:30", type: "office" }, { d: "09", ci: "08:30", co: "17:30", type: "office" }, { d: "10", empty: true }, { d: "11", empty: true } ],
+    [ { d: "12", ci: "08:30", co: "17:35", type: "office" }, { d: "13", ci: "08:28", co: "17:30", type: "office" }, { d: "14", ci: "08:30", co: "17:40", type: "office" }, { d: "15", ci: "08:32", co: "17:30", type: "office" }, { d: "16", ci: "08:29", co: "17:35", type: "office" }, { d: "17", empty: true }, { d: "18", empty: true } ],
+    [ { d: "19", ci: "08:30", co: "17:30", type: "office" }, { d: "20", ci: "08:31", co: "17:35", type: "office" }, { d: "21", ci: "08:30", co: "17:30", type: "office" }, { d: "22", ci: "08:28", co: "17:35", type: "office" }, { d: "23", ci: "08:30", co: "17:30", type: "office" }, { d: "24", empty: true }, { d: "25", empty: true } ],
+    [ { d: "26", ci: "08:30", co: "17:35", type: "office" }, { d: "27", ci: "08:29", co: "17:30", type: "office" }, { d: "28", ci: "08:32", co: "17:40", type: "office" }, { d: "29", ci: "08:30", co: "17:35", type: "office" }, { d: "30", ci: "08:28", co: "17:30", type: "office" }, { d: "31", empty: true }, { d: "01", gray: true } ],
+  ],
+};
+
+const MONTH_LABELS: Record<number, string> = {
+  1: "Tháng 1", 2: "Tháng 2", 3: "Tháng 3", 4: "Tháng 4",
+  5: "Tháng 5", 6: "Tháng 6", 7: "Tháng 7", 8: "Tháng 8",
+  9: "Tháng 9", 10: "Tháng 10", 11: "Tháng 11", 12: "Tháng 12",
+};
+
+function calcWork(ci: string, co: string): string {
+  if (!ci || !co) return "-";
+  const [ch, cm] = ci.split(":").map(Number);
+  const [oh, om] = co.split(":").map(Number);
+  const totalMins = (oh * 60 + om) - (ch * 60 + cm) - 60; // trừ 1h nghỉ trưa
+  if (totalMins <= 0) return "-";
+  const h = Math.floor(totalMins / 60);
+  const m = totalMins % 60;
+  return m > 0 ? `${h} giờ ${m} phút` : `${h} giờ`;
+}
 
 export default function AttendancePage() {
-  const [activeTab, setActiveTab] = useState<"calendar" | "adjust" | "ot" | "history">("calendar");
-  const [toastMsg, setToastMsg] = useState<string | null>(null);
-
-  const showToast = (msg: string) => {
-    setToastMsg(msg);
-    setTimeout(() => setToastMsg(null), 3000);
-  };
+  const [activeTab, setActiveTab] = useState<string | null>("calendar");
+  const [currentYear, setCurrentYear] = useState(2026);
+  const [currentMonth, setCurrentMonth] = useState(9);
+  const [selectedDay, setSelectedDay] = useState<any>(null);
+  const [adjModalOpened, setAdjModalOpened] = useState(false);
 
   // State for Adjustment Form
   const [adjDate, setAdjDate] = useState("2026-09-22");
@@ -17,928 +55,419 @@ export default function AttendancePage() {
   const [adjCheckOut, setAdjCheckOut] = useState("17:30");
   const [adjReason, setAdjReason] = useState("Quên bấm máy chấm công");
   const [adjDetail, setAdjDetail] = useState("");
-  const [adjHistory, setAdjHistory] = useState([
-    {
-      code: "#ADJ-2026-0922",
-      type: "Bổ sung giờ Check-out",
-      date: "22/09/2026",
-      realTime: "Check-out bổ sung: 17:45 PM",
-      reason: "Quên bấm máy chấm công khi ra ca",
-      status: "Chờ duyệt",
-    },
-    {
-      code: "#EX-2026-0909",
-      type: "Giải trình đi muộn",
-      date: "09/09/2026",
-      realTime: "Check-in: 08:47 AM (Muộn 17 phút)",
-      reason: "Sự cố giao thông kẹt xe cầu Sài Gòn",
-      status: "Đã chấp nhận",
-    },
+
+  // State for Filters
+  const [searchQuery, setSearchQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  // State for History
+  const [historySortConfig, setHistorySortConfig] = useState<{ key: string | null, direction: 'asc' | 'desc' }>({ key: null, direction: 'asc' });
+
+  const [requestsHistory, setRequestsHistory] = useState([
+    { code: "ADJ-0922", type: "Bổ sung giờ Check-out", submitDate: "23/09/2026 08:15", applyDate: "22/09/2026", time: "Check-out bổ sung: 17:45", detail: "Quên bấm máy chấm công khi ra ca", status: "Chờ duyệt" },
+    { code: "EX-0909", type: "Giải trình đi muộn", submitDate: "09/09/2026 09:10", applyDate: "09/09/2026", time: "Check-in: 08:47 (Muộn 17 phút)", detail: "Sự cố giao thông kẹt xe cầu Sài Gòn", status: "Đã duyệt" },
+    { code: "ADJ-0830", type: "Giải trình về sớm", submitDate: "30/08/2026 17:10", applyDate: "30/08/2026", time: "Check-out: 16:20 (Về sớm 70 phút)", detail: "Đưa con đi khám bệnh, đã thông báo TL", status: "Đã duyệt" },
+    { code: "ADJ-0815", type: "Bổ sung giờ Check-in", submitDate: "16/08/2026 08:40", applyDate: "15/08/2026", time: "Check-in bổ sung: 08:28", detail: "Sự cố thiết bị chấm công tại cổng B", status: "Từ chối" },
   ]);
 
-  // State for OT Form
-  const [otDate, setOtDate] = useState("2026-09-25");
-  const [otType, setOtType] = useState("OT Ngày thường (Hệ số 150%)");
-  const [otStart, setOtStart] = useState("18:00");
-  const [otEnd, setOtEnd] = useState("20:30");
-  const [otProject, setOtProject] = useState("Đốt tiến độ bàn giao Module HRMS v2.0");
-  const [otDetail, setOtDetail] = useState("");
-  const [otMethod, setOtMethod] = useState("Thanh toán lương tăng ca (Chi trả trong kỳ lương)");
-  const [otHistory, setOtHistory] = useState([
-    {
-      code: "#OT-2026-0925",
-      date: "25/09/2026",
-      time: "18:00 - 20:30 (2.5 giờ · Hệ số 150%)",
-      project: "Đốt tiến độ bàn giao Module HRMS v2.0",
-      status: "Chờ duyệt",
-    },
-  ]);
+  const prevMonth = () => {
+    if (currentMonth === 1) { setCurrentMonth(12); setCurrentYear(y => y - 1); }
+    else setCurrentMonth(m => m - 1);
+    setSelectedDay(null);
+  };
+  const nextMonth = () => {
+    if (currentMonth === 12) { setCurrentMonth(1); setCurrentYear(y => y + 1); }
+    else setCurrentMonth(m => m + 1);
+    setSelectedDay(null);
+  };
 
-  // State for History Filters & Data
-  const [historyFromDate, setHistoryFromDate] = useState("2026-09-01");
-  const [historyToDate, setHistoryToDate] = useState("2026-09-30");
-  const [historyTypeFilter, setHistoryTypeFilter] = useState("all");
-  const [historyStatusFilter, setHistoryStatusFilter] = useState("all");
-  const [historyKeyword, setHistoryKeyword] = useState("");
+  const calKey = `${currentYear}-${currentMonth}`;
+  const weeks = CALENDAR_DATA[calKey] || [];
 
-  const initialRequestsHistory = [
-    {
-      code: "#OT-2026-0925",
-      type: "Đăng ký Tăng ca (OT)",
-      submitDate: "24/09/2026 16:30",
-      applyDate: "25/09/2026",
-      time: "18:00 - 20:30 (2.5 giờ · Hệ số 150%)",
-      detail: "Đốt tiến độ bàn giao Module HRMS v2.0",
-      status: "Chờ duyệt",
-      statusTone: "amber",
-    },
-    {
-      code: "#ADJ-2026-0922",
-      type: "Bổ sung giờ Check-out",
-      submitDate: "23/09/2026 08:15",
-      applyDate: "22/09/2026",
-      time: "Check-out bổ sung: 17:45 PM",
-      detail: "Quên bấm máy chấm công khi ra ca",
-      status: "Chờ duyệt",
-      statusTone: "amber",
-    },
-    {
-      code: "#WFH-2026-0918",
-      type: "Đăng ký WFH",
-      submitDate: "17/09/2026 14:20",
-      applyDate: "18/09/2026",
-      time: "08:30 - 17:35 (Làm việc tại nhà)",
-      detail: "AI camera xác thực 20/20 ảnh làm việc",
-      status: "Đã duyệt",
-      statusTone: "emerald",
-    },
-    {
-      code: "#EX-2026-0909",
-      type: "Giải trình đi muộn",
-      submitDate: "09/09/2026 09:10",
-      applyDate: "09/09/2026",
-      time: "Check-in: 08:47 AM (Muộn 17 phút)",
-      detail: "Sự cố giao thông kẹt xe cầu Sài Gòn",
-      status: "Đã chấp nhận",
-      statusTone: "emerald",
-    },
-    {
-      code: "#LV-2026-0915",
-      type: "Đơn xin nghỉ phép",
-      submitDate: "12/09/2026 10:00",
-      applyDate: "15/09/2026",
-      time: "Nghỉ nguyên ngày (Phép năm)",
-      detail: "Giải quyết việc cá nhân gia đình",
-      status: "Đã duyệt",
-      statusTone: "emerald",
-    },
-  ];
-
-  const filteredRequests = initialRequestsHistory.filter((item) => {
-    if (historyTypeFilter !== "all" && item.type !== historyTypeFilter) return false;
-    if (historyStatusFilter !== "all" && item.status !== historyStatusFilter) return false;
-    if (historyKeyword.trim()) {
-      const q = historyKeyword.toLowerCase();
-      return (
-        item.code.toLowerCase().includes(q) ||
-        item.type.toLowerCase().includes(q) ||
-        item.detail.toLowerCase().includes(q)
-      );
-    }
-    return true;
+  let filteredRequests = [...requestsHistory].filter(req => {
+    const matchSearch = req.code.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                        req.detail.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchType = typeFilter === "all" || req.type === typeFilter;
+    const matchStatus = statusFilter === "all" || req.status === statusFilter;
+    return matchSearch && matchType && matchStatus;
   });
+  if (historySortConfig.key) {
+    filteredRequests.sort((a: any, b: any) => {
+      const aV = a[historySortConfig.key!]; const bV = b[historySortConfig.key!];
+      if (aV < bV) return historySortConfig.direction === 'asc' ? -1 : 1;
+      if (aV > bV) return historySortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+
+  const handleHistorySort = (key: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (historySortConfig.key === key && historySortConfig.direction === 'asc') direction = 'desc';
+    setHistorySortConfig({ key, direction });
+  };
+
+  const HistoryTh = ({ children, columnKey }: { children: React.ReactNode, columnKey: string }) => (
+    <Table.Th>
+      <Group justify="space-between" align="center" style={{ cursor: 'pointer' }} onClick={() => handleHistorySort(columnKey)} wrap="nowrap">
+        <Text fw={600} fz="sm">{children}</Text>
+        <Group gap={0} style={{ flexDirection: 'column', gap: 0 }}>
+          <IconChevronUp size={12} color={historySortConfig.key === columnKey && historySortConfig.direction === 'asc' ? 'var(--mantine-color-blue-6)' : 'gray'} style={{ marginBottom: -4 }} />
+          <IconChevronDown size={12} color={historySortConfig.key === columnKey && historySortConfig.direction === 'desc' ? 'var(--mantine-color-blue-6)' : 'gray'} />
+        </Group>
+      </Group>
+    </Table.Th>
+  );
 
   const handleSubmitAdjustment = (e: React.FormEvent) => {
     e.preventDefault();
-    const newCode = `#ADJ-2026-09${Math.floor(Math.random() * 80 + 10)}`;
-    setAdjHistory((prev) => [
+    const newCode = `ADJ-${adjDate.slice(5,7)}${adjDate.slice(8,10)}`;
+    setRequestsHistory((prev) => [
       {
         code: newCode,
         type: adjType,
-        date: adjDate.split("-").reverse().join("/"),
-        realTime: `Check-in: ${adjCheckIn} - Check-out: ${adjCheckOut}`,
-        reason: adjReason,
+        submitDate: new Date().toLocaleString("vi-VN", { dateStyle: "short", timeStyle: "short" }),
+        applyDate: adjDate.split("-").reverse().join("/"),
+        time: `Check-in: ${adjCheckIn} - Check-out: ${adjCheckOut}`,
+        detail: adjReason + (adjDetail ? " - " + adjDetail : ""),
         status: "Chờ duyệt",
       },
       ...prev,
     ]);
-    showToast(`Đã nộp đơn bổ sung giờ công (${newCode}) thành công!`);
     setAdjDetail("");
+    setAdjModalOpened(false);
   };
 
-  const handleSubmitOT = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newCode = `#OT-2026-09${Math.floor(Math.random() * 80 + 10)}`;
-    setOtHistory((prev) => [
-      {
-        code: newCode,
-        date: otDate.split("-").reverse().join("/"),
-        time: `${otStart} - ${otEnd} (2.5 giờ)`,
-        project: otProject,
-        status: "Chờ duyệt",
-      },
-      ...prev,
-    ]);
-    showToast(`Đã nộp đơn đăng ký tăng ca OT (${newCode}) thành công!`);
-    setOtDetail("");
-  };
+  const renderStatusBadge = (status: string) => <StatusBadge status={status} />;
+
+  const typeColor: Record<string, string> = { office: "blue", wfh: "teal", leave: "yellow", late: "red", missing: "orange", ot: "violet" };
 
   return (
-    <div className="page">
-      {/* Toast Alert */}
-      {toastMsg && (
-        <div className="fixed bottom-5 right-5 z-50 bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl border-l-4 border-emerald-400 shadow-2xl flex items-center gap-2">
-          <span className="text-emerald-400">✓</span>
-          <span>{toastMsg}</span>
-        </div>
-      )}
+    <Box>
+      <Group justify="space-between" align="center" mb="xl">
+        <Box>
+          <Title order={2} fw={600} mb={4}>Chấm công</Title>
+          <Breadcrumbs separator="/" fz="sm">
+            <Anchor href="#" c="dimmed">Tổng quan</Anchor>
+            <Text c="dimmed">Chấm công</Text>
+          </Breadcrumbs>
+        </Box>
+        {activeTab === "giai-trinh" && (
+          <Button color="blue" radius="xl" leftSection={<IconPlus size={16} />} onClick={() => setAdjModalOpened(true)}>
+            Bổ sung / Giải trình
+          </Button>
+        )}
+      </Group>
 
-      {/* Header Banner */}
-      <PageHeader
-        group="CÔNG VIỆC CỦA TÔI"
-        title="Chấm công"
-        description="Theo dõi thời gian làm việc, bổ sung giờ công và tra cứu lịch sử đơn từ."
-        icon="clock"
-      />
+      <Tabs value={activeTab} onChange={setActiveTab} variant="default" mb="xl">
+        <Tabs.List mb="xl">
+          <Tabs.Tab value="calendar">Lịch chấm công</Tabs.Tab>
+          <Tabs.Tab value="giai-trinh">Giải trình / Bổ sung</Tabs.Tab>
+        </Tabs.List>
 
-      {/* Subtab Navigation Buttons */}
-      <div className="approval-tabs mb-6">
-        <button
-          onClick={() => setActiveTab("calendar")}
-          className={activeTab === "calendar" ? "active" : ""}
-        >
-          Lịch chấm công & Lịch biểu
-        </button>
+        <Tabs.Panel value="calendar">
+          <Grid mb="xl">
+            {[
+              { label: "Ngày công tháng 9", value: "16,5", sub: "/ 22 ngày", progress: 75, color: "blue" },
+              { label: "Thời gian trung bình", value: "8h 12m", sub: "+18 phút so với tháng trước", subColor: "green" },
+              { label: "Đi muộn / về sớm", value: "1 lần", sub: "Đã gửi giải trình", subColor: "dimmed" },
+              { label: "Ngày WFH", value: "3 ngày", sub: "Trong hạn mức", subColor: "dimmed" }
+            ].map((item, index) => (
+              <Grid.Col span={{ base: 12, sm: 6, lg: 3 }} key={index}>
+                <Card withBorder radius="lg" padding="lg">
+                  <Text fw={700} fz="sm" c="dimmed" mb={8} tt="uppercase" style={{ letterSpacing: "0.5px" }}>{item.label}</Text>
+                  <Group align="baseline" gap="xs">
+                    <Text fw={700} fz={24}>{item.value}</Text>
+                    {item.progress && <Text fz="xs" c="dimmed">{item.sub}</Text>}
+                  </Group>
+                  {item.progress ? (
+                    <Box mt="sm" h={6} bg="gray.1" style={{ borderRadius: 8, overflow: 'hidden' }}>
+                      <Box h="100%" w={`${item.progress}%`} bg={item.color} />
+                    </Box>
+                  ) : (
+                    <Text fz="xs" c={item.subColor} fw={item.subColor === 'green' ? 600 : 400} mt={4}>{item.sub}</Text>
+                  )}
+                </Card>
+              </Grid.Col>
+            ))}
+          </Grid>
 
-        <button
-          onClick={() => setActiveTab("adjust")}
-          className={activeTab === "adjust" ? "active" : ""}
-        >
-          Bổ sung giờ công / Đi muộn
-        </button>
+          <Card withBorder radius="lg" p="lg" shadow="sm" mb={selectedDay ? "md" : "xl"}>
+            <Group justify="space-between" mb="lg">
+              <Box>
+                <Text fz="xs" fw={700} c="dimmed" tt="uppercase">Lịch chấm công</Text>
+                <Title order={4}>Lịch làm việc</Title>
+              </Box>
+              <Group gap="md">
+                <Group gap={6}><Box w={8} h={8} style={{ borderRadius: '50%' }} bg="blue" /><Text fz="xs" fw={500}>Văn phòng</Text></Group>
+                <Group gap={6}><Box w={8} h={8} style={{ borderRadius: '50%' }} bg="teal" /><Text fz="xs" fw={500}>WFH</Text></Group>
+                <Group gap={6}><Box w={8} h={8} style={{ borderRadius: '50%' }} bg="yellow" /><Text fz="xs" fw={500}>Nghỉ phép</Text></Group>
+                <Group gap={6}><Box w={8} h={8} style={{ borderRadius: '50%' }} bg="red" /><Text fz="xs" fw={500}>Đi muộn</Text></Group>
+              </Group>
+            </Group>
 
-        <button
-          onClick={() => setActiveTab("ot")}
-          className={activeTab === "ot" ? "active" : ""}
-        >
-          Đăng ký Tăng ca (OT)
-        </button>
+            <Group justify="space-between" mb="md">
+              <Button variant="default" size="xs" leftSection={<IconChevronLeft size={14} />} onClick={prevMonth}>Trước</Button>
+              <Text fw={700}>{MONTH_LABELS[currentMonth]}, {currentYear}</Text>
+              <Button variant="default" size="xs" rightSection={<IconChevronRight size={14} />} onClick={nextMonth}>Sau</Button>
+            </Group>
 
-        <button
-          onClick={() => setActiveTab("history")}
-          className={activeTab === "history" ? "active" : ""}
-        >
-          Lịch sử đơn từ & Yêu cầu
-        </button>
-      </div>
-
-
-      {/* =================================================================== */}
-      {/* SUBTAB 1: LỊCH CHẤM CÔNG & LỊCH BIỂU                              */}
-      {/* =================================================================== */}
-      {activeTab === "calendar" && (
-        <div className="space-y-6">
-          {/* 4 Summary Stat Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-xs space-y-2">
-              <span className="text-xs text-slate-400 font-medium">Ngày công tháng 9</span>
-              <div className="flex items-baseline gap-1">
-                <b className="text-xl font-extrabold text-slate-900">16,5</b>
-                <span className="text-xs text-slate-400 font-medium">/ 22 ngày</span>
-              </div>
-              <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-cyan-500 h-full w-[75%]" />
-              </div>
-            </div>
-
-            <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-xs space-y-2">
-              <span className="text-xs text-slate-400 font-medium">Thời gian trung bình</span>
-              <b className="text-xl font-extrabold text-slate-900 block">8h 12m</b>
-              <span className="text-[11px] text-emerald-600 font-semibold block">
-                +18 phút so với tháng trước
-              </span>
-            </div>
-
-            <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-xs space-y-2">
-              <span className="text-xs text-slate-400 font-medium">Đi muộn / về sớm</span>
-              <b className="text-xl font-extrabold text-slate-900 block">1 lần</b>
-              <span className="text-[11px] text-slate-400 block">Đã gửi giải trình</span>
-            </div>
-
-            <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-xs space-y-2">
-              <span className="text-xs text-slate-400 font-medium">Ngày WFH</span>
-              <b className="text-xl font-extrabold text-slate-900 block">3 ngày</b>
-              <span className="text-[11px] text-slate-400 block">Trong hạn mức</span>
-            </div>
-          </div>
-
-          {/* Calendar Grid Container */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4">
-            <div className="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-slate-100">
-              <div>
-                <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">
-                  LỊCH CHẤM CÔNG
-                </span>
-                <h3 className="text-base font-bold text-slate-900">Lịch làm việc</h3>
-              </div>
-
-              {/* Legend Badges */}
-              <div className="flex items-center gap-4 text-xs font-semibold">
-                <span className="flex items-center gap-1.5 text-slate-700">
-                  <span className="w-2 h-2 rounded-full bg-blue-600" />
-                  Văn phòng
-                </span>
-                <span className="flex items-center gap-1.5 text-slate-700">
-                  <span className="w-2 h-2 rounded-full bg-teal-500" />
-                  WFH
-                </span>
-                <span className="flex items-center gap-1.5 text-slate-700">
-                  <span className="w-2 h-2 rounded-full bg-amber-500" />
-                  Nghỉ phép
-                </span>
-                <span className="flex items-center gap-1.5 text-slate-700">
-                  <span className="w-2 h-2 rounded-full bg-rose-600" />
-                  Đi muộn
-                </span>
-              </div>
-            </div>
-
-            {/* Month Navigation */}
-            <div className="flex items-center justify-between py-1">
-              <button className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-bold">
-                ‹
-              </button>
-              <b className="text-sm font-bold text-slate-900">Tháng 9, 2026</b>
-              <button className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-bold">
-                ›
-              </button>
-            </div>
-
-            {/* Calendar Table Grid */}
-            <div className="overflow-x-auto border border-slate-200 rounded-xl">
-              <table className="w-full border-collapse text-left text-xs">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 text-center font-bold">
-                    <th className="py-2.5 px-3 border-r border-slate-200">T2</th>
-                    <th className="py-2.5 px-3 border-r border-slate-200">T3</th>
-                    <th className="py-2.5 px-3 border-r border-slate-200">T4</th>
-                    <th className="py-2.5 px-3 border-r border-slate-200">T5</th>
-                    <th className="py-2.5 px-3 border-r border-slate-200">T6</th>
-                    <th className="py-2.5 px-3 border-r border-slate-200">T7</th>
-                    <th className="py-2.5 px-3">CN</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200 bg-white">
-                  {/* Row 1: Days 1-7 */}
-                  <tr>
-                    {[
-                      { d: "1", status: "off", time: "08:32 - 17:41" },
-                      { d: "2", status: "off", time: "08:32 - 17:41" },
-                      { d: "3", status: "off", time: "08:32 - 17:41" },
-                      { d: "4", status: "wfh", text: "WFH" },
-                      { d: "5", status: "none" },
-                      { d: "6", status: "none" },
-                      { d: "7", status: "off", time: "08:32 - 17:41" },
-                    ].map((cell, idx) => (
-                      <td key={idx} className="p-2 border-r border-slate-200 h-20 align-top hover:bg-slate-50/80 transition">
-                        <b className="text-slate-800 font-bold block mb-1">{cell.d}</b>
-                        {cell.status === "off" && (
-                          <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-600">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
-                            <span>{cell.time}</span>
-                          </div>
-                        )}
-                        {cell.status === "wfh" && (
-                          <div className="flex items-center gap-1 text-[10px] font-semibold text-teal-600">
-                            <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
-                            <span>{cell.text}</span>
-                          </div>
-                        )}
-                      </td>
+            <ScrollArea>
+              <Table withTableBorder withColumnBorders>
+                <Table.Thead>
+                  <Table.Tr bg="gray.0">
+                    {["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map(d => (
+                      <Table.Th key={d} ta="center" w={`${100/7}%`}>{d}</Table.Th>
                     ))}
-                  </tr>
-
-                  {/* Row 2: Days 8-14 */}
-                  <tr>
-                    {[
-                      { d: "8", status: "off", time: "08:32 - 17:41" },
-                      { d: "9", status: "late", time: "08:47 - Muộn" },
-                      { d: "10", status: "off", time: "08:32 - 17:41" },
-                      { d: "11", status: "wfh", text: "WFH" },
-                      { d: "12", status: "none" },
-                      { d: "13", status: "none" },
-                      { d: "14", status: "off", time: "08:32 - 17:41" },
-                    ].map((cell, idx) => (
-                      <td key={idx} className="p-2 border-r border-slate-200 h-20 align-top hover:bg-slate-50/80 transition">
-                        <b className="text-slate-800 font-bold block mb-1">{cell.d}</b>
-                        {cell.status === "off" && (
-                          <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-600">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
-                            <span>{cell.time}</span>
-                          </div>
-                        )}
-                        {cell.status === "late" && (
-                          <div className="flex items-center gap-1 text-[10px] font-semibold text-rose-600">
-                            <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
-                            <span>{cell.time}</span>
-                          </div>
-                        )}
-                        {cell.status === "wfh" && (
-                          <div className="flex items-center gap-1 text-[10px] font-semibold text-teal-600">
-                            <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
-                            <span>{cell.text}</span>
-                          </div>
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-
-                  {/* Row 3: Days 15-21 */}
-                  <tr>
-                    {[
-                      { d: "15", status: "leave", text: "Nghỉ phép" },
-                      { d: "16", status: "off", time: "08:32 - 17:41" },
-                      { d: "17", status: "off", time: "08:32 - 17:41" },
-                      { d: "18", status: "wfh", text: "WFH" },
-                      { d: "19", status: "none" },
-                      { d: "20", status: "none" },
-                      { d: "21", status: "off", time: "08:32 - 17:41" },
-                    ].map((cell, idx) => (
-                      <td key={idx} className="p-2 border-r border-slate-200 h-20 align-top hover:bg-slate-50/80 transition">
-                        <b className="text-slate-800 font-bold block mb-1">{cell.d}</b>
-                        {cell.status === "leave" && (
-                          <div className="flex items-center gap-1 text-[10px] font-semibold text-amber-600">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                            <span>{cell.text}</span>
-                          </div>
-                        )}
-                        {cell.status === "off" && (
-                          <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-600">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
-                            <span>{cell.time}</span>
-                          </div>
-                        )}
-                        {cell.status === "wfh" && (
-                          <div className="flex items-center gap-1 text-[10px] font-semibold text-teal-600">
-                            <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
-                            <span>{cell.text}</span>
-                          </div>
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-
-                  {/* Row 4: Days 22-28 */}
-                  <tr>
-                    {[
-                      { d: "22", status: "active", time: "08:32 - 17:41" },
-                      { d: "23", status: "off", time: "08:32 - 17:41" },
-                      { d: "24", status: "off", time: "08:32 - 17:41" },
-                      { d: "25", status: "off", time: "08:32 - 17:41" },
-                      { d: "26", status: "none" },
-                      { d: "27", status: "none" },
-                      { d: "28", status: "off", time: "08:32 - 17:41" },
-                    ].map((cell, idx) => (
-                      <td
-                        key={idx}
-                        className={`p-2 border-r border-slate-200 h-20 align-top hover:bg-slate-50/80 transition ${
-                          cell.status === "active" ? "bg-blue-50/60 ring-2 ring-blue-500 ring-inset rounded-lg" : ""
-                        }`}
-                      >
-                        <b className="text-slate-800 font-bold block mb-1">{cell.d}</b>
-                        {cell.time && (
-                          <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-600">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
-                            <span>{cell.time}</span>
-                          </div>
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-
-                  {/* Row 5: Days 29-30 */}
-                  <tr>
-                    {[
-                      { d: "29", status: "off", time: "08:32 - 17:41" },
-                      { d: "30", status: "off", time: "08:32 - 17:41" },
-                      { d: "", status: "none" },
-                      { d: "", status: "none" },
-                      { d: "", status: "none" },
-                      { d: "", status: "none" },
-                      { d: "", status: "none" },
-                    ].map((cell, idx) => (
-                      <td key={idx} className="p-2 border-r border-slate-200 h-20 align-top">
-                        {cell.d && <b className="text-slate-800 font-bold block mb-1">{cell.d}</b>}
-                        {cell.time && (
-                          <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-600">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
-                            <span>{cell.time}</span>
-                          </div>
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* =================================================================== */}
-      {/* SUBTAB 2: BỔ SUNG GIỜ CÔNG / ĐI MUỘN                             */}
-      {/* =================================================================== */}
-      {activeTab === "adjust" && (
-        <div className="space-y-6">
-          {/* New Request Form Card */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
-            <div>
-              <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">
-                TẠO ĐƠN MỚI
-              </span>
-              <h3 className="text-base font-bold text-slate-900">
-                Bổ sung Giờ công & Giải trình đi muộn / về sớm
-              </h3>
-            </div>
-
-            <form onSubmit={handleSubmitAdjustment} className="space-y-4 text-xs">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Ngày áp dụng *</label>
-                  <input
-                    type="date"
-                    value={adjDate}
-                    onChange={(e) => setAdjDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Loại yêu cầu *</label>
-                  <select
-                    value={adjType}
-                    onChange={(e) => setAdjType(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                  >
-                    <option>Quên Check-in giờ vào ca</option>
-                    <option>Quên Check-out</option>
-                    <option>Giải trình đi muộn</option>
-                    <option>Giải trình về sớm</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Giờ vào thực tế (Check-in)</label>
-                  <input
-                    type="text"
-                    value={adjCheckIn}
-                    onChange={(e) => setAdjCheckIn(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Giờ ra thực tế (Check-out)</label>
-                  <input
-                    type="text"
-                    value={adjCheckOut}
-                    onChange={(e) => setAdjCheckOut(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-slate-600 font-semibold mb-1">Lý do điều chỉnh *</label>
-                <select
-                  value={adjReason}
-                  onChange={(e) => setAdjReason(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                >
-                  <option>Quên bấm máy chấm công</option>
-                  <option>Sự cố giao thông kẹt xe</option>
-                  <option>Gặp đối tác / công tác ngoài</option>
-                  <option>Sự cố thiết bị chấm công</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-slate-600 font-semibold mb-1">Mô tả hoàn cảnh chi tiết</label>
-                <textarea
-                  rows={3}
-                  value={adjDetail}
-                  onChange={(e) => setAdjDetail(e.target.value)}
-                  placeholder="Ghi rõ chi tiết lý do hoặc hoàn cảnh công tác..."
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Attachment File Dropzone */}
-              <div>
-                <label className="block text-slate-600 font-semibold mb-1">
-                  Đính kèm bằng chứng (Vé xe, Hình ảnh, Xác nhận...)
-                </label>
-                <div className="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:border-blue-500 transition cursor-pointer bg-slate-50/50">
-                  <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center mx-auto mb-2 font-bold">
-                    📄
-                  </div>
-                  <p className="text-xs text-slate-500">
-                    Kéo thả file vào đây hoặc <span className="text-blue-600 font-bold">Chọn tải ảnh lên</span>
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex justify-end pt-2">
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-xs transition"
-                >
-                  ✓ Nộp đơn bổ sung giờ công
-                </button>
-              </div>
-            </form>
-          </div>
-
-          {/* History List Card */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4">
-            <h3 className="text-base font-bold text-slate-900">
-              Lịch sử đơn Bổ sung giờ công & Giải trình ({adjHistory.length})
-            </h3>
-
-            <div className="overflow-x-auto border border-slate-200 rounded-xl">
-              <table className="w-full text-left text-xs text-slate-700">
-                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase text-[11px]">
-                  <tr>
-                    <th className="py-3 px-4">Mã đơn</th>
-                    <th className="py-3 px-4">Loại yêu cầu</th>
-                    <th className="py-3 px-4">Ngày áp dụng</th>
-                    <th className="py-3 px-4">Giờ thực tế</th>
-                    <th className="py-3 px-4">Lý do chi tiết</th>
-                    <th className="py-3 px-4">Trạng thái</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 bg-white">
-                  {adjHistory.map((item, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50 transition">
-                      <td className="py-3 px-4 font-mono font-bold text-blue-600">{item.code}</td>
-                      <td className="py-3 px-4 font-semibold text-slate-800">{item.type}</td>
-                      <td className="py-3 px-4 text-slate-600">{item.date}</td>
-                      <td className="py-3 px-4 font-mono text-blue-700 font-semibold">{item.realTime}</td>
-                      <td className="py-3 px-4 text-slate-600">{item.reason}</td>
-                      <td className="py-3 px-4">
-                        <span
-                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                            item.status === "Chờ duyệt"
-                              ? "bg-amber-100 text-amber-800"
-                              : "bg-emerald-100 text-emerald-800"
-                          }`}
-                        >
-                          ● {item.status}
-                        </span>
-                      </td>
-                    </tr>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {weeks.length === 0 ? (
+                    <Table.Tr><Table.Td colSpan={7} ta="center" py="xl" c="dimmed">Chưa có dữ liệu tháng này</Table.Td></Table.Tr>
+                  ) : weeks.map((week, idx) => (
+                    <Table.Tr key={idx}>
+                      {week.map((day, dIdx) => {
+                        const bgMap: Record<string, string> = { wfh: "teal-0", leave: "yellow-0", late: "red-0", missing: "orange-0", ot: "violet-0" };
+                        const bgColor = bgMap[day.type] ? `var(--mantine-color-${bgMap[day.type]})` : undefined;
+                        const isSelected = selectedDay && selectedDay.d === day.d && selectedDay._week === idx;
+                        return (
+                          <Table.Td
+                            key={dIdx} p="xs" h={80}
+                            style={{
+                              verticalAlign: 'top',
+                              backgroundColor: isSelected ? 'var(--mantine-color-blue-1)' : bgColor,
+                              cursor: day.empty || day.gray ? 'default' : 'pointer',
+                              outline: isSelected ? '2px solid var(--mantine-color-blue-5)' : undefined,
+                            }}
+                            onClick={() => {
+                              if (day.empty || day.gray) return;
+                              setSelectedDay(isSelected ? null : { ...day, _week: idx });
+                            }}
+                          >
+                            <Text fz="sm" fw={600} c={day.gray ? "dimmed" : isSelected ? "blue.7" : "dark"} mb={4}>{day.d}</Text>
+                            {!day.empty && !day.gray && (
+                              <Stack gap={2}>
+                                {day.type === 'leave' ? (
+                                  <Badge color="yellow" variant="filled" size="sm" w="100%">Nghỉ phép</Badge>
+                                ) : (
+                                  <>
+                                    <Group justify="space-between" wrap="nowrap">
+                                      <Text fz={10} c="dimmed">In:</Text>
+                                      <Text fz={11} fw={700} c={day.type === 'late' ? "red" : "dark"}>{day.ci}</Text>
+                                    </Group>
+                                    <Group justify="space-between" wrap="nowrap">
+                                      <Text fz={10} c="dimmed">Out:</Text>
+                                      <Text fz={11} fw={700} c={!day.co ? "red" : "dark"}>{day.co || "???"}</Text>
+                                    </Group>
+                                  </>
+                                )}
+                              </Stack>
+                            )}
+                          </Table.Td>
+                        );
+                      })}
+                    </Table.Tr>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
+                </Table.Tbody>
+              </Table>
+            </ScrollArea>
+          </Card>
 
-      {/* =================================================================== */}
-      {/* SUBTAB 3: ĐĂNG KÝ TĂNG CA (OT)                                     */}
-      {/* =================================================================== */}
-      {activeTab === "ot" && (
-        <div className="space-y-6">
-          {/* OT Form Card */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
-            <div>
-              <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">
-                ĐĂNG KÝ LÀM THÊM GIỜ
-              </span>
-              <h3 className="text-base font-bold text-slate-900">
-                Đơn đăng ký Tăng ca (Overtime / OT)
-              </h3>
-            </div>
+          {/* Day detail panel */}
+          {selectedDay && (
+            <Card withBorder radius="lg" p="lg" shadow="sm" mb="xl">
+              {selectedDay.type === 'wfh' ? (
+                <>
+                  <Group justify="space-between" mb="md">
+                    <Title order={5}>Phiếu WFH — ngày {selectedDay.d}/{String(currentMonth).padStart(2,'0')}/{currentYear}</Title>
+                    <Badge color="teal" variant="filled" size="lg">Làm việc từ xa</Badge>
+                  </Group>
+                  <Card withBorder radius="md" p="md" bg="teal.0">
+                    <Group justify="space-between" mb="xs">
+                      <Text fw={700} c="teal.9">Mã phiếu: {selectedDay.wfhCode}</Text>
+                      <Badge color="green" variant="light" style={{ textTransform: "uppercase", letterSpacing: "0.5px" }}>ĐÃ DUYỆT</Badge>
+                    </Group>
+                    <Text fz="sm" c="teal.8" mb={4}>Dự án / Công việc: {selectedDay.wfhProject}</Text>
+                    <Text fz="sm" c="teal.8" mb={4}>Check-in: {selectedDay.ci} · Check-out: {selectedDay.co}</Text>
+                    <Text fz="sm" c="teal.8">Thời gian làm việc: {calcWork(selectedDay.ci, selectedDay.co)}</Text>
+                  </Card>
+                </>
+              ) : (
+                <>
+                  <Title order={5} mb="md">Chi tiết ngày {selectedDay.d}/{String(currentMonth).padStart(2,'0')}/{currentYear}</Title>
+                  <Table withTableBorder withColumnBorders>
+                    <Table.Thead>
+                      <Table.Tr bg="gray.0">
+                        <Table.Th fw={600} fz="sm">Ngày</Table.Th>
+                        <Table.Th fw={600} fz="sm">Check-in</Table.Th>
+                        <Table.Th fw={600} fz="sm">Check-out</Table.Th>
+                        <Table.Th fw={600} fz="sm">Thời gian làm việc</Table.Th>
+                        <Table.Th fw={600} fz="sm">Overtime</Table.Th>
+                      </Table.Tr>
+                    </Table.Thead>
+                    <Table.Tbody>
+                      <Table.Tr>
+                        <Table.Td fw={500}>{selectedDay.d} Th{String(currentMonth).padStart(2,'0')} {currentYear}</Table.Td>
+                        <Table.Td c={selectedDay.type === 'late' ? 'red' : undefined} fw={600}>{selectedDay.ci || '-'}</Table.Td>
+                        <Table.Td c={!selectedDay.co ? 'red' : undefined} fw={600}>{selectedDay.co || 'Chưa có'}</Table.Td>
+                        <Table.Td fw={600}>{calcWork(selectedDay.ci, selectedDay.co)}</Table.Td>
+                        <Table.Td fw={600} c="violet">{selectedDay.ot || '-'}</Table.Td>
+                      </Table.Tr>
+                    </Table.Tbody>
+                  </Table>
+                  {selectedDay.type === 'late' && (
+                    <Text fz="sm" c="red" mt="sm">⚠ Check-in muộn — cần giải trình nếu chưa nộp đơn.</Text>
+                  )}
+                  {selectedDay.type === 'missing' && (
+                    <Text fz="sm" c="orange" mt="sm">⚠ Thiếu dữ liệu Check-out — cần bổ sung giờ công.</Text>
+                  )}
+                </>
+              )}
+            </Card>
+          )}
+        </Tabs.Panel>
 
-            <form onSubmit={handleSubmitOT} className="space-y-4 text-xs">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Ngày đăng ký tăng ca *</label>
-                  <input
-                    type="date"
-                    value={otDate}
-                    onChange={(e) => setOtDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                    required
-                  />
-                </div>
+        <Tabs.Panel value="giai-trinh">
+          <Card withBorder radius="lg" p={0} shadow="sm">
+            <Box p="md" style={{ borderBottom: '1px solid var(--mantine-color-gray-2)' }}>
+              <Group justify="space-between" align="center">
+                <Title order={4}>Lịch sử đơn từ &amp; yêu cầu</Title>
+              </Group>
+            </Box>
 
-                <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Loại hình tăng ca *</label>
-                  <select
-                    value={otType}
-                    onChange={(e) => setOtType(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                  >
-                    <option>OT Ngày thường (Hệ số 150%)</option>
-                    <option>OT Cuối tuần (Hệ số 200%)</option>
-                    <option>OT Ngày lễ (Hệ số 300%)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Giờ bắt đầu OT *</label>
-                  <input
-                    type="text"
-                    value={otStart}
-                    onChange={(e) => setOtStart(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-slate-600 font-semibold mb-1">Giờ kết thúc OT *</label>
-                  <input
-                    type="text"
-                    value={otEnd}
-                    onChange={(e) => setOtEnd(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* OT Auto Calculate Banner */}
-              <div className="p-3.5 bg-blue-50/80 border border-blue-100 rounded-xl flex items-center justify-between text-xs text-blue-700">
-                <span>Tổng thời gian OT tự động tính toán:</span>
-                <b className="text-sm font-extrabold text-blue-700">2,5 giờ OT</b>
-              </div>
-
-              <div>
-                <label className="block text-slate-600 font-semibold mb-1">Tên dự án / Công việc OT *</label>
-                <input
-                  type="text"
-                  value={otProject}
-                  onChange={(e) => setOtProject(e.target.value)}
-                  placeholder="Ví dụ: Đốt tiến độ bàn giao Module HRMS v2.0"
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                  required
+            <Box p="md" className="filter-section">
+              <Group justify="flex-start" wrap="wrap" gap="sm">
+                <TextInput
+                  placeholder="Tìm kiếm mã đơn, lý do..."
+                  leftSection={<IconSearch size={14} />}
+                  size="sm"
+                  radius="md"
+                  w={{ base: "100%", sm: 260 }}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.currentTarget.value)}
                 />
-              </div>
-
-              <div>
-                <label className="block text-slate-600 font-semibold mb-1">Nội dung công việc chi tiết trong ca OT</label>
-                <textarea
-                  rows={3}
-                  value={otDetail}
-                  onChange={(e) => setOtDetail(e.target.value)}
-                  placeholder="Mô tả cụ thể nhiệm vụ cần hoàn thành trong giờ OT..."
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none focus:ring-2 focus:ring-blue-500"
+                <Select
+                  placeholder="Tất cả loại đơn"
+                  size="sm"
+                  radius="md"
+                  w={200}
+                  data={[
+                    { value: "all", label: "Tất cả loại đơn" },
+                    { value: "Bổ sung giờ Check-in", label: "Bổ sung giờ Check-in" },
+                    { value: "Bổ sung giờ Check-out", label: "Bổ sung giờ Check-out" },
+                    { value: "Giải trình đi muộn", label: "Giải trình đi muộn" },
+                    { value: "Giải trình về sớm", label: "Giải trình về sớm" },
+                  ]}
+                  value={typeFilter}
+                  onChange={(v) => v && setTypeFilter(v)}
+                  allowDeselect={false}
                 />
-              </div>
-
-              <div>
-                <label className="block text-slate-600 font-semibold mb-1">Phương thức quy đổi / Chi trả *</label>
-                <select
-                  value={otMethod}
-                  onChange={(e) => setOtMethod(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                >
-                  <option>Thanh toán lương tăng ca (Chi trả trong kỳ lương)</option>
-                  <option>Quy đổi thành ngày nghỉ bù</option>
-                </select>
-              </div>
-
-              <div className="flex justify-end pt-2">
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-xs transition"
-                >
-                  + Nộp đơn đăng ký OT
-                </button>
-              </div>
-            </form>
-          </div>
-
-          {/* OT History Table */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4">
-            <h3 className="text-base font-bold text-slate-900">
-              Lịch sử đăng ký Tăng ca (OT) ({otHistory.length})
-            </h3>
-
-            <div className="overflow-x-auto border border-slate-200 rounded-xl">
-              <table className="w-full text-left text-xs text-slate-700">
-                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase text-[11px]">
-                  <tr>
-                    <th className="py-3 px-4">Mã đơn</th>
-                    <th className="py-3 px-4">Ngày tăng ca</th>
-                    <th className="py-3 px-4">Khung giờ OT</th>
-                    <th className="py-3 px-4">Nội dung / Dự án</th>
-                    <th className="py-3 px-4">Trạng thái</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 bg-white">
-                  {otHistory.map((item, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50 transition">
-                      <td className="py-3 px-4 font-mono font-bold text-blue-600">{item.code}</td>
-                      <td className="py-3 px-4 text-slate-700 font-semibold">{item.date}</td>
-                      <td className="py-3 px-4 font-mono text-blue-700 font-semibold">{item.time}</td>
-                      <td className="py-3 px-4 text-slate-700">{item.project}</td>
-                      <td className="py-3 px-4">
-                        <span
-                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                            item.status === "Chờ duyệt"
-                              ? "bg-amber-100 text-amber-800"
-                              : "bg-emerald-100 text-emerald-800"
-                          }`}
-                        >
-                          ● {item.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* =================================================================== */}
-      {/* SUBTAB 4: LỊCH SỬ ĐƠN TỪ & YÊU CẦU                                */}
-      {/* =================================================================== */}
-      {activeTab === "history" && (
-        <div className="space-y-6">
-          {/* Search Filter Card */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4">
-            <div>
-              <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">
-                BỘ LỌC TRA CỨU DỮ LIỆU
-              </span>
-              <h3 className="text-base font-bold text-slate-900">
-                Tra cứu Lịch sử Đơn từ & Yêu cầu
-              </h3>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
-              <div>
-                <label className="block text-slate-500 font-medium mb-1">Từ ngày</label>
-                <input
-                  type="date"
-                  value={historyFromDate}
-                  onChange={(e) => setHistoryFromDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none"
+                <Select
+                  placeholder="Tất cả trạng thái"
+                  size="sm"
+                  radius="md"
+                  w={180}
+                  data={[
+                    { value: "all", label: "Tất cả trạng thái" },
+                    { value: "Chờ duyệt", label: "Chờ duyệt" },
+                    { value: "Đã duyệt", label: "Đã duyệt" },
+                    { value: "Từ chối", label: "Từ chối" },
+                  ]}
+                  value={statusFilter}
+                  onChange={(v) => v && setStatusFilter(v)}
+                  allowDeselect={false}
                 />
-              </div>
+              </Group>
+            </Box>
 
-              <div>
-                <label className="block text-slate-500 font-medium mb-1">Đến ngày</label>
-                <input
-                  type="date"
-                  value={historyToDate}
-                  onChange={(e) => setHistoryToDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-500 font-medium mb-1">Loại đơn từ</label>
-                <select
-                  value={historyTypeFilter}
-                  onChange={(e) => setHistoryTypeFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none"
-                >
-                  <option value="all">Tất cả các loại đơn</option>
-                  <option value="Đăng ký Tăng ca (OT)">Đăng ký Tăng ca (OT)</option>
-                  <option value="Bổ sung giờ Check-out">Bổ sung giờ công</option>
-                  <option value="Đăng ký WFH">Đăng ký WFH</option>
-                  <option value="Giải trình đi muộn">Giải trình đi muộn</option>
-                  <option value="Đơn xin nghỉ phép">Đơn xin nghỉ phép</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-slate-500 font-medium mb-1">Trạng thái duyệt</label>
-                <select
-                  value={historyStatusFilter}
-                  onChange={(e) => setHistoryStatusFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none"
-                >
-                  <option value="all">Tất cả trạng thái</option>
-                  <option value="Chờ duyệt">Chờ duyệt</option>
-                  <option value="Đã duyệt">Đã duyệt</option>
-                  <option value="Đã chấp nhận">Đã chấp nhận</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-slate-500 font-medium mb-1">Tìm theo từ khóa</label>
-                <input
-                  type="text"
-                  placeholder="Mã đơn, lý do..."
-                  value={historyKeyword}
-                  onChange={(e) => setHistoryKeyword(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-900 outline-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Results Table Card */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900">
-                Kết quả tra cứu ({filteredRequests.length} đơn từ)
-              </h3>
-              <button
-                onClick={() => {
-                  setHistoryTypeFilter("all");
-                  setHistoryStatusFilter("all");
-                  setHistoryKeyword("");
-                }}
-                className="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 text-xs font-semibold rounded-lg shadow-xs transition"
-              >
-                Đặt lại bộ lọc
-              </button>
-            </div>
-
-            <div className="overflow-x-auto border border-slate-200 rounded-xl">
-              <table className="w-full text-left text-xs text-slate-700">
-                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase text-[11px]">
-                  <tr>
-                    <th className="py-3 px-4">Mã đơn</th>
-                    <th className="py-3 px-4">Loại đơn từ</th>
-                    <th className="py-3 px-4">Ngày nộp đơn</th>
-                    <th className="py-3 px-4">Ngày áp dụng</th>
-                    <th className="py-3 px-4">Thời gian / Khung giờ</th>
-                    <th className="py-3 px-4">Lý do / Dự án chi tiết</th>
-                    <th className="py-3 px-4">Trạng thái</th>
-                    <th className="py-3 px-4 text-right">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 bg-white">
+            <ScrollArea>
+              <Table verticalSpacing="md" horizontalSpacing="md" striped highlightOnHover>
+                <Table.Thead>
+                  <Table.Tr bg="gray.0">
+                    <HistoryTh columnKey="code">Mã đơn</HistoryTh>
+                    <HistoryTh columnKey="type">Loại đơn từ</HistoryTh>
+                    <HistoryTh columnKey="submitDate">Ngày nộp đơn</HistoryTh>
+                    <HistoryTh columnKey="applyDate">Ngày áp dụng</HistoryTh>
+                    <HistoryTh columnKey="time">Thời gian</HistoryTh>
+                    <HistoryTh columnKey="detail">Lý do chi tiết</HistoryTh>
+                    <Table.Th fw={600} fz="sm">Trạng thái</Table.Th>
+                    <Table.Th fw={600} fz="sm" ta="right"></Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
                   {filteredRequests.map((req, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50 transition">
-                      <td className="py-3 px-4 font-mono font-bold text-blue-600">{req.code}</td>
-                      <td className="py-3 px-4 font-semibold text-slate-800">{req.type}</td>
-                      <td className="py-3 px-4 text-slate-400 font-mono text-[11px]">{req.submitDate}</td>
-                      <td className="py-3 px-4 text-slate-700 font-medium">{req.applyDate}</td>
-                      <td className="py-3 px-4 font-mono text-blue-700 font-semibold">{req.time}</td>
-                      <td className="py-3 px-4 text-slate-600">{req.detail}</td>
-                      <td className="py-3 px-4">
-                        <span
-                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                            req.statusTone === "amber"
-                              ? "bg-amber-100 text-amber-800"
-                              : "bg-emerald-100 text-emerald-800"
-                          }`}
-                        >
-                          ● {req.status}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <button
-                          onClick={() => showToast(`Xem thông tin chi tiết đơn ${req.code}`)}
-                          className="px-3 py-1 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-semibold rounded-lg shadow-xs transition"
-                        >
-                          Xem
-                        </button>
-                      </td>
-                    </tr>
+                    <Table.Tr key={idx}>
+                      <Table.Td fw={700} c="blue">{req.code}</Table.Td>
+                      <Table.Td fw={600}>{req.type}</Table.Td>
+                      <Table.Td fz="xs" c="dimmed">{req.submitDate}</Table.Td>
+                      <Table.Td fw={500}>{req.applyDate}</Table.Td>
+                      <Table.Td fw={600} c="blue">{req.time}</Table.Td>
+                      <Table.Td>{req.detail}</Table.Td>
+                      <Table.Td>{renderStatusBadge(req.status)}</Table.Td>
+                      <Table.Td ta="right">
+                        <Menu position="bottom-end" shadow="sm">
+                          <Menu.Target>
+                            <ActionIcon variant="subtle" color="gray"><IconDotsVertical size={16} /></ActionIcon>
+                          </Menu.Target>
+                          <Menu.Dropdown>
+                            <Menu.Item leftSection={<IconEdit size={14} />}>Chỉnh sửa</Menu.Item>
+                            <Menu.Item leftSection={<IconTrash size={14} />} color="red">Xóa đơn</Menu.Item>
+                          </Menu.Dropdown>
+                        </Menu>
+                      </Table.Td>
+                    </Table.Tr>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+                </Table.Tbody>
+              </Table>
+            </ScrollArea>
+
+            <Box p="md" style={{ borderTop: '1px solid var(--mantine-color-gray-2)' }}>
+              <Group justify="space-between">
+                <Text fz="sm" c="dimmed">Hiển thị 1 đến {filteredRequests.length} của {filteredRequests.length} kết quả</Text>
+                <Pagination total={1} value={1} size="sm" color="blue" />
+              </Group>
+            </Box>
+          </Card>
+        </Tabs.Panel>
+      </Tabs>
+
+      <Modal opened={adjModalOpened} onClose={() => setAdjModalOpened(false)} title={<Text fw={600} fz="lg">Bổ sung Giờ công &amp; Giải trình</Text>} size="lg" radius="md">
+        <form onSubmit={handleSubmitAdjustment}>
+          <Grid>
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <TextInput type="date" label="Ngày áp dụng" withAsterisk value={adjDate} onChange={e => setAdjDate(e.currentTarget.value)} />
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Select label="Loại yêu cầu" withAsterisk data={["Quên Check-in giờ vào ca", "Quên Check-out", "Giải trình đi muộn", "Giải trình về sớm"]} value={adjType} onChange={(v) => v && setAdjType(v)} />
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <TextInput label="Giờ vào thực tế (Check-in)" value={adjCheckIn} onChange={e => setAdjCheckIn(e.currentTarget.value)} />
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <TextInput label="Giờ ra thực tế (Check-out)" value={adjCheckOut} onChange={e => setAdjCheckOut(e.currentTarget.value)} />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Select label="Lý do điều chỉnh" withAsterisk data={["Quên bấm máy chấm công", "Sự cố giao thông kẹt xe", "Gặp đối tác / công tác ngoài", "Sự cố thiết bị chấm công"]} value={adjReason} onChange={(v) => v && setAdjReason(v)} />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Textarea label="Mô tả hoàn cảnh chi tiết" placeholder="Ghi rõ chi tiết lý do..." minRows={3} value={adjDetail} onChange={e => setAdjDetail(e.currentTarget.value)} />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Text fw={500} fz="sm" mb={4}>Đính kèm bằng chứng (Vé xe, Hình ảnh, Xác nhận...)</Text>
+              <Card withBorder style={{ borderStyle: 'dashed', cursor: 'pointer' }} p="xl" ta="center" bg="gray.0">
+                <IconFileUpload size={32} color="gray" style={{ margin: '0 auto', marginBottom: 8 }} />
+                <Text fz="sm" c="dimmed">Kéo thả file vào đây hoặc <Text span c="blue" fw={600}>Chọn tải ảnh lên</Text></Text>
+              </Card>
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Group justify="flex-end" mt="md">
+                <Button variant="default" onClick={() => setAdjModalOpened(false)}>Hủy</Button>
+                <Button type="submit" color="blue" leftSection={<IconCheck size={16} />}>Nộp đơn</Button>
+              </Group>
+            </Grid.Col>
+          </Grid>
+        </form>
+      </Modal>
+    </Box>
   );
 }

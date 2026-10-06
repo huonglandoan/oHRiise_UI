@@ -1,4 +1,5 @@
 import React from "react";
+import { Badge } from "@mantine/core";
 
 export type IconName =
   | "home" | "clock" | "laptop" | "calendar" | "receipt" | "wallet"
@@ -59,10 +60,26 @@ export function Status({
   children: React.ReactNode;
   tone?: "blue" | "green" | "amber" | "red" | "gray";
 }) {
+  const formatText = (text: React.ReactNode) => {
+    if (typeof text === "string") {
+      return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    }
+    return text;
+  };
+
+  let icon = <span className="status-dot" />;
+  if (tone === "green") {
+    icon = <Icon name="check" size={12} />;
+  } else if (tone === "red") {
+    icon = <Icon name="close" size={12} />;
+  } else if (tone === "amber") {
+    icon = <Icon name="clock" size={12} />;
+  }
+
   return (
     <span className={`status status-${tone}`}>
-      <span className="status-dot" />
-      {children}
+      {icon}
+      {formatText(children)}
     </span>
   );
 }
@@ -74,6 +91,96 @@ export function ProgressRing({ value, label }: { value: number; label: string })
         <strong>{value}%</strong>
         <span>{label}</span>
       </div>
+    </div>
+  );
+}
+
+export function StatusBadge({ status, statusText }: { status: string; statusText?: string }) {
+  const textRaw = statusText || status;
+  const text = textRaw.charAt(0).toUpperCase() + textRaw.slice(1).toLowerCase();
+
+  const s = status.toLowerCase();
+  const isSuccess = ["paid", "approved", "completed", "success", "đã duyệt", "hoàn thành", "present", "on_time", "active", "đang sử dụng"].includes(s);
+  const isRejected = ["cancelled", "rejected", "failed", "declined", "đã hủy", "từ chối", "absent", "late", "replaced", "đã thu hồi"].includes(s);
+  const isPending = ["pending", "hr_review", "reviewing", "waiting", "new", "chờ duyệt", "chờ xử lý", "maintenance", "đang bảo hành"].includes(s);
+
+  let color = "gray";
+  let icon = <span className="status-dot" style={{ backgroundColor: "currentColor" }} />;
+  
+  if (isSuccess) {
+    color = "green";
+    icon = <Icon name="check" size={14} />;
+  } else if (isPending) {
+    color = "yellow";
+    icon = <Icon name="clock" size={14} />;
+  } else if (isRejected) {
+    color = "red";
+    icon = <Icon name="close" size={14} />;
+  } else if (s === "pending") {
+    color = "indigo";
+  }
+
+  return (
+    <Badge
+      variant="outline"
+      color={color}
+      radius="sm"
+      size="lg"
+      style={{ fontWeight: 600, textTransform: "none", letterSpacing: "normal" }}
+      leftSection={icon}
+    >
+      {text}
+    </Badge>
+  );
+}
+
+export function StatCard({
+  label,
+  value,
+  sub,
+}: {
+  label: string;
+  value: string | number;
+  sub?: string;
+}) {
+  return (
+    <div
+      style={{
+        background: "#111",
+        borderRadius: "16px",
+        padding: "20px 24px",
+        textAlign: "center",
+        display: "flex",
+        flexDirection: "column",
+        gap: "4px",
+      }}
+    >
+      <span
+        style={{
+          fontSize: "11px",
+          fontWeight: 700,
+          color: "rgba(255,255,255,0.45)",
+          letterSpacing: "0.8px",
+          textTransform: "uppercase",
+        }}
+      >
+        {label}
+      </span>
+      <span
+        style={{
+          fontSize: "28px",
+          fontWeight: 800,
+          color: "#fff",
+          lineHeight: 1.2,
+        }}
+      >
+        {value}
+      </span>
+      {sub && (
+        <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", fontWeight: 500 }}>
+          {sub}
+        </span>
+      )}
     </div>
   );
 }

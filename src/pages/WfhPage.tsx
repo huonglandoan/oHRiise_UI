@@ -1,715 +1,1068 @@
-import { useState } from "react";
-import { Icon, Status } from "../components/UI";
-import { PageHeader } from "../components/PageHeader";
+import React, { useState } from "react";
+import { StatusBadge } from "../components/UI";
+import {
+  Box, Group, Text, Title, Card, Grid, Select, TextInput, Textarea,
+  Button, Table, Badge, ScrollArea, Breadcrumbs, Anchor, Pagination,
+  Menu, ActionIcon, Modal, Stack, Tabs, Progress, Divider, SimpleGrid,
+  ThemeIcon, Tooltip
+} from "@mantine/core";
+import {
+  IconPlus, IconCheck, IconFileUpload, IconChevronUp, IconChevronDown,
+  IconDotsVertical, IconEdit, IconTrash, IconX, IconEye, IconFileText,
+  IconSearch, IconSparkles, IconExternalLink, IconPaperclip, IconFilter, IconSelector
+} from "@tabler/icons-react";
 
-interface WfhRecord {
+export interface WfhRecord {
   id: string;
   date: string;
-  dayOfWeek: string;
   timeSlot: string;
-  reason: string;
   project: string;
-  status: "approved" | "pending" | "completed" | "cancelled";
-  statusText: string;
+  reason: string;
+  status: string;
   hasReport: boolean;
-  reportSummary?: string;
-  aiScore?: string;
+  reportData?: DailyReportItem;
 }
 
-const INITIAL_WFH_LIST: WfhRecord[] = [
+export interface DailyReportItem {
+  reportId: string;
+  wfhId: string;
+  date: string;
+  timeSlot: string;
+  project: string;
+  submittedAt: string;
+  summary: string;
+  completedTasks: string[];
+  completionRate: number;
+  blockers?: string;
+  nextDayPlan?: string;
+  ticketLink?: string;
+  attachments: string[];
+  aiScore: string;
+  aiNote: string;
+}
+
+const INITIAL_REPORTS: DailyReportItem[] = [
   {
-    id: "#WFH-2026-0930",
-    date: "30/09/2026",
-    dayOfWeek: "Thứ Tư",
-    timeSlot: "Buổi sáng (08:30 - 12:00)",
-    reason: "Design system documentation",
-    project: "Design System v2",
-    status: "pending",
-    statusText: "Đang chờ duyệt",
-    hasReport: false,
-  },
-  {
-    id: "#WFH-2026-0925",
-    date: "25/09/2026",
-    dayOfWeek: "Thứ Sáu",
-    timeSlot: "Cả ngày (08:30 - 17:35)",
-    reason: "Product Design & Layout Review",
-    project: "HRMS Portal",
-    status: "approved",
-    statusText: "Đã duyệt",
-    hasReport: false,
-  },
-  {
-    id: "#WFH-2026-0918",
+    reportId: "RPT-0918",
+    wfhId: "WFH-0918",
     date: "18/09/2026",
-    dayOfWeek: "Thứ Sáu",
     timeSlot: "Cả ngày (08:30 - 17:35)",
-    reason: "Product Design & Mockup UI",
     project: "HRMS Portal",
-    status: "completed",
-    statusText: "Đã hoàn thành",
-    hasReport: true,
-    reportSummary: "Hoàn tất 5 screen UI dashboard, nộp file Figma trên Jira #UI-102.",
-    aiScore: "20/20 ảnh mẫu minh bạch (99%)",
+    submittedAt: "18/09/2026 17:40",
+    summary: "Hoàn tất 5 screen UI dashboard, nộp file Figma trên Jira #UI-102 và bàn giao token.",
+    completedTasks: [
+      "Thiết kế Responsive Mobile cho Employee Profile",
+      "Xây dựng Component Tabs và Filter cho Attendance & WFH",
+      "Bàn giao Tokens và Mantine Theme specs cho Developer"
+    ],
+    completionRate: 100,
+    blockers: "Không có, team phối hợp nhanh chóng.",
+    nextDayPlan: "Họp Demo Design Review với Product Owner.",
+    ticketLink: "https://jira.company.vn/browse/UI-102",
+    attachments: ["screenshot_figma_screens.png", "figma_handoff.pdf"],
+    aiScore: "20/20 ảnh (99%)",
+    aiNote: "Báo cáo đầy đủ, tiến độ đạt 100%, có bằng chứng bàn giao Jira & Figma chuẩn xác.",
   },
   {
-    id: "#WFH-2026-0911",
+    reportId: "RPT-0911",
+    wfhId: "WFH-0911",
     date: "11/09/2026",
-    dayOfWeek: "Thứ Sáu",
     timeSlot: "Cả ngày (08:30 - 17:35)",
-    reason: "Research synthesis & User journey mapping",
     project: "UX Research",
-    status: "completed",
-    statusText: "Đã hoàn thành",
-    hasReport: true,
-    reportSummary: "Tổng hợp 12 cuộc phỏng vấn người dùng và vẽ sơ đồ Customer Journey.",
-    aiScore: "18/18 ảnh mẫu minh bạch (96%)",
+    submittedAt: "11/09/2026 17:30",
+    summary: "Tổng hợp 12 cuộc phỏng vấn người dùng và vẽ sơ đồ Customer Journey.",
+    completedTasks: [
+      "Phỏng vấn 4 Quản lý bộ phận về tính năng duyệt đơn",
+      "Tổng hợp Insights từ phỏng vấn nhân viên",
+      "Vẽ sơ đồ luồng người dùng (User Flow) v1.2"
+    ],
+    completionRate: 95,
+    blockers: "Một số user phản hồi chậm buổi sáng, đã dời qua đầu giờ chiều.",
+    nextDayPlan: "Hoàn thiện Slide báo cáo UX Research.",
+    ticketLink: "https://jira.company.vn/browse/UX-88",
+    attachments: ["user_journey_map.pdf", "interview_notes.docx"],
+    aiScore: "18/18 ảnh (96%)",
+    aiNote: "Nội dung chi tiết, các đầu việc phỏng vấn có biên bản đính kèm minh bạch.",
+  },
+];
+
+const INITIAL_WFH: WfhRecord[] = [
+  {
+    id: "WFH-0930",
+    date: "30/09/2026",
+    timeSlot: "Buổi sáng (08:30 - 12:00)",
+    project: "Design System v2",
+    reason: "Design system documentation",
+    status: "Chờ duyệt",
+    hasReport: false,
   },
   {
-    id: "#WFH-2026-0904",
+    id: "WFH-0925",
+    date: "25/09/2026",
+    timeSlot: "Cả ngày (08:30 - 17:35)",
+    project: "HRMS Portal",
+    reason: "Product Design & Layout Review",
+    status: "Đã duyệt",
+    hasReport: false,
+  },
+  {
+    id: "WFH-0918",
+    date: "18/09/2026",
+    timeSlot: "Cả ngày (08:30 - 17:35)",
+    project: "HRMS Portal",
+    reason: "Product Design & Mockup UI",
+    status: "Hoàn thành",
+    hasReport: true,
+    reportData: INITIAL_REPORTS[0],
+  },
+  {
+    id: "WFH-0911",
+    date: "11/09/2026",
+    timeSlot: "Cả ngày (08:30 - 17:35)",
+    project: "UX Research",
+    reason: "Research synthesis & User journey mapping",
+    status: "Hoàn thành",
+    hasReport: true,
+    reportData: INITIAL_REPORTS[1],
+  },
+  {
+    id: "WFH-0904",
     date: "04/09/2026",
-    dayOfWeek: "Thứ Sáu",
     timeSlot: "Buổi chiều (13:00 - 17:35)",
-    reason: "Design review & Release notes",
     project: "Release v1.4",
-    status: "cancelled",
-    statusText: "Đã hủy",
+    reason: "Design review & Release notes",
+    status: "Đã hủy",
     hasReport: false,
   },
 ];
 
-export default function WfhPage({ open }: { open: () => void }) {
-  const [activeTab, setActiveTab] = useState<"register" | "report" | "history">("register");
-  const [records, setRecords] = useState<WfhRecord[]>(INITIAL_WFH_LIST);
-  const [cancelModalRecord, setCancelModalRecord] = useState<WfhRecord | null>(null);
-  const [cancelReason, setCancelReason] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
+interface WfhPageProps {
+  open?: () => void;
+}
 
-  // Form states for WFH Registration
-  const [regDate, setRegDate] = useState("2026-10-02");
-  const [regTimeSlot, setRegTimeSlot] = useState("Cả ngày (08:30 - 17:35)");
-  const [regProject, setRegProject] = useState("oHRiise UI/UX");
-  const [regReason, setRegReason] = useState("");
+export default function WfhPage({ open }: WfhPageProps) {
+  // Tabs: "requests" | "reports"
+  const [activeTab, setActiveTab] = useState<string | null>("requests");
 
-  // Form states for Daily Report
-  const [reportWfhId, setReportWfhId] = useState("#WFH-2026-0925");
-  const [reportContent, setReportContent] = useState("");
-  const [reportLink, setReportLink] = useState("");
-  const [reportProgress, setReportProgress] = useState(100);
+  const [records, setRecords] = useState<WfhRecord[]>(INITIAL_WFH);
+  const [reports, setReports] = useState<DailyReportItem[]>(INITIAL_REPORTS);
 
-  // History Filter States
-  const [wfhStartDate, setWfhStartDate] = useState("2026-09-01");
-  const [wfhEndDate, setWfhEndDate] = useState("2026-09-30");
-  const [wfhSortOrder, setWfhSortOrder] = useState<"newest" | "oldest">("newest");
+  // Filter state for Subtab 1 (Đơn WFH)
+  const [wfhSearch, setWfhSearch] = useState("");
+  const [wfhFilterMonth, setWfhFilterMonth] = useState<string | null>("all");
+  const [wfhFilterStatus, setWfhFilterStatus] = useState<string | null>("all");
 
-  // Handle Cancel WFH
-  const handleConfirmCancel = () => {
-    if (!cancelModalRecord) return;
-    setRecords((prev) =>
-      prev.map((item) =>
-        item.id === cancelModalRecord.id
-          ? { ...item, status: "cancelled", statusText: "Đã hủy" }
-          : item
-      )
-    );
-    alert(`Đã hủy đơn WFH ${cancelModalRecord.id} thành công.`);
-    setCancelModalRecord(null);
-    setCancelReason("");
+  // Filter state for Subtab 2 (Lịch sử Daily Report)
+  const [reportSearch, setReportSearch] = useState("");
+  const [reportFilterMonth, setReportFilterMonth] = useState<string | null>("all");
+  const [reportFilterProject, setReportFilterProject] = useState<string | null>("all");
+  const [reportFilterScore, setReportFilterScore] = useState<string | null>("all");
+
+  // Modal Đăng ký WFH
+  const [addModalOpened, setAddModalOpened] = useState(false);
+  const [wfhDate, setWfhDate] = useState("");
+  const [wfhSlot, setWfhSlot] = useState("Cả ngày (08:30 - 17:35)");
+  const [wfhProject, setWfhProject] = useState("");
+  const [wfhReason, setWfhReason] = useState("");
+
+  // Modal Nộp Daily Report chi tiết
+  const [reportModalRecord, setReportModalRecord] = useState<WfhRecord | null>(null);
+  const [reportSummary, setReportSummary] = useState("");
+  const [reportTasks, setReportTasks] = useState("");
+  const [reportCompletion, setReportCompletion] = useState("100%");
+  const [reportBlockers, setReportBlockers] = useState("");
+  const [reportNextDay, setReportNextDay] = useState("");
+  const [reportTicket, setReportTicket] = useState("");
+  const [reportFiles, setReportFiles] = useState<string[]>(["screenshot_proof_work.png"]);
+
+  // Modal Xem chi tiết Daily Report
+  const [viewReportModal, setViewReportModal] = useState<DailyReportItem | null>(null);
+
+  // Sort state for WFH requests
+  const [sortConfig, setSortConfig] = useState<{ key: keyof WfhRecord | null; direction: "asc" | "desc" }>({ key: null, direction: "asc" });
+
+  const handleSort = (key: keyof WfhRecord) => {
+    let direction: "asc" | "desc" = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") direction = "desc";
+    setSortConfig({ key, direction });
   };
 
-  // Handle Submit WFH Register Form
-  const handleSubmitRegister = (e: React.FormEvent) => {
+  const Th = ({ children, columnKey }: { children: React.ReactNode; columnKey: keyof WfhRecord }) => {
+    const isSorted = sortConfig.key === columnKey;
+    const isAsc = isSorted && sortConfig.direction === "asc";
+    const isDesc = isSorted && sortConfig.direction === "desc";
+
+    return (
+      <Table.Th>
+        <Group justify="space-between" align="center" wrap="nowrap" style={{ cursor: "pointer" }} onClick={() => handleSort(columnKey)}>
+          <Text fw={600} fz="sm">{children}</Text>
+          <Group gap={0}>
+            {isAsc ? (
+              <IconChevronUp size={14} color="var(--mantine-color-blue-6)" />
+            ) : isDesc ? (
+              <IconChevronDown size={14} color="var(--mantine-color-blue-6)" />
+            ) : (
+              <IconSelector size={14} color="gray" opacity={0.5} />
+            )}
+          </Group>
+        </Group>
+      </Table.Th>
+    );
+  };
+
+  const [reportSortConfig, setReportSortConfig] = useState<{ key: keyof DailyReportItem | null; direction: "asc" | "desc" }>({ key: null, direction: "asc" });
+
+  const handleReportSort = (key: keyof DailyReportItem) => {
+    let direction: "asc" | "desc" = "asc";
+    if (reportSortConfig.key === key && reportSortConfig.direction === "asc") direction = "desc";
+    setReportSortConfig({ key, direction });
+  };
+
+  const ThReport = ({ children, columnKey }: { children: React.ReactNode; columnKey: keyof DailyReportItem }) => {
+    const isSorted = reportSortConfig.key === columnKey;
+    const isAsc = isSorted && reportSortConfig.direction === "asc";
+    const isDesc = isSorted && reportSortConfig.direction === "desc";
+
+    return (
+      <Table.Th>
+        <Group justify="space-between" align="center" wrap="nowrap" style={{ cursor: "pointer" }} onClick={() => handleReportSort(columnKey)}>
+          <Text fw={600} fz="sm">{children}</Text>
+          <Group gap={0}>
+            {isAsc ? (
+              <IconChevronUp size={14} color="var(--mantine-color-blue-6)" />
+            ) : isDesc ? (
+              <IconChevronDown size={14} color="var(--mantine-color-blue-6)" />
+            ) : (
+              <IconSelector size={14} color="gray" opacity={0.5} />
+            )}
+          </Group>
+        </Group>
+      </Table.Th>
+    );
+  };
+
+  // Filtered & Sorted WFH Records
+  let filteredWfh = records.filter(r => {
+    const matchSearch =
+      r.id.toLowerCase().includes(wfhSearch.toLowerCase()) ||
+      r.project.toLowerCase().includes(wfhSearch.toLowerCase()) ||
+      r.reason.toLowerCase().includes(wfhSearch.toLowerCase()) ||
+      r.date.includes(wfhSearch);
+    const matchMonth =
+      wfhFilterMonth === "all" || !wfhFilterMonth || r.date.includes(wfhFilterMonth);
+    const matchStatus =
+      wfhFilterStatus === "all" || !wfhFilterStatus || r.status === wfhFilterStatus;
+    return matchSearch && matchMonth && matchStatus;
+  });
+
+  if (sortConfig.key) {
+    filteredWfh.sort((a, b) => {
+      const aV = a[sortConfig.key!] ?? ""; const bV = b[sortConfig.key!] ?? "";
+      if (aV < bV) return sortConfig.direction === "asc" ? -1 : 1;
+      if (aV > bV) return sortConfig.direction === "asc" ? 1 : -1;
+      return 0;
+    });
+  }
+
+  // Filtered & Sorted Reports
+  let processedReportsData = [...reports];
+  if (reportSortConfig.key) {
+    processedReportsData.sort((a, b) => {
+      const aV = a[reportSortConfig.key!] ?? ""; const bV = b[reportSortConfig.key!] ?? "";
+      if (aV < bV) return reportSortConfig.direction === "asc" ? -1 : 1;
+      if (aV > bV) return reportSortConfig.direction === "asc" ? 1 : -1;
+      return 0;
+    });
+  }
+
+  const filteredReports = processedReportsData.filter((rpt) => {
+    const matchSearch =
+      rpt.project.toLowerCase().includes(reportSearch.toLowerCase()) ||
+      rpt.summary.toLowerCase().includes(reportSearch.toLowerCase()) ||
+      rpt.wfhId.toLowerCase().includes(reportSearch.toLowerCase()) ||
+      rpt.reportId.toLowerCase().includes(reportSearch.toLowerCase()) ||
+      rpt.date.includes(reportSearch);
+    const matchMonth =
+      reportFilterMonth === "all" || !reportFilterMonth || rpt.date.includes(reportFilterMonth);
+    const matchProject =
+      reportFilterProject === "all" || !reportFilterProject || rpt.project === reportFilterProject;
+    const matchScore =
+      reportFilterScore === "all" || !reportFilterScore
+        ? true
+        : reportFilterScore === "high"
+          ? rpt.aiScore.includes("98%") || rpt.aiScore.includes("99%") || rpt.aiScore.includes("100%")
+          : true;
+    return matchSearch && matchMonth && matchProject && matchScore;
+  });
+
+  const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!regReason.trim()) {
-      alert("Vui lòng nhập lý do / mục tiêu công việc WFH.");
-      return;
-    }
+    const mon = wfhDate ? wfhDate.slice(5, 7) : "00";
+    const day = wfhDate ? wfhDate.slice(8, 10) : "00";
     const newRecord: WfhRecord = {
-      id: `#WFH-2026-10${Math.floor(Math.random() * 90 + 10)}`,
-      date: regDate.split("-").reverse().join("/"),
-      dayOfWeek: "Thứ Sáu",
-      timeSlot: regTimeSlot,
-      reason: regReason,
-      project: regProject,
-      status: "pending",
-      statusText: "Đang chờ duyệt",
+      id: `WFH-${mon}${day}`,
+      date: wfhDate ? wfhDate.split("-").reverse().join("/") : "Hôm nay",
+      timeSlot: wfhSlot,
+      project: wfhProject || "Dự án chưa đặt tên",
+      reason: wfhReason || "Làm việc từ xa",
+      status: "Chờ duyệt",
       hasReport: false,
     };
     setRecords([newRecord, ...records]);
-    alert("Đã gửi đăng ký WFH thành công! Đơn đang chờ duyệt.");
-    setRegReason("");
+    setAddModalOpened(false);
+    setWfhDate(""); setWfhProject(""); setWfhReason("");
   };
 
-  // Handle Submit Daily Report
-  const handleSubmitReport = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!reportContent.trim()) {
-      alert("Vui lòng nhập nội dung công việc đã hoàn thành trong ngày.");
-      return;
-    }
-    setRecords((prev) =>
-      prev.map((item) =>
-        item.id === reportWfhId
-          ? {
-              ...item,
-              hasReport: true,
-              status: "completed",
-              statusText: "Đã hoàn thành",
-              reportSummary: reportContent,
-            }
-          : item
-      )
-    );
-    alert("Đã nộp báo cáo Daily Report WFH thành công!");
-    setReportContent("");
-    setReportLink("");
+  const openSubmitReportModal = (record: WfhRecord) => {
+    setReportModalRecord(record);
+    setReportSummary("");
+    setReportTasks("");
+    setReportCompletion("100%");
+    setReportBlockers("");
+    setReportNextDay("");
+    setReportTicket("");
+    setReportFiles(["screenshot_proof_work.png"]);
   };
 
-  const getRecordTimestamp = (dateStr: string) => {
-    const parts = dateStr.split("/");
-    if (parts.length === 3) {
-      return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`).getTime();
-    }
-    return 0;
+  const handleSubmitReport = () => {
+    if (!reportModalRecord) return;
+
+    const rateNum = parseInt(reportCompletion) || 100;
+    const taskList = reportTasks
+      ? reportTasks.split("\n").map(t => t.trim()).filter(Boolean)
+      : ["Hoàn thành các mục tiêu công việc theo kế hoạch WFH."];
+
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+    const newReport: DailyReportItem = {
+      reportId: `RPT-${reportModalRecord.id.replace("WFH-", "")}`,
+      wfhId: reportModalRecord.id,
+      date: reportModalRecord.date,
+      timeSlot: reportModalRecord.timeSlot,
+      project: reportModalRecord.project,
+      submittedAt: `${reportModalRecord.date} ${timeStr}`,
+      summary: reportSummary,
+      completedTasks: taskList,
+      completionRate: rateNum,
+      blockers: reportBlockers || "Không có vướng mắc phát sinh.",
+      nextDayPlan: reportNextDay || "Tiếp tục thực hiện các công việc theo kế hoạch sprint.",
+      ticketLink: reportTicket || undefined,
+      attachments: reportFiles.length > 0 ? reportFiles : ["screenshot_work.png"],
+      aiScore: "20/20 ảnh (100%)",
+      aiNote: "Báo cáo chi tiết, nộp đúng thời hạn, tài liệu chứng thực hợp lệ.",
+    };
+
+    setReports([newReport, ...reports]);
+
+    // Cập nhật trạng thái record thành "Hoàn thành"
+    setRecords(prev => prev.map(r =>
+      r.id === reportModalRecord.id
+        ? { ...r, hasReport: true, status: "Hoàn thành", reportData: newReport }
+        : r
+    ));
+
+    setReportModalRecord(null);
   };
 
-  const filteredHistoryRecords = records
-    .filter((r) => {
-      // Filter status
-      if (filterStatus !== "all" && r.status !== filterStatus) return false;
-      // Filter date range
-      const parts = r.date.split("/");
-      if (parts.length === 3) {
-        const recIso = `${parts[2]}-${parts[1].padStart(2, "0")}-${parts[0].padStart(2, "0")}`;
-        if (wfhStartDate && recIso < wfhStartDate) return false;
-        if (wfhEndDate && recIso > wfhEndDate) return false;
-      }
-      return true;
-    })
-    .sort((a, b) => {
-      const timeA = getRecordTimestamp(a.date);
-      const timeB = getRecordTimestamp(b.date);
-      return wfhSortOrder === "newest" ? timeB - timeA : timeA - timeB;
-    });
+  const renderStatusBadge = (status: string) => <StatusBadge status={status} />;
+
+  const summaryCards = [
+    { label: "Hạn mức WFH", value: "4", sub: "ngày / tháng" },
+    { label: "Đã sử dụng", value: "3", sub: "tháng 9/2026" },
+    { label: "Còn lại", value: "1", sub: "ngày tháng này" },
+    { label: "Tỉ lệ hoàn thành", value: "100%", sub: "Báo cáo đã nộp" },
+  ];
+
+  const uniqueProjects = Array.from(new Set(reports.map(r => r.project)));
 
   return (
-    <div className="page inner-page">
-      {/* Page Heading */}
-      <PageHeader
-        group="LÀM VIỆC LINH HOẠT"
-        title="Làm việc từ xa (WFH)"
-        description="Đăng ký ngày WFH, nộp Báo cáo Daily Report và xem Lịch sử đơn từ."
-        icon="laptop"
-      />
-
-      {/* TOP SUB-TABS NAVIGATION */}
-      <div className="approval-tabs mb-6">
-        <button
-          onClick={() => setActiveTab("register")}
-          className={activeTab === "register" ? "active" : ""}
-        >
+    <Box>
+      {/* Header */}
+      <Group justify="space-between" align="center" mb="xl">
+        <Box>
+          <Title order={2} fw={600} mb={4}>Làm việc từ xa (WFH)</Title>
+          <Breadcrumbs separator="/" fz="sm">
+            <Anchor href="#" c="dimmed">Tổng quan</Anchor>
+            <Text c="dimmed">Làm việc từ xa</Text>
+          </Breadcrumbs>
+        </Box>
+        <Button color="blue" radius="xl" leftSection={<IconPlus size={16} />} onClick={() => setAddModalOpened(true)}>
           Đăng ký WFH
-        </button>
+        </Button>
+      </Group>
 
-        <button
-          onClick={() => setActiveTab("report")}
-          className={activeTab === "report" ? "active" : ""}
-        >
-          Nộp Daily Report
-        </button>
+      {/* Summary Cards */}
+      <Grid mb="xl">
+        {summaryCards.map((item, index) => (
+          <Grid.Col span={{ base: 12, sm: 6, lg: 3 }} key={index}>
+            <Card withBorder radius="lg" padding="lg" ta="center">
+              <Text fw={700} fz="sm" c="dimmed" tt="uppercase" style={{ letterSpacing: "0.5px" }}>{item.label}</Text>
+              <Group justify="center" align="baseline" gap={4} mt="xs">
+                <Text fw={700} fz={24} c="dark.9">{item.value}</Text>
+                {item.sub && <Text fz="xs" c="dimmed">{item.sub}</Text>}
+              </Group>
+            </Card>
+          </Grid.Col>
+        ))}
+      </Grid>
 
-        <button
-          onClick={() => setActiveTab("history")}
-          className={activeTab === "history" ? "active" : ""}
-        >
-          Lịch sử WFH & Báo cáo
-        </button>
-      </div>
+      {/* 2 Subtabs */}
+      <Tabs value={activeTab} onChange={setActiveTab} variant="default" mb="xl">
+        <Tabs.List mb="lg">
+          <Tabs.Tab value="requests">Danh sách đơn WFH</Tabs.Tab>
+          <Tabs.Tab value="reports">Lịch sử Báo cáo hằng ngày</Tabs.Tab>
+        </Tabs.List>
 
-      {/* SUB-TAB 1: ĐĂNG KÝ WFH (FULL WIDTH CLEAN DESIGN WITH LARGER TYPOGRAPHY) */}
-      {activeTab === "register" && (
-        <section className="panel" style={{ padding: "32px", width: "100%" }}>
-          <div style={{ marginBottom: "24px" }}>
-            <p style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-sub)", letterSpacing: "0.5px" }}>
-              TẠO YÊU CẦU MỚI
-            </p>
-            <h2 style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-main)", marginTop: "4px" }}>
-              Đăng ký ngày Làm việc từ xa (WFH)
-            </h2>
-          </div>
-
-          <form onSubmit={handleSubmitRegister} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px" }}>
-              <div>
-                <label style={{ fontSize: "15px", fontWeight: 700, display: "block", marginBottom: "8px" }}>
-                  Chọn ngày đăng ký WFH <span style={{ color: "#dc2626" }}>*</span>
-                </label>
-                <input
-                  type="date"
-                  value={regDate}
-                  onChange={(e) => setRegDate(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "13px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "15px",
-                    fontWeight: 600,
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ fontSize: "15px", fontWeight: 700, display: "block", marginBottom: "8px" }}>
-                  Khung thời gian WFH <span style={{ color: "#dc2626" }}>*</span>
-                </label>
-                <select
-                  value={regTimeSlot}
-                  onChange={(e) => setRegTimeSlot(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "13px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "15px",
-                    fontWeight: 600,
-                  }}
-                >
-                  <option value="Cả ngày (08:30 - 17:35)">Cả ngày (08:30 - 17:35)</option>
-                  <option value="Buổi sáng (08:30 - 12:00)">Buổi sáng (08:30 - 12:00)</option>
-                  <option value="Buổi chiều (13:00 - 17:35)">Buổi chiều (13:00 - 17:35)</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label style={{ fontSize: "15px", fontWeight: 700, display: "block", marginBottom: "8px" }}>
-                Dự án / Nhóm công việc liên quan
-              </label>
-              <input
-                type="text"
-                value={regProject}
-                onChange={(e) => setRegProject(e.target.value)}
-                placeholder="Nhập tên dự án hoặc nhóm công việc..."
-                style={{
-                  width: "100%",
-                  padding: "13px",
-                  borderRadius: "12px",
-                  border: "1px solid var(--border-soft)",
-                  fontSize: "15px",
-                }}
-              />
-            </div>
-
-            <div>
-              <label style={{ fontSize: "15px", fontWeight: 700, display: "block", marginBottom: "8px" }}>
-                Lý do & Mục tiêu đầu ra công việc <span style={{ color: "#dc2626" }}>*</span>
-              </label>
-              <textarea
-                rows={4}
-                value={regReason}
-                onChange={(e) => setRegReason(e.target.value)}
-                placeholder="Mô tả cụ thể mục tiêu đầu ra và lý do làm việc từ xa..."
-                style={{
-                  width: "100%",
-                  padding: "13px",
-                  borderRadius: "12px",
-                  border: "1px solid var(--border-soft)",
-                  fontSize: "15px",
-                }}
-              />
-            </div>
-
-            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "10px" }}>
-              <button className="primary" type="submit" style={{ padding: "14px 32px", fontSize: "16px", fontWeight: 800 }}>
-                <Icon name="check" size={20} /> Nộp đơn đăng ký WFH
-              </button>
-            </div>
-          </form>
-        </section>
-      )}
-
-      {/* SUB-TAB 2: NỘP BÁO CÁO NGÀY (DAILY REPORT WFH) */}
-      {activeTab === "report" && (
-        <section className="panel" style={{ padding: "32px", width: "100%" }}>
-          <div style={{ marginBottom: "24px" }}>
-            <p style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-sub)", letterSpacing: "0.5px" }}>
-              BÁO CÁO CUỐI NGÀY
-            </p>
-            <h2 style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-main)" }}>
-              Nộp Báo cáo ngày (Daily Report WFH)
-            </h2>
-            <p style={{ fontSize: "15px", color: "var(--text-sub)", marginTop: "4px" }}>
-              Báo cáo tiến độ kết quả công việc dành riêng cho ngày làm việc từ xa.
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmitReport} style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
-            <div>
-              <label style={{ fontSize: "15px", fontWeight: 700, display: "block", marginBottom: "8px" }}>
-                Chọn ngày WFH cần nộp báo cáo <span style={{ color: "#dc2626" }}>*</span>
-              </label>
-              <select
-                value={reportWfhId}
-                onChange={(e) => setReportWfhId(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "13px",
-                  borderRadius: "12px",
-                  border: "1px solid var(--border-soft)",
-                  fontSize: "15px",
-                  fontWeight: 600,
-                }}
-              >
-                {records
-                  .filter((r) => r.status === "approved" || r.status === "completed")
-                  .map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.id} - Ngày {r.date} ({r.reason})
-                    </option>
-                  ))}
-              </select>
-            </div>
-
-            <div>
-              <label style={{ fontSize: "15px", fontWeight: 700, display: "block", marginBottom: "8px" }}>
-                Nội dung công việc & Kết quả đã hoàn thành <span style={{ color: "#dc2626" }}>*</span>
-              </label>
-              <textarea
-                rows={5}
-                value={reportContent}
-                onChange={(e) => setReportContent(e.target.value)}
-                placeholder="Liệt kê các đầu việc đã làm trong ngày WFH, kết quả nghiệm thu..."
-                style={{
-                  width: "100%",
-                  padding: "13px",
-                  borderRadius: "12px",
-                  border: "1px solid var(--border-soft)",
-                  fontSize: "15px",
-                }}
-              />
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px" }}>
-              <div>
-                <label style={{ fontSize: "15px", fontWeight: 700, display: "block", marginBottom: "8px" }}>
-                  Mức độ hoàn thành (%)
-                </label>
-                <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                  <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={reportProgress}
-                    onChange={(e) => setReportProgress(Number(e.target.value))}
-                    placeholder="100"
-                    style={{
-                      width: "100%",
-                      padding: "13px",
-                      paddingRight: "36px",
-                      borderRadius: "12px",
-                      border: "1px solid var(--border-soft)",
-                      fontSize: "15px",
-                      fontWeight: 700,
-                    }}
+        {/* SUBTAB 1: DANH SÁCH ĐƠN WFH */}
+        <Tabs.Panel value="requests">
+          <Card withBorder radius="lg" p={0} shadow="sm">
+            {/* Bộ lọc trên tiêu đề subtab */}
+            <Box p="md" className="filter-section">
+              <Group justify="space-between" wrap="wrap" gap="sm">
+                <Group gap="xs" wrap="wrap">
+                  <TextInput
+                    placeholder="Tìm kiếm đơn..."
+                    leftSection={<IconSearch size={15} />}
+                    size="xs"
+                    w={190}
+                    value={wfhSearch}
+                    onChange={(e) => setWfhSearch(e.currentTarget.value)}
                   />
-                  <span
-                    style={{
-                      position: "absolute",
-                      right: "14px",
-                      fontSize: "15px",
-                      fontWeight: 700,
-                      color: "var(--text-sub)",
-                      pointerEvents: "none",
-                    }}
-                  >
-                    %
-                  </span>
-                </div>
-              </div>
+                  <Select
+                    placeholder="Thời gian"
+                    size="xs"
+                    w={125}
+                    data={[
+                      { value: "all", label: "Tất cả tháng" },
+                      { value: "09/2026", label: "Tháng 09/2026" },
+                      { value: "10/2026", label: "Tháng 10/2026" },
+                    ]}
+                    value={wfhFilterMonth}
+                    onChange={setWfhFilterMonth}
+                    allowDeselect={false}
+                  />
+                  <Select
+                    placeholder="Trạng thái"
+                    size="xs"
+                    w={130}
+                    data={[
+                      { value: "all", label: "Tất cả trạng thái" },
+                      { value: "Chờ duyệt", label: "Chờ duyệt" },
+                      { value: "Đã duyệt", label: "Đã duyệt" },
+                      { value: "Hoàn thành", label: "Hoàn thành" },
+                      { value: "Đã hủy", label: "Đã hủy" },
+                    ]}
+                    value={wfhFilterStatus}
+                    onChange={setWfhFilterStatus}
+                    allowDeselect={false}
+                  />
+                </Group>
+              </Group>
+            </Box>
 
-              <div>
-                <label style={{ fontSize: "15px", fontWeight: 700, display: "block", marginBottom: "8px" }}>
-                  Link đính kèm kết quả (Figma / Jira / Docs)
-                </label>
-                <input
-                  type="text"
-                  value={reportLink}
-                  onChange={(e) => setReportLink(e.target.value)}
-                  placeholder="https://figma.com/file/... hoặc link báo cáo"
-                  style={{
-                    width: "100%",
-                    padding: "13px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "15px",
-                  }}
-                />
-              </div>
-            </div>
+            <ScrollArea>
+              <Table className="ohriise-table" verticalSpacing="md" horizontalSpacing="md" highlightOnHover striped={false}>
+                <Table.Thead>
+                  <Table.Tr bg="transparent">
+                    <Th columnKey="id">Mã đơn</Th>
+                    <Th columnKey="date">Ngày WFH</Th>
+                    <Th columnKey="timeSlot">Khung giờ</Th>
+                    <Th columnKey="project">Dự án</Th>
+                    <Th columnKey="hasReport">Báo cáo</Th>
+                    <Th columnKey="status">Trạng thái</Th>
+                    <Table.Th style={{ textAlign: "right" }}></Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {filteredWfh.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={7} ta="center" py="xl">
+                        <Text c="dimmed">Không tìm thấy đơn WFH nào phù hợp bộ lọc</Text>
+                      </Table.Td>
+                    </Table.Tr>
+                  ) : (
+                    filteredWfh.map((r) => (
+                      <Table.Tr key={r.id}>
+                        <Table.Td fw={700} c="dark.9">{r.id}</Table.Td>
+                        <Table.Td fw={500}>{r.date}</Table.Td>
+                        <Table.Td c="blue" fw={600}>{r.timeSlot}</Table.Td>
+                        <Table.Td>
+                          <Text fw={600} fz="sm">{r.project}</Text>
+                          <Text fz="xs" c="dimmed">{r.reason}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          {r.hasReport ? (
+                            <Badge
+                              color="teal"
+                              variant="light"
+                              size="sm"
+                              leftSection={<IconCheck size={12} />}
+                              style={{ cursor: "pointer" }}
+                              onClick={() => {
+                                const found = reports.find(rpt => rpt.wfhId === r.id);
+                                if (found) setViewReportModal(found);
+                              }}
+                            >
+                              Đã có report
+                            </Badge>
+                          ) : r.status === "Đã duyệt" ? (
+                            <Button
+                              size="xs"
+                              variant="filled"
+                              color="blue"
+                              radius="sm"
+                              leftSection={<IconFileText size={13} />}
+                              onClick={() => openSubmitReportModal(r)}
+                            >
+                              Nộp Báo cáo
+                            </Button>
+                          ) : (
+                            <Text fz="xs" c="dimmed">—</Text>
+                          )}
+                        </Table.Td>
+                        <Table.Td>{renderStatusBadge(r.status)}</Table.Td>
+                        <Table.Td ta="right">
+                          <Menu position="bottom-end" shadow="sm">
+                            <Menu.Target>
+                              <ActionIcon variant="subtle" color="gray"><IconDotsVertical size={16} /></ActionIcon>
+                            </Menu.Target>
+                            <Menu.Dropdown>
+                              <Menu.Item leftSection={<IconEdit size={14} />}>Chỉnh sửa</Menu.Item>
+                              <Menu.Item leftSection={<IconX size={14} />} color="orange">Hủy đơn</Menu.Item>
+                              <Menu.Item leftSection={<IconTrash size={14} />} color="red">Xóa</Menu.Item>
+                            </Menu.Dropdown>
+                          </Menu>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))
+                  )}
+                </Table.Tbody>
+              </Table>
+            </ScrollArea>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "10px" }}>
-              <button className="primary" type="submit" style={{ padding: "14px 32px", fontSize: "16px", fontWeight: 800 }}>
-                <Icon name="check" size={20} /> Nộp Báo cáo Daily Report
-              </button>
-            </div>
-          </form>
-        </section>
-      )}
+            <Box p="md">
+              <Group justify="space-between">
+                <Text fz="sm" c="dimmed">Hiển thị {filteredWfh.length} của {records.length} kết quả</Text>
+                <Pagination total={1} value={1} size="sm" radius="sm" color="blue" />
+              </Group>
+            </Box>
+          </Card>
+        </Tabs.Panel>
 
-      {/* SUB-TAB 3: LỊCH SỬ WFH & BÁO CÁO (HAS CANCEL ACTION & DATE FILTERS) */}
-      {activeTab === "history" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-          <section className="panel" style={{ padding: "28px", width: "100%" }}>
-            <div style={{ marginBottom: "20px" }}>
-              <p style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-sub)", letterSpacing: "0.5px" }}>
-                TRA CỨU LỊCH SỬ
-              </p>
-              <h2 style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-main)" }}>
-                Bộ lọc tra cứu đơn WFH ({filteredHistoryRecords.length})
-              </h2>
-            </div>
+        {/* SUBTAB 2: LỊCH SỬ BÁO CÁO HẰNG NGÀY */}
+        <Tabs.Panel value="reports">
+          <Card withBorder radius="lg" p={0} shadow="sm">
+            {/* Bộ lọc trên tiêu đề subtab: Gọn gàng, đầy đủ */}
+            <Box p="md" className="filter-section">
+              <Group justify="space-between" wrap="wrap" gap="sm">
+                <Group gap="xs" wrap="wrap">
+                  <TextInput
+                    placeholder="Tìm theo nội dung, dự án, mã..."
+                    leftSection={<IconSearch size={15} />}
+                    size="xs"
+                    w={210}
+                    value={reportSearch}
+                    onChange={(e) => setReportSearch(e.currentTarget.value)}
+                  />
+                  <Select
+                    placeholder="Thời gian"
+                    size="xs"
+                    w={125}
+                    data={[
+                      { value: "all", label: "Tất cả tháng" },
+                      { value: "09/2026", label: "Tháng 09/2026" },
+                      { value: "10/2026", label: "Tháng 10/2026" },
+                    ]}
+                    value={reportFilterMonth}
+                    onChange={setReportFilterMonth}
+                    allowDeselect={false}
+                  />
+                  <Select
+                    placeholder="Dự án"
+                    size="xs"
+                    w={140}
+                    data={[
+                      { value: "all", label: "Tất cả dự án" },
+                      ...uniqueProjects.map(p => ({ value: p, label: p }))
+                    ]}
+                    value={reportFilterProject}
+                    onChange={setReportFilterProject}
+                    allowDeselect={false}
+                  />
+                  <Select
+                    placeholder="AI Đánh giá"
+                    size="xs"
+                    w={135}
+                    data={[
+                      { value: "all", label: "Tất cả đánh giá" },
+                      { value: "high", label: "Minh bạch ≥ 98%" },
+                    ]}
+                    value={reportFilterScore}
+                    onChange={setReportFilterScore}
+                    allowDeselect={false}
+                  />
+                </Group>
 
-            {/* Date Range & Status Filter Bar */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                gap: "16px",
-                alignItems: "end",
+                <Badge color="teal" variant="light" size="md">
+                  {filteredReports.length} Báo cáo
+                </Badge>
+              </Group>
+            </Box>
+
+            <ScrollArea>
+              <Table className="ohriise-table" verticalSpacing="md" horizontalSpacing="md" highlightOnHover striped={false}>
+                <Table.Thead>
+                  {/* Tiêu đề ngắn gọn, bỏ cột chi tiết */}
+                  <Table.Tr bg="transparent">
+                    <ThReport columnKey="reportId">Mã báo cáo</ThReport>
+                    <ThReport columnKey="date">Ngày WFH</ThReport>
+                    <ThReport columnKey="project">Dự án</ThReport>
+                    <Table.Th fw={600} fz="sm" style={{ minWidth: 260 }}>Nội dung</Table.Th>
+                    <ThReport columnKey="completionRate">Tiến độ</ThReport>
+                    <Table.Th fw={600} fz="sm">Minh chứng</Table.Th>
+                    <ThReport columnKey="aiScore">AI Đánh giá</ThReport>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {filteredReports.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={7} ta="center" py="xl">
+                        <Text c="dimmed">Không tìm thấy báo cáo hằng ngày nào phù hợp</Text>
+                      </Table.Td>
+                    </Table.Tr>
+                  ) : (
+                    filteredReports.map((rpt) => {
+                      // Tách chỉ lấy giờ nộp (ví dụ "17:40") để tránh lặp lại ngày "18/09/2026"
+                      const timeOnly = rpt.submittedAt.includes(" ")
+                        ? rpt.submittedAt.split(" ")[1]
+                        : rpt.submittedAt;
+
+                      return (
+                        <Table.Tr key={rpt.reportId}>
+                          {/* Nhấn vô mã report là xem được nội dung chi tiết */}
+                          <Table.Td>
+                            <Tooltip label="Nhấn để xem chi tiết báo cáo" withArrow position="top-start">
+                              <Anchor
+                                component="button"
+                                type="button"
+                                fw={700}
+                                c="dark"
+                                fz="sm"
+                                onClick={() => setViewReportModal(rpt)}
+                                style={{
+                                  textDecoration: "none",
+                                  cursor: "pointer",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: 4
+                                }}
+                              >
+                                {rpt.reportId}
+                                <IconEye size={13} style={{ opacity: 0.7 }} />
+                              </Anchor>
+                            </Tooltip>
+                            <Text fz="xs" c="dimmed">Đơn {rpt.wfhId}</Text>
+                          </Table.Td>
+
+                          {/* Cột Ngày WFH: Không bị lặp ngày giờ */}
+                          <Table.Td>
+                            <Text fw={600} fz="sm">{rpt.date}</Text>
+                            <Text fz="xs" c="dimmed">Nộp lúc {timeOnly}</Text>
+                          </Table.Td>
+
+                          <Table.Td>
+                            <Badge color="blue" variant="light" size="sm">{rpt.project}</Badge>
+                          </Table.Td>
+
+                          <Table.Td>
+                            <Text fz="sm" lineClamp={2} fw={500}>{rpt.summary}</Text>
+                            <Text fz="xs" c="dimmed" mt={2}>
+                              {rpt.completedTasks.length} đầu việc hoàn tất
+                            </Text>
+                          </Table.Td>
+
+                          <Table.Td>
+                            <Group gap="xs" align="center">
+                              <Progress value={rpt.completionRate} size="sm" color="teal" w={60} radius="xl" />
+                              <Text fz="xs" fw={700} c="teal.7">{rpt.completionRate}%</Text>
+                            </Group>
+                          </Table.Td>
+
+                          <Table.Td>
+                            <Group gap={6}>
+                              {rpt.ticketLink && (
+                                <Badge
+                                  component="a"
+                                  href={rpt.ticketLink}
+                                  target="_blank"
+                                  size="xs"
+                                  color="indigo"
+                                  variant="light"
+                                  rightSection={<IconExternalLink size={10} />}
+                                  style={{ cursor: "pointer" }}
+                                >
+                                  Jira
+                                </Badge>
+                              )}
+                              <Badge size="xs" color="gray" variant="light" leftSection={<IconPaperclip size={10} />}>
+                                {rpt.attachments.length} file
+                              </Badge>
+                            </Group>
+                          </Table.Td>
+
+                          <Table.Td>
+                            <Badge color="teal" variant="outline" size="sm" leftSection={<IconSparkles size={11} />}>
+                              {rpt.aiScore}
+                            </Badge>
+                          </Table.Td>
+                        </Table.Tr>
+                      );
+                    })
+                  )}
+                </Table.Tbody>
+              </Table>
+            </ScrollArea>
+
+            <Box p="md">
+              <Group justify="space-between" align="center">
+                <Text fz="sm" c="dimmed">
+                  Hiển thị {filteredReports.length} của {reports.length} kết quả
+                </Text>
+                <Pagination total={1} value={1} size="sm" radius="sm" color="teal" />
+              </Group>
+            </Box>
+          </Card>
+        </Tabs.Panel>
+      </Tabs>
+
+      {/* Modal Đăng ký WFH nhanh */}
+      <Modal
+        opened={addModalOpened}
+        onClose={() => setAddModalOpened(false)}
+        title={<Text fw={600} fz="lg">Đăng ký WFH</Text>}
+        size="lg"
+        radius="md"
+      >
+        <form onSubmit={handleAddSubmit}>
+          <Grid>
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <TextInput type="date" label="Ngày WFH" withAsterisk value={wfhDate} onChange={e => setWfhDate(e.currentTarget.value)} />
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Select label="Khung giờ" withAsterisk data={["Cả ngày (08:30 - 17:35)", "Buổi sáng (08:30 - 12:00)", "Buổi chiều (13:00 - 17:35)"]} value={wfhSlot} onChange={v => v && setWfhSlot(v)} allowDeselect={false} />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <TextInput label="Tên dự án / Công việc" withAsterisk placeholder="VD: HRMS Portal, Design System..." value={wfhProject} onChange={e => setWfhProject(e.currentTarget.value)} />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Textarea label="Lý do & Kế hoạch công việc" withAsterisk minRows={3} placeholder="Mô tả cụ thể lý do làm việc từ xa và kế hoạch công việc dự kiến..." value={wfhReason} onChange={e => setWfhReason(e.currentTarget.value)} />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Group justify="flex-end" mt="md">
+                <Button variant="default" onClick={() => setAddModalOpened(false)}>Hủy</Button>
+                <Button type="submit" color="blue" leftSection={<IconCheck size={16} />}>Gửi đơn</Button>
+              </Group>
+            </Grid.Col>
+          </Grid>
+        </form>
+      </Modal>
+
+      {/* MODAL NỘP BÁO CÁO HẰNG NGÀY CHI TIẾT */}
+      <Modal
+        opened={!!reportModalRecord}
+        onClose={() => setReportModalRecord(null)}
+        title={
+          <Group gap="xs">
+            <ThemeIcon color="teal" variant="light" size="lg" radius="md">
+              <IconFileText size={18} />
+            </ThemeIcon>
+            <Box>
+              <Text fw={600} fz="lg">Nộp Báo cáo WFH</Text>
+              <Text fz="xs" c="dimmed">Mã đơn: {reportModalRecord?.id} • Ngày: {reportModalRecord?.date}</Text>
+            </Box>
+          </Group>
+        }
+        size="xl"
+        radius="md"
+      >
+        <Stack gap="md">
+          {/* Info Card */}
+          <Card withBorder bg="blue.0" p="sm" radius="md">
+            <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="xs">
+              <Box>
+                <Text fz="xs" c="dimmed">Dự án thực hiện</Text>
+                <Text fw={600} fz="sm">{reportModalRecord?.project}</Text>
+              </Box>
+              <Box>
+                <Text fz="xs" c="dimmed">Khung giờ làm việc</Text>
+                <Text fw={600} fz="sm">{reportModalRecord?.timeSlot}</Text>
+              </Box>
+              <Box>
+                <Text fz="xs" c="dimmed">Kế hoạch đăng ký ban đầu</Text>
+                <Text fz="xs" lineClamp={1}>{reportModalRecord?.reason}</Text>
+              </Box>
+            </SimpleGrid>
+          </Card>
+
+          {/* Công việc thực hiện */}
+          <Textarea
+            label="1. Tóm tắt kết quả công việc đã thực hiện trong ngày"
+            description="Mô tả tổng quan các tính năng, tài liệu hoặc sản phẩm đã hoàn thành"
+            withAsterisk
+            minRows={3}
+            placeholder="VD: Đã hoàn tất 5 màn hình UI Dashboard, phối hợp cùng team BE thống nhất API endpoint, nộp mã nguồn lên branch..."
+            value={reportSummary}
+            onChange={e => setReportSummary(e.currentTarget.value)}
+          />
+
+          <Textarea
+            label="2. Danh sách các đầu việc cụ thể (Tasks completed)"
+            description="Mỗi đầu việc trên một dòng để AI tự động phân tích"
+            minRows={3}
+            placeholder={"- Thiết kế màn hình xem báo cáo WFH\n- Fix lỗi hiển thị responsive table\n- Họp daily sync lúc 14h00"}
+            value={reportTasks}
+            onChange={e => setReportTasks(e.currentTarget.value)}
+          />
+
+          {/* Tiến độ & Khó khăn */}
+          <Grid>
+            <Grid.Col span={{ base: 12, sm: 6 }}>
+              <Select
+                label="3. Mức độ hoàn thành mục tiêu ngày"
+                data={["100%", "90%", "80%", "70%", "50%"]}
+                value={reportCompletion}
+                onChange={v => v && setReportCompletion(v)}
+                allowDeselect={false}
+              />
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, sm: 6 }}>
+              <TextInput
+                label="4. Link Jira / GitHub / Figma bàn giao"
+                placeholder="https://jira.company.vn/browse/..."
+                value={reportTicket}
+                onChange={e => setReportTicket(e.currentTarget.value)}
+              />
+            </Grid.Col>
+          </Grid>
+
+          <Grid>
+            <Grid.Col span={{ base: 12, sm: 6 }}>
+              <TextInput
+                label="5. Khó khăn / Vướng mắc phát sinh (nếu có)"
+                placeholder="VD: Chờ phản hồi API từ bên đối tác..."
+                value={reportBlockers}
+                onChange={e => setReportBlockers(e.currentTarget.value)}
+              />
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, sm: 6 }}>
+              <TextInput
+                label="6. Kế hoạch ngày làm việc tiếp theo"
+                placeholder="VD: Tiếp tục hoàn thiện module Analytics..."
+                value={reportNextDay}
+                onChange={e => setReportNextDay(e.currentTarget.value)}
+              />
+            </Grid.Col>
+          </Grid>
+
+          {/* Đính kèm minh chứng */}
+          <Box>
+            <Text fw={500} fz="sm" mb={4}>7. Ảnh & Tài liệu minh chứng làm việc (Proof of Work)</Text>
+            <Card
+              withBorder
+              style={{ borderStyle: "dashed", cursor: "pointer" }}
+              p="md"
+              ta="center"
+              bg="gray.0"
+              onClick={() => {
+                const mockFiles = [
+                  "screenshot_prototype_ui.png",
+                  "git_commit_log.png",
+                  "daily_meeting_zoom.png"
+                ];
+                setReportFiles(prev => Array.from(new Set([...prev, mockFiles[prev.length % mockFiles.length]])));
               }}
             >
-              <div>
-                <label style={{ fontSize: "14px", fontWeight: 700, display: "block", marginBottom: "6px" }}>
-                  Từ ngày
-                </label>
-                <input
-                  type="date"
-                  value={wfhStartDate}
-                  onChange={(e) => setWfhStartDate(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "11px",
-                    borderRadius: "10px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "15px",
-                    fontWeight: 600,
-                  }}
-                />
-              </div>
+              <IconFileUpload size={24} color="gray" style={{ margin: "0 auto", marginBottom: 4 }} />
+              <Text fz="sm" c="dimmed">
+                Bấm vào đây để tải ảnh screenshot màn hình làm việc hoặc tài liệu bàn giao <Text span c="blue" fw={600}>(Thêm tệp)</Text>
+              </Text>
+            </Card>
 
-              <div>
-                <label style={{ fontSize: "14px", fontWeight: 700, display: "block", marginBottom: "6px" }}>
-                  Đến ngày
-                </label>
-                <input
-                  type="date"
-                  value={wfhEndDate}
-                  onChange={(e) => setWfhEndDate(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "11px",
-                    borderRadius: "10px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "15px",
-                    fontWeight: 600,
-                  }}
-                />
-              </div>
+            {/* List attached files */}
+            {reportFiles.length > 0 && (
+              <Group gap="xs" mt="xs">
+                {reportFiles.map((file, idx) => (
+                  <Badge
+                    key={idx}
+                    color="teal"
+                    variant="light"
+                    size="md"
+                    leftSection={<IconPaperclip size={12} />}
+                    rightSection={
+                      <ActionIcon size="xs" variant="transparent" color="teal" onClick={() => setReportFiles(reportFiles.filter((_, i) => i !== idx))}>
+                        <IconX size={10} />
+                      </ActionIcon>
+                    }
+                  >
+                    {file}
+                  </Badge>
+                ))}
+              </Group>
+            )}
+          </Box>
 
-              <div>
-                <label style={{ fontSize: "14px", fontWeight: 700, display: "block", marginBottom: "6px" }}>
-                  Trạng thái duyệt
-                </label>
-                <select
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "11px",
-                    borderRadius: "10px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "15px",
-                    fontWeight: 700,
-                    background: "white",
-                  }}
-                >
-                  <option value="all">Tất cả trạng thái</option>
-                  <option value="pending">Đang chờ duyệt</option>
-                  <option value="approved">Đã phê duyệt</option>
-                  <option value="completed">Đã hoàn thành (Có report)</option>
-                  <option value="cancelled">Đã hủy</option>
-                </select>
-              </div>
+          {/* AI Validation Pre-Check banner */}
+          <Card withBorder bg="teal.0" p="xs" radius="md">
+            <Group gap="xs">
+              <IconSparkles size={18} color="var(--mantine-color-teal-7)" />
+              <Box>
+                <Text fw={600} fz="xs" c="teal.9">Hệ thống AI đối soát & chấm điểm minh bạch</Text>
+                <Text fz="xs" c="teal.8">
+                  Báo cáo có đủ tóm tắt nội dung, tiến độ và minh chứng sẽ được AI tự động xếp hạng uy tín 95-100%.
+                </Text>
+              </Box>
+            </Group>
+          </Card>
 
-              <div>
-                <label style={{ fontSize: "14px", fontWeight: 700, display: "block", marginBottom: "6px" }}>
-                  Sắp xếp thời gian
-                </label>
-                <select
-                  value={wfhSortOrder}
-                  onChange={(e) => setWfhSortOrder(e.target.value as "newest" | "oldest")}
-                  style={{
-                    width: "100%",
-                    padding: "11px",
-                    borderRadius: "10px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "15px",
-                    fontWeight: 700,
-                    background: "white",
-                  }}
-                >
-                  <option value="newest">Gần nhất (Mới nhất)</option>
-                  <option value="oldest">Xa nhất (Cũ nhất)</option>
-                </select>
-              </div>
-            </div>
-          </section>
+          <Divider />
 
-          <section className="panel" style={{ padding: "24px", width: "100%" }}>
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "15px" }}>
-                <thead>
-                  <tr style={{ borderBottom: "2px solid var(--border-soft)", color: "var(--text-sub)", fontSize: "14px" }}>
-                    <th style={{ padding: "14px 16px" }}>MÃ ĐƠN</th>
-                    <th style={{ padding: "14px 16px" }}>NGÀY WFH</th>
-                    <th style={{ padding: "14px 16px" }}>KHUNG GIỜ</th>
-                    <th style={{ padding: "14px 16px" }}>LÝ DO / DỰ ÁN</th>
-                    <th style={{ padding: "14px 16px" }}>DAILY REPORT</th>
-                    <th style={{ padding: "14px 16px" }}>TRẠNG THÁI</th>
-                    <th style={{ padding: "14px 16px", textAlign: "right" }}>THAO TÁC</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredHistoryRecords.map((r) => (
-                    <tr key={r.id} style={{ borderBottom: "1px solid var(--border-soft)" }}>
-                      <td style={{ padding: "16px 16px", fontWeight: 800, color: "var(--brand)" }}>{r.id}</td>
-                      <td style={{ padding: "16px 16px", fontWeight: 700 }}>{r.date}</td>
-                      <td style={{ padding: "16px 16px", color: "#1e40af", fontWeight: 600 }}>{r.timeSlot}</td>
-                      <td style={{ padding: "16px 16px", color: "var(--text-main)" }}>
-                        <b style={{ fontSize: "15px" }}>{r.project}</b>
-                        <small style={{ display: "block", color: "var(--text-sub)", fontSize: "13px" }}>{r.reason}</small>
-                      </td>
-                      <td style={{ padding: "16px 16px" }}>
-                        {r.hasReport ? (
-                          <span style={{ fontSize: "14px", color: "#166534", fontWeight: 700 }}>
-                            Đã nộp Report
-                          </span>
-                        ) : (
-                          <span style={{ color: "var(--text-sub)", fontSize: "14px" }}>Chưa nộp</span>
-                        )}
-                      </td>
-                      <td style={{ padding: "16px 16px" }}>
-                        <Status
-                          tone={
-                            r.status === "completed"
-                              ? "green"
-                              : r.status === "approved"
-                              ? "blue"
-                              : r.status === "pending"
-                              ? "amber"
-                              : "gray"
-                          }
-                        >
-                          {r.statusText}
-                        </Status>
-                      </td>
-                      <td style={{ padding: "16px 16px", textAlign: "right" }}>
-                        {(r.status === "approved" || r.status === "pending") && (
-                          <button
-                            className="secondary"
-                            onClick={() => setCancelModalRecord(r)}
-                            style={{
-                              color: "#dc2626",
-                              borderColor: "#fca5a5",
-                              fontSize: "13px",
-                              fontWeight: 700,
-                              padding: "6px 14px",
-                            }}
-                          >
-                            Hủy đơn WFH
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        </div>
-      )}
+          <Group justify="flex-end">
+            <Button variant="default" onClick={() => setReportModalRecord(null)}>Hủy</Button>
+            <Button
+              color="teal"
+              leftSection={<IconCheck size={16} />}
+              onClick={handleSubmitReport}
+              disabled={!reportSummary.trim()}
+            >
+              Nộp Daily Report & Hoàn thành
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
 
-      {/* CANCEL CONFIRMATION MODAL */}
-      {cancelModalRecord && (
-        <div
-          className="modal-overlay"
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(15, 23, 42, 0.55)",
-            backdropFilter: "blur(6px)",
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "20px",
-          }}
-          onClick={() => setCancelModalRecord(null)}
-        >
-          <div
-            className="modal-card"
-            style={{
-              background: "white",
-              borderRadius: "20px",
-              padding: "28px",
-              width: "100%",
-              maxWidth: "500px",
-              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ fontSize: "20px", fontWeight: 800, color: "#dc2626", marginBottom: "10px" }}>
-              Xác nhận Hủy đơn WFH {cancelModalRecord.id}?
-            </h3>
-            <p style={{ fontSize: "15px", color: "var(--text-sub)", marginBottom: "18px" }}>
-              Bạn đang yêu cầu hủy đơn đăng ký WFH ngày <b>{cancelModalRecord.date}</b> ({cancelModalRecord.timeSlot}).
-            </p>
+      {/* MODAL XEM CHI TIẾT DAILY REPORT ĐÃ NỘP (KHI NHẤN VÀO MÃ REPORT) */}
+      <Modal
+        opened={!!viewReportModal}
+        onClose={() => setViewReportModal(null)}
+        title={
+          <Group gap="xs">
+            <ThemeIcon color="teal" variant="light" size="lg" radius="md">
+              <IconSparkles size={18} />
+            </ThemeIcon>
+            <Box>
+              <Text fw={600} fz="lg">Chi tiết Daily Report — {viewReportModal?.reportId}</Text>
+              <Text fz="xs" c="dimmed">Mã đơn WFH: {viewReportModal?.wfhId} • Ngày nộp: {viewReportModal?.submittedAt}</Text>
+            </Box>
+          </Group>
+        }
+        size="lg"
+        radius="md"
+      >
+        {viewReportModal && (
+          <Stack gap="md">
+            <Card withBorder bg="gray.0" p="sm" radius="md">
+              <Grid>
+                <Grid.Col span={6}>
+                  <Text fz="xs" c="dimmed">Ngày WFH</Text>
+                  <Text fw={600} fz="sm">{viewReportModal.date}</Text>
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <Text fz="xs" c="dimmed">Dự án</Text>
+                  <Text fw={600} fz="sm">{viewReportModal.project}</Text>
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <Text fz="xs" c="dimmed">Khung giờ</Text>
+                  <Text fz="sm">{viewReportModal.timeSlot}</Text>
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <Text fz="xs" c="dimmed">Mức độ hoàn thành</Text>
+                  <Group gap="xs">
+                    <Progress value={viewReportModal.completionRate} size="sm" color="teal" w={60} radius="xl" />
+                    <Text fw={700} fz="sm" c="teal.7">{viewReportModal.completionRate}%</Text>
+                  </Group>
+                </Grid.Col>
+              </Grid>
+            </Card>
 
-            <div style={{ marginBottom: "22px" }}>
-              <label style={{ fontSize: "14px", fontWeight: 700, display: "block", marginBottom: "8px" }}>
-                Lý do hủy đơn WFH
-              </label>
-              <textarea
-                rows={3}
-                value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
-                placeholder="Nhập lý do thay đổi kế hoạch..."
-                style={{
-                  width: "100%",
-                  padding: "12px",
-                  borderRadius: "10px",
-                  border: "1px solid var(--border-soft)",
-                  fontSize: "14px",
-                }}
-              />
-            </div>
+            <Box>
+              <Text fw={600} fz="sm" mb={4}>Tóm tắt công việc đã thực hiện:</Text>
+              <Card withBorder p="sm" radius="md">
+                <Text fz="sm">{viewReportModal.summary}</Text>
+              </Card>
+            </Box>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
-              <button className="secondary" onClick={() => setCancelModalRecord(null)} style={{ padding: "10px 18px", fontSize: "14px", fontWeight: 600 }}>
-                Quay lại
-              </button>
-              <button
-                className="primary"
-                onClick={handleConfirmCancel}
-                style={{ background: "#dc2626", borderColor: "#dc2626", padding: "10px 20px", fontSize: "14px", fontWeight: 700 }}
-              >
-                Xác nhận Hủy WFH
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+            <Box>
+              <Text fw={600} fz="sm" mb={4}>Các đầu việc cụ thể:</Text>
+              <Stack gap={6}>
+                {viewReportModal.completedTasks.map((task, idx) => (
+                  <Group key={idx} gap="xs" align="flex-start">
+                    <ThemeIcon color="teal" size={18} radius="xl">
+                      <IconCheck size={12} />
+                    </ThemeIcon>
+                    <Text fz="sm">{task}</Text>
+                  </Group>
+                ))}
+              </Stack>
+            </Box>
+
+            {viewReportModal.blockers && (
+              <Box>
+                <Text fw={600} fz="sm" mb={2}>Khó khăn & Vướng mắc:</Text>
+                <Text fz="sm" c="dimmed">{viewReportModal.blockers}</Text>
+              </Box>
+            )}
+
+            {viewReportModal.nextDayPlan && (
+              <Box>
+                <Text fw={600} fz="sm" mb={2}>Kế hoạch ngày tiếp theo:</Text>
+                <Text fz="sm" c="dimmed">{viewReportModal.nextDayPlan}</Text>
+              </Box>
+            )}
+
+            <Box>
+              <Text fw={600} fz="sm" mb={6}>Tệp đính kèm & Minh chứng ({viewReportModal.attachments.length}):</Text>
+              <Group gap="xs">
+                {viewReportModal.attachments.map((att, i) => (
+                  <Badge key={i} color="gray" variant="outline" size="md" leftSection={<IconPaperclip size={12} />}>
+                    {att}
+                  </Badge>
+                ))}
+                {viewReportModal.ticketLink && (
+                  <Badge
+                    component="a"
+                    href={viewReportModal.ticketLink}
+                    target="_blank"
+                    color="blue"
+                    size="md"
+                    rightSection={<IconExternalLink size={12} />}
+                  >
+                    Mở Jira Task
+                  </Badge>
+                )}
+              </Group>
+            </Box>
+
+            {/* AI Review Banner */}
+            <Card withBorder bg="teal.0" p="sm" radius="md">
+              <Group gap="xs" align="flex-start">
+                <IconSparkles size={20} color="var(--mantine-color-teal-7)" style={{ marginTop: 2 }} />
+                <Box>
+                  <Group gap="xs">
+                    <Text fw={700} fz="sm" c="teal.9">AI Đánh giá:</Text>
+                    <Badge color="teal" variant="filled" size="sm">{viewReportModal.aiScore}</Badge>
+                  </Group>
+                  <Text fz="xs" c="teal.8" mt={2}>{viewReportModal.aiNote}</Text>
+                </Box>
+              </Group>
+            </Card>
+
+            <Group justify="flex-end" mt="xs">
+              <Button variant="default" onClick={() => setViewReportModal(null)}>Đóng</Button>
+            </Group>
+          </Stack>
+        )}
+      </Modal>
+    </Box>
   );
 }

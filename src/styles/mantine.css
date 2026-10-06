@@ -1,0 +1,42 @@
+@import '@mantine/core/styles.css';
+@import '@mantine/dates/styles.css';
+@import '@mantine/notifications/styles.css';
+@import '@mantine/charts/styles.css';
+@import '@mantine/carousel/styles.css';
+@import '@mantine/tiptap/styles.css';
+@import '@mantine/code-highlight/styles.css';
+
+/* ─── Status Badge / Pill Styles ────────────────────────────────────────── */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 20px;
+  padding: 4px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.status-green { color: #16845d; background: #eaf8f1; }
+.status-blue { color: #1267e8; background: #e8f1ff; }
+.status-amber { color: #a76a0a; background: #fff5df; }
+.status-red { color: #b64f4f; background: #fff0ee; }
+.status-gray { color: #788598; background: #f1f3f6; }
+
+/* ─── Common UI Utilities ────────────────────────────────────────── */
+.filter-section {
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+}
+
+.ohriise-table th,
+.ohriise-table td,
+.ohriise-table tr {
+  border-bottom: 1px solid var(--mantine-color-gray-2) !important;
+}

@@ -1,6 +1,11 @@
 import React, { useState } from "react";
-import { Icon, Status } from "../components/UI";
-
+import {
+  Box, Group, Text, Card, Grid, Table, ScrollArea, Avatar, TextInput, Select, Title, Pagination, ActionIcon, Menu, Tabs, Drawer, Stack, Badge, Button, ThemeIcon, Textarea, SimpleGrid
+} from "@mantine/core";
+import {
+  IconSearch, IconCheck, IconX, IconChevronUp, IconChevronDown, IconSelector, IconDotsVertical, IconEye, IconFilter, IconFileText, IconClock, IconLink
+} from "@tabler/icons-react";
+import { StatusBadge } from "../components/UI";
 export interface ApprovalRequest {
   id: string;
   code: string;
@@ -450,1445 +455,283 @@ const INITIAL_REQUESTS: ApprovalRequest[] = [
 
 export default function ApprovalPage({ role }: { role?: string }) {
   const [requests, setRequests] = useState<ApprovalRequest[]>(INITIAL_REQUESTS);
-  const [activeTab, setActiveTab] = useState<"pending" | "processed" | "history" | "all">("pending");
-  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string | null>("pending");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedId, setSelectedId] = useState<string>("req-1");
-  const [selectedBulkIds, setSelectedBulkIds] = useState<string[]>([]);
+  const [typeFilter, setTypeFilter] = useState("all");
+  
+  // Drawer state
+  const [drawerOpened, setDrawerOpened] = useState(false);
+  const [selectedReq, setSelectedReq] = useState<ApprovalRequest | null>(null);
 
-  // Modals
-  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
-  const [rejectReasonText, setRejectReasonText] = useState("");
-  const [isClarifyModalOpen, setIsClarifyModalOpen] = useState(false);
-  const [clarifyQuestionText, setClarifyQuestionText] = useState("");
-  const [isWorkflowModalOpen, setIsWorkflowModalOpen] = useState(false);
+  // Sorting
+  const [sortConfig, setSortConfig] = useState<{ key: keyof ApprovalRequest | null, direction: 'asc' | 'desc' }>({ key: null, direction: 'asc' });
 
-  // History Subtab Filter State
-  const [histStartDate, setHistStartDate] = useState<string>("");
-  const [histEndDate, setHistEndDate] = useState<string>("");
-  const [histStatusFilter, setHistStatusFilter] = useState<string>("all");
-  const [histTypeFilter, setHistTypeFilter] = useState<string>("all");
-  const [histSearchQuery, setHistSearchQuery] = useState<string>("");
+  const handleSort = (key: keyof ApprovalRequest) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') direction = 'desc';
+    setSortConfig({ key, direction });
+  };
 
-  // Filter requests by Tab, Type, Search
-  const filteredRequests = requests.filter((r) => {
-    if (activeTab === "pending" && r.status !== "pending") return false;
-    if (activeTab === "processed" && r.status === "pending") return false;
-    if (activeTab === "history" && r.status === "pending") return false;
+  const filteredRequests = requests.filter(r => {
+    if (statusFilter !== "all" && statusFilter !== null) {
+      if (statusFilter === "processed") {
+        if (r.status === "pending") return false;
+      } else if (r.status !== statusFilter) {
+        return false;
+      }
+    }
+    
     if (typeFilter !== "all" && r.type !== typeFilter) return false;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      const matchName = r.employeeName.toLowerCase().includes(q);
-      const matchCode = r.code.toLowerCase().includes(q);
-      const matchType = r.typeLabel.toLowerCase().includes(q);
-      if (!matchName && !matchCode && !matchType) return false;
+      if (!r.employeeName.toLowerCase().includes(q) && !r.code.toLowerCase().includes(q)) return false;
     }
     return true;
   });
 
-  // Filter requests specifically for History Subtab (with Date Range, Status, Type, Search)
-  const historyFilteredRequests = requests.filter((r) => {
-    if (r.status === "pending") return false;
-    if (histStatusFilter !== "all" && r.status !== histStatusFilter) return false;
-    if (histTypeFilter !== "all" && r.type !== histTypeFilter) return false;
-    if (histSearchQuery.trim()) {
-      const q = histSearchQuery.toLowerCase();
-      const matchName = r.employeeName.toLowerCase().includes(q);
-      const matchCode = r.code.toLowerCase().includes(q);
-      const matchType = r.typeLabel.toLowerCase().includes(q);
-      const matchNote = (r.historyAction?.note || r.reason || "").toLowerCase().includes(q);
-      if (!matchName && !matchCode && !matchType && !matchNote) return false;
-    }
+  if (sortConfig.key) {
+    filteredRequests.sort((a, b) => {
+      let aVal = a[sortConfig.key!];
+      let bVal = b[sortConfig.key!];
+      if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
 
-    const recordDate = parseViDate(r.historyAction?.actionDate || r.submittedAt);
-    if (recordDate) {
-      if (histStartDate) {
-        const start = new Date(histStartDate);
-        start.setHours(0, 0, 0, 0);
-        if (recordDate < start) return false;
-      }
-      if (histEndDate) {
-        const end = new Date(histEndDate);
-        end.setHours(23, 59, 59, 999);
-        if (recordDate > end) return false;
-      }
-    }
-    return true;
-  });
+  const Th = ({ children, columnKey }: { children: React.ReactNode, columnKey: keyof ApprovalRequest }) => {
+    const isSorted = sortConfig.key === columnKey;
+    const isAsc = isSorted && sortConfig.direction === 'asc';
+    const isDesc = isSorted && sortConfig.direction === 'desc';
+    return (
+      <Table.Th>
+        <Group justify="space-between" align="center" style={{ cursor: 'pointer' }} onClick={() => handleSort(columnKey)} wrap="nowrap">
+          <Text fw={700} fz="sm" c="dark.9">{children}</Text>
+          <Group gap={0}>
+            {isAsc ? <IconChevronUp size={14} color="var(--mantine-color-blue-6)" /> : isDesc ? <IconChevronDown size={14} color="var(--mantine-color-blue-6)" /> : <IconSelector size={14} color="gray" opacity={0.5} />}
+          </Group>
+        </Group>
+      </Table.Th>
+    )
+  }
 
-  const selectedRequest = requests.find((r) => r.id === selectedId) || filteredRequests[0] || requests[0];
-  const pendingCount = requests.filter((r) => r.status === "pending").length;
-  const processedCount = requests.filter((r) => r.status !== "pending").length;
-
-  // Single Actions
-  const handleApprove = (reqId: string) => {
-    setRequests((prev) =>
-      prev.map((r) => {
-        if (r.id === reqId) {
-          return {
-            ...r,
-            status: "approved",
-            statusText: "Đã duyệt",
-            historyAction: {
-              actionBy: "Nguyễn Minh Anh (Lead)",
-              actionDate: new Date().toLocaleString("vi-VN"),
-              actionType: "approved",
-              note: "Đã phê duyệt yêu cầu thành công!",
-            },
-          };
-        }
-        return r;
-      })
-    );
-
-    // Auto advance to next pending request
-    const remainingPending = requests.filter((r) => r.status === "pending" && r.id !== reqId);
-    if (remainingPending.length > 0) {
-      setSelectedId(remainingPending[0].id);
-    }
-
-    alert(`Đã phê duyệt thành công yêu cầu ${selectedRequest.code} của ${selectedRequest.employeeName}!`);
+  const openDrawer = (req: ApprovalRequest) => {
+    setSelectedReq(req);
+    setDrawerOpened(true);
   };
 
-  const handleRejectSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!rejectReasonText.trim()) {
-      alert("Vui lòng nhập lý do từ chối yêu cầu.");
-      return;
-    }
-    setRequests((prev) =>
-      prev.map((r) => {
-        if (r.id === selectedId) {
-          return {
-            ...r,
-            status: "rejected",
-            statusText: "Từ chối",
-            historyAction: {
-              actionBy: "Nguyễn Minh Anh (Lead)",
-              actionDate: new Date().toLocaleString("vi-VN"),
-              actionType: "rejected",
-              note: rejectReasonText,
-            },
-          };
-        }
-        return r;
-      })
-    );
-    setIsRejectModalOpen(false);
-    setRejectReasonText("");
-    alert(`Đã gửi phản hồi từ chối yêu cầu ${selectedRequest.code} cho ${selectedRequest.employeeName}.`);
+  const pendingCount = requests.filter(r => r.status === "pending").length;
+  const processedCount = requests.filter(r => r.status !== "pending").length;
+
+  const handleApprove = (id: string) => {
+    setRequests(prev => prev.map(r => r.id === id ? { ...r, status: "approved", statusText: "Đã duyệt" } : r));
+    setDrawerOpened(false);
   };
 
-  const handleClarifySubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!clarifyQuestionText.trim()) {
-      alert("Vui lòng nhập nội dung cần làm rõ.");
-      return;
-    }
-    setRequests((prev) =>
-      prev.map((r) => {
-        if (r.id === selectedId) {
-          return {
-            ...r,
-            status: "clarification",
-            statusText: "Cần làm rõ",
-            historyAction: {
-              actionBy: "Nguyễn Minh Anh (Lead)",
-              actionDate: new Date().toLocaleString("vi-VN"),
-              actionType: "clarification",
-              note: clarifyQuestionText,
-            },
-          };
-        }
-        return r;
-      })
-    );
-    setIsClarifyModalOpen(false);
-    setClarifyQuestionText("");
-    alert(`Đã gửi yêu cầu giải trình thêm tới ${selectedRequest.employeeName} thành công!`);
-  };
-
-  // Bulk Approve
-  const toggleBulkSelect = (id: string) => {
-    setSelectedBulkIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-  };
-
-  const handleBulkApprove = () => {
-    if (selectedBulkIds.length === 0) return;
-    setRequests((prev) =>
-      prev.map((r) => {
-        if (selectedBulkIds.includes(r.id)) {
-          return {
-            ...r,
-            status: "approved",
-            statusText: "Đã duyệt",
-            historyAction: {
-              actionBy: "Nguyễn Minh Anh (Lead)",
-              actionDate: new Date().toLocaleString("vi-VN"),
-              actionType: "approved",
-              note: "Phê duyệt hàng loạt",
-            },
-          };
-        }
-        return r;
-      })
-    );
-    alert(`Đã phê duyệt hàng loạt ${selectedBulkIds.length} yêu cầu thành công!`);
-    setSelectedBulkIds([]);
+  const handleReject = (id: string) => {
+    setRequests(prev => prev.map(r => r.id === id ? { ...r, status: "rejected", statusText: "Từ chối" } : r));
+    setDrawerOpened(false);
   };
 
   return (
-    <div className="page inner-page" style={{ gap: "24px" }}>
-      {/* PAGE HEADING */}
-      <div
-        className="page-heading"
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-end",
-          flexWrap: "wrap",
-          gap: "16px",
-          marginBottom: "8px",
-        }}
-      >
-        <div>
-          <p style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-sub)", letterSpacing: "0.8px" }}>
-            {role === "lead" ? "QUẢN LÝ THỜI GIAN & PHÊ DUYỆT TEAM" : "QUẢN TRỊ VẬN HÀNH NHÂN SỰ"}
-          </p>
-          <h1 style={{ fontSize: "32px", fontWeight: 900, color: "var(--text-main)", margin: "4px 0" }}>
-            Trung tâm phê duyệt
-          </h1>
-          <span style={{ fontSize: "16px", color: "var(--text-sub)", fontWeight: 500 }}>
-            Quản lý và xét duyệt các yêu cầu WFH, Nghỉ phép, Điều chỉnh chấm công & Bồi hoàn chi phí.
-          </span>
-        </div>
+    <Box>
+      <Group justify="space-between" align="center" mb="xl">
+        <Box>
+          <Title order={2} fw={700} c="dark.9">Trung tâm phê duyệt</Title>
+          <Text c="dimmed">Quản lý và xét duyệt các yêu cầu WFH, Nghỉ phép, Điều chỉnh chấm công & Bồi hoàn chi phí.</Text>
+        </Box>
+      </Group>
 
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-          {selectedBulkIds.length > 0 && (
-            <button
-              className="primary"
-              onClick={handleBulkApprove}
-              style={{
-                padding: "12px 20px",
-                fontSize: "15px",
-                fontWeight: 900,
-                background: "#166534",
-                borderColor: "#166534",
-                borderRadius: "14px",
-              }}
-            >
-              <Icon name="check" size={18} /> Duyệt hàng loạt ({selectedBulkIds.length})
-            </button>
-          )}
+      <Grid mb="xl">
+        <Grid.Col span={{ base: 12, sm: 6 }}>
+          <Card withBorder radius="lg" padding="lg" ta="center">
+            <Text fz="xs" fw={700} c="dimmed" tt="uppercase" mb={4}>Yêu cầu chờ tôi xử lý</Text>
+            <Group justify="center" align="baseline" gap="xs">
+              <Text fw={900} fz={32} lh={1}>{pendingCount}</Text>
+              <Text fz="xs" c="dimmed">Yêu cầu</Text>
+            </Group>
+          </Card>
+        </Grid.Col>
+        <Grid.Col span={{ base: 12, sm: 6 }}>
+          <Card withBorder radius="lg" padding="lg" ta="center">
+            <Text fz="xs" fw={700} c="dimmed" tt="uppercase" mb={4}>Đã xử lý trong tháng</Text>
+            <Group justify="center" align="baseline" gap="xs">
+              <Text fw={900} fz={32} lh={1}>{processedCount}</Text>
+              <Text fz="xs" c="dimmed">Đơn</Text>
+            </Group>
+          </Card>
+        </Grid.Col>
+      </Grid>
 
-        </div>
-      </div>
-
-      {/* METRICS OVERVIEW BAR */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: "16px",
-        }}
-      >
-        <div
-          style={{
-            background: "white",
-            borderRadius: "20px",
-            padding: "20px 24px",
-            border: "1px solid var(--border-soft)",
-            boxShadow: "0 4px 14px rgba(0,0,0,0.02)",
-            display: "flex",
-            alignItems: "center",
-            gap: "16px",
-          }}
-        >
-          <div
-            style={{
-              width: "48px",
-              height: "48px",
-              borderRadius: "14px",
-              background: "#fff5df",
-              color: "#a76a0a",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Icon name="clock" size={24} />
-          </div>
-          <div>
-            <b style={{ fontSize: "28px", fontWeight: 900, color: "var(--text-main)", display: "block", lineHeight: 1.1 }}>
-              {pendingCount}
-            </b>
-            <span style={{ fontSize: "14px", color: "var(--text-sub)", fontWeight: 700 }}>Yêu cầu chờ tôi xử lý</span>
-          </div>
-        </div>
-
-        <div
-          style={{
-            background: "white",
-            borderRadius: "20px",
-            padding: "20px 24px",
-            border: "1px solid var(--border-soft)",
-            boxShadow: "0 4px 14px rgba(0,0,0,0.02)",
-            display: "flex",
-            alignItems: "center",
-            gap: "16px",
-          }}
-        >
-          <div
-            style={{
-              width: "48px",
-              height: "48px",
-              borderRadius: "14px",
-              background: "#eaf8f1",
-              color: "#16845d",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Icon name="check" size={24} />
-          </div>
-          <div>
-            <b style={{ fontSize: "28px", fontWeight: 900, color: "var(--text-main)", display: "block", lineHeight: 1.1 }}>
-              {processedCount}
-            </b>
-            <span style={{ fontSize: "14px", color: "var(--text-sub)", fontWeight: 700 }}>Đã xử lý trong tháng</span>
-          </div>
-        </div>
-
-      </div>
-
-      {/* FILTER & TABS BAR */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "16px", marginBottom: "24px" }}>
-        {/* Navigation Tabs */}
-        <div className="approval-tabs" style={{ marginBottom: 0, paddingBottom: 0, borderBottom: "none" }}>
-          <button
-            className={activeTab === "pending" ? "active" : ""}
-            onClick={() => setActiveTab("pending")}
-          >
-            Chờ tôi xử lý {pendingCount > 0 && `(${pendingCount})`}
-          </button>
-          <button
-            className={activeTab === "processed" ? "active" : ""}
-            onClick={() => setActiveTab("processed")}
-          >
-            Đã xử lý ({processedCount})
-          </button>
-          <button
-            className={activeTab === "history" ? "active" : ""}
-            onClick={() => setActiveTab("history")}
-          >
-            Lịch sử phê duyệt
-          </button>
-          <button
-            className={activeTab === "all" ? "active" : ""}
-            onClick={() => setActiveTab("all")}
-          >
-            Toàn bộ danh sách ({requests.length})
-          </button>
-        </div>
-
-        {/* Filter dropdowns & Search */}
-        <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
-          <div style={{ position: "relative" }}>
-            <input
-              type="text"
-              placeholder="Tìm theo tên, mã..."
+      <Card withBorder radius="lg" p={0} shadow="sm">
+        <Box p="md" className="filter-section">
+          <Group justify="flex-start" wrap="wrap" gap="sm">
+            <TextInput
+              placeholder="Tên nhân viên, mã đơn..."
+              leftSection={<IconSearch size={14} />}
+              size="sm"
+              radius="md"
+              w={{ base: "100%", sm: 250 }}
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                padding: "10px 14px 10px 36px",
-                borderRadius: "12px",
-                border: "1px solid var(--border-soft)",
-                fontSize: "14px",
-                fontWeight: 600,
-                width: "200px",
-              }}
+              onChange={(e) => setSearchQuery(e.currentTarget.value)}
             />
-            <div style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--text-sub)" }}>
-              <Icon name="search" size={16} />
-            </div>
-          </div>
+            <Select
+              placeholder="Tất cả trạng thái"
+              size="sm"
+              radius="md"
+              w={180}
+              data={[
+                { value: "all", label: "Tất cả trạng thái" },
+                { value: "pending", label: "Chờ xử lý" },
+                { value: "processed", label: "Đã xử lý (Tất cả)" },
+                { value: "approved", label: "Đã duyệt" },
+                { value: "rejected", label: "Từ chối" },
+                { value: "clarification", label: "Cần làm rõ" },
+              ]}
+              value={statusFilter}
+              onChange={(v) => v && setStatusFilter(v)}
+              allowDeselect={false}
+            />
+            <Select
+              placeholder="Tất cả loại yêu cầu"
+              size="sm"
+              radius="md"
+              w={200}
+              data={[
+                { value: "all", label: "Tất cả loại yêu cầu" },
+                { value: "wfh", label: "Làm việc từ xa" },
+                { value: "leave", label: "Nghỉ phép" },
+                { value: "attendance", label: "Điều chỉnh chấm công" },
+                { value: "expense", label: "Bồi hoàn chi phí" },
+                { value: "equipment", label: "Cấp mới thiết bị" },
+              ]}
+              value={typeFilter}
+              onChange={(v) => v && setTypeFilter(v)}
+              allowDeselect={false}
+            />
+          </Group>
+        </Box>
 
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            style={{
-              padding: "10px 14px",
-              borderRadius: "12px",
-              border: "1px solid var(--border-soft)",
-              fontSize: "14px",
-              fontWeight: 700,
-              background: "white",
-            }}
-          >
-            <option value="all">Tất cả loại yêu cầu</option>
-            <option value="attendance">⏱️ Điều chỉnh chấm công</option>
-            <option value="wfh">💻 Làm việc từ xa (WFH)</option>
-            <option value="leave">🌴 Nghỉ phép năm</option>
-            <option value="expense">💵 Bồi hoàn chi phí</option>
-            <option value="equipment">🖥️ Cấp mới thiết bị</option>
-          </select>
-        </div>
-      </div>
-
-      {/* SPECIAL ATTENDANCE ADJUSTMENT INSIGHT BANNER WHEN ATTENDANCE FILTER IS SELECTED */}
-      {typeFilter === "attendance" && (
-        <div
-          style={{
-            background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
-            border: "1.5px solid #bae6fd",
-            borderRadius: "20px",
-            padding: "18px 24px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: "16px",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-            <div
-              style={{
-                width: "44px",
-                height: "44px",
-                borderRadius: "14px",
-                background: "#0284c7",
-                color: "white",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "20px",
-                flexShrink: 0,
-              }}
-            >
-              ⏱️
-            </div>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 900, color: "#0369a1" }}>
-                  Bộ lọc: Phê duyệt Đơn xin Điều chỉnh Chấm công
-                </h4>
-                <span
-                  style={{
-                    background: "#0284c7",
-                    color: "white",
-                    padding: "2px 8px",
-                    borderRadius: "6px",
-                    fontSize: "11px",
-                    fontWeight: 800,
-                  }}
-                >
-                  Tự động đối chiếu Wi-Fi/GPS 94.2%
-                </span>
-              </div>
-              <p style={{ margin: "3px 0 0 0", fontSize: "13px", color: "#0c4a6e", fontWeight: 600 }}>
-                Top lý do tháng này: <b>45%</b> Quên Check-out · <b>30%</b> Lỗi GPS Chi nhánh · <b>15%</b> Gặp Khách hàng ngoài · <b>10%</b> Sự cố mạng
-              </p>
-            </div>
-          </div>
-
-          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-            <button
-              className="primary"
-              onClick={() => {
-                const attendancePending = requests.filter((r) => r.type === "attendance" && r.status === "pending");
-                if (attendancePending.length === 0) {
-                  alert("Không có đơn điều chỉnh chấm công nào đang chờ duyệt.");
-                  return;
-                }
-                const updated = requests.map((r) =>
-                  r.type === "attendance" && r.status === "pending"
-                    ? {
-                        ...r,
-                        status: "approved" as const,
-                        statusText: "Đã duyệt",
-                        historyAction: {
-                          actionBy: "Nguyễn Minh Anh (Lead/HR)",
-                          actionDate: new Date().toLocaleDateString("vi-VN"),
-                          actionType: "approved" as const,
-                          note: "Phê duyệt hàng loạt: Khớp 100% nhật ký Wi-Fi Router & GPS.",
-                        },
-                      }
-                    : r
-                );
-                setRequests(updated);
-                alert(`Đã duyệt thành công ${attendancePending.length} đơn điều chỉnh chấm công hợp lệ!`);
-              }}
-              style={{
-                padding: "8px 16px",
-                fontSize: "13px",
-                fontWeight: 800,
-                borderRadius: "10px",
-                background: "#0284c7",
-                border: "none",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-              }}
-            >
-              <Icon name="check" size={14} /> Duyệt nhanh các đơn khớp Wi-Fi
-            </button>
-            <button
-              className="secondary"
-              onClick={() => setTypeFilter("all")}
-              style={{ padding: "8px 14px", fontSize: "13px", fontWeight: 700, borderRadius: "10px", background: "white" }}
-            >
-              Xem tất cả loại
-            </button>
-          </div>
-        </div>
-      )}
-      {activeTab === "history" ? (
-        <section
-          className="panel"
-          style={{
-            background: "white",
-            borderRadius: "28px",
-            padding: "32px",
-            border: "1px solid var(--border-soft)",
-            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.03)",
-            display: "flex",
-            flexDirection: "column",
-            gap: "24px",
-          }}
-        >
-          {/* Header */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
-            <div>
-              <p style={{ fontSize: "13px", fontWeight: 800, color: "var(--text-sub)", letterSpacing: "0.8px" }}>
-                TRA CỨU VẾT THAO TÁC (AUDIT TRAIL)
-              </p>
-              <h2 style={{ fontSize: "24px", fontWeight: 900, color: "var(--text-main)", margin: "2px 0" }}>
-                Sổ nhật ký & Lịch sử phê duyệt
-              </h2>
-            </div>
-            <button
-              className="secondary"
-              onClick={() => alert("Đang xuất tập tin báo cáo nhật ký phê duyệt 'Audit_Log_Approval_2026.csv' thành công!")}
-              style={{
-                padding: "10px 20px",
-                fontSize: "14px",
-                fontWeight: 800,
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                borderRadius: "12px",
-              }}
-            >
-              <Icon name="file" size={18} /> Tải báo cáo Audit Log (CSV)
-            </button>
-          </div>
-
-          {/* ADVANCED FILTERS BAR */}
-          <div
-            style={{
-              background: "#f8fafc",
-              borderRadius: "20px",
-              padding: "20px 24px",
-              border: "1px solid var(--border-soft)",
-              display: "flex",
-              flexDirection: "column",
-              gap: "16px",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "13px", fontWeight: 900, color: "var(--text-sub)", letterSpacing: "0.5px" }}>
-                BỘ LỌC NGÀY THÁNG & ĐIỀU KIỆN TRA CỨU
-              </span>
-              {(histStartDate || histEndDate || histStatusFilter !== "all" || histTypeFilter !== "all" || histSearchQuery) && (
-                <button
-                  onClick={() => {
-                    setHistStartDate("");
-                    setHistEndDate("");
-                    setHistStatusFilter("all");
-                    setHistTypeFilter("all");
-                    setHistSearchQuery("");
-                  }}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    color: "#ef4444",
-                    fontSize: "13px",
-                    fontWeight: 800,
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                  }}
-                >
-                  ✕ Đặt lại bộ lọc
-                </button>
-              )}
-            </div>
-
-            {/* Filter Inputs Grid */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                gap: "14px",
-                alignItems: "flex-end",
-              }}
-            >
-              {/* Từ ngày */}
-              <div>
-                <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "var(--text-main)", marginBottom: "6px" }}>
-                  Từ ngày (From)
-                </label>
-                <input
-                  type="date"
-                  value={histStartDate}
-                  onChange={(e) => setHistStartDate(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "10px 14px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "14px",
-                    fontWeight: 700,
-                    background: "white",
-                  }}
-                />
-              </div>
-
-              {/* Đến ngày */}
-              <div>
-                <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "var(--text-main)", marginBottom: "6px" }}>
-                  Đến ngày (To)
-                </label>
-                <input
-                  type="date"
-                  value={histEndDate}
-                  onChange={(e) => setHistEndDate(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "10px 14px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "14px",
-                    fontWeight: 700,
-                    background: "white",
-                  }}
-                />
-              </div>
-
-              {/* Trạng thái kết quả */}
-              <div>
-                <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "var(--text-main)", marginBottom: "6px" }}>
-                  Kết quả phê duyệt
-                </label>
-                <select
-                  value={histStatusFilter}
-                  onChange={(e) => setHistStatusFilter(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "10px 14px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "14px",
-                    fontWeight: 700,
-                    background: "white",
-                  }}
-                >
-                  <option value="all">Tất cả kết quả</option>
-                  <option value="approved">Đã duyệt (Approved)</option>
-                  <option value="rejected">Từ chối (Rejected)</option>
-                  <option value="clarification">Cần làm rõ (Clarification)</option>
-                </select>
-              </div>
-
-              {/* Loại yêu cầu */}
-              <div>
-                <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "var(--text-main)", marginBottom: "6px" }}>
-                  Loại yêu cầu đề xuất
-                </label>
-                <select
-                  value={histTypeFilter}
-                  onChange={(e) => setHistTypeFilter(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "10px 14px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "14px",
-                    fontWeight: 700,
-                    background: "white",
-                  }}
-                >
-                  <option value="all">Tất cả loại đề xuất</option>
-                  <option value="wfh">Làm việc từ xa (WFH)</option>
-                  <option value="leave">Nghỉ phép năm</option>
-                  <option value="attendance">Điều chỉnh chấm công</option>
-                  <option value="expense">Bồi hoàn chi phí</option>
-                  <option value="equipment">Cấp mới thiết bị</option>
-                </select>
-              </div>
-
-              {/* Từ khóa */}
-              <div>
-                <label style={{ display: "block", fontSize: "13px", fontWeight: 800, color: "var(--text-main)", marginBottom: "6px" }}>
-                  Từ khóa tra cứu
-                </label>
-                <div style={{ position: "relative" }}>
-                  <input
-                    type="text"
-                    placeholder="Tên nhân sự, mã đơn, ghi chú..."
-                    value={histSearchQuery}
-                    onChange={(e) => setHistSearchQuery(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "10px 14px 10px 36px",
-                      borderRadius: "12px",
-                      border: "1px solid var(--border-soft)",
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      background: "white",
-                    }}
-                  />
-                  <div style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--text-sub)" }}>
-                    <Icon name="search" size={16} />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Date Presets Bar */}
-            <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap", paddingTop: "4px" }}>
-              <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-sub)", marginRight: "4px" }}>
-                Chọn nhanh:
-              </span>
-              <button
-                className="secondary"
-                onClick={() => {
-                  setHistStartDate("");
-                  setHistEndDate("");
-                }}
-                style={{
-                  padding: "6px 14px",
-                  fontSize: "13px",
-                  fontWeight: 800,
-                  borderRadius: "10px",
-                  background: !histStartDate && !histEndDate ? "#e2e8f0" : "white",
-                }}
-              >
-                Tất cả thời gian
-              </button>
-              <button
-                className="secondary"
-                onClick={() => {
-                  setHistStartDate("2026-09-01");
-                  setHistEndDate("2026-09-30");
-                }}
-                style={{
-                  padding: "6px 14px",
-                  fontSize: "13px",
-                  fontWeight: 800,
-                  borderRadius: "10px",
-                  background: histStartDate === "2026-09-01" && histEndDate === "2026-09-30" ? "#e2e8f0" : "white",
-                }}
-              >
-                Tháng 9/2026
-              </button>
-              <button
-                className="secondary"
-                onClick={() => {
-                  setHistStartDate("2026-09-19");
-                  setHistEndDate("2026-09-25");
-                }}
-                style={{
-                  padding: "6px 14px",
-                  fontSize: "13px",
-                  fontWeight: 800,
-                  borderRadius: "10px",
-                  background: histStartDate === "2026-09-19" && histEndDate === "2026-09-25" ? "#e2e8f0" : "white",
-                }}
-              >
-                7 ngày vừa qua (19–25/09)
-              </button>
-              <button
-                className="secondary"
-                onClick={() => {
-                  setHistStartDate("2026-09-21");
-                  setHistEndDate("2026-09-27");
-                }}
-                style={{
-                  padding: "6px 14px",
-                  fontSize: "13px",
-                  fontWeight: 800,
-                  borderRadius: "10px",
-                  background: histStartDate === "2026-09-21" && histEndDate === "2026-09-27" ? "#e2e8f0" : "white",
-                }}
-              >
-                Tuần này
-              </button>
-            </div>
-          </div>
-
-          {/* Results Counter Banner */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "14px", fontWeight: 800, color: "var(--text-sub)" }}>
-              Hiển thị <b style={{ color: "var(--brand)" }}>{historyFilteredRequests.length}</b> lượt xử lý trong nhật ký
-            </span>
-          </div>
-
-          {/* Table */}
-          <div style={{ overflowX: "auto" }}>
-            {historyFilteredRequests.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "48px 24px", color: "var(--text-sub)", background: "#f8fafc", borderRadius: "16px" }}>
-                <Icon name="search" size={40} />
-                <p style={{ marginTop: "12px", fontSize: "16px", fontWeight: 800, color: "var(--text-main)" }}>
-                  Không tìm thấy bản ghi lịch sử nào phù hợp với bộ lọc ngày tháng & điều kiện tra cứu!
-                </p>
-                <button
-                  className="secondary"
-                  onClick={() => {
-                    setHistStartDate("");
-                    setHistEndDate("");
-                    setHistStatusFilter("all");
-                    setHistTypeFilter("all");
-                    setHistSearchQuery("");
-                  }}
-                  style={{ marginTop: "16px", padding: "10px 20px", fontSize: "14px", fontWeight: 800, borderRadius: "12px" }}
-                >
-                  Xóa toàn bộ bộ lọc
-                </button>
-              </div>
-            ) : (
-              <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "15px" }}>
-                <thead>
-                  <tr style={{ borderBottom: "2px solid var(--border-soft)", color: "var(--text-sub)", fontSize: "14px" }}>
-                    <th style={{ padding: "16px", fontWeight: 800 }}>THỜI GIAN THAO TÁC</th>
-                    <th style={{ padding: "16px", fontWeight: 800 }}>MÃ ĐƠN & LOẠI ĐỀ XUẤT</th>
-                    <th style={{ padding: "16px", fontWeight: 800 }}>NHÂN SỰ ĐỀ XUẤT</th>
-                    <th style={{ padding: "16px", fontWeight: 800 }}>NGƯỜI XỬ LÝ</th>
-                    <th style={{ padding: "16px", fontWeight: 800 }}>KẾT QUẢ / TRẠNG THÁI</th>
-                    <th style={{ padding: "16px", fontWeight: 800 }}>GHI CHÚ / BÌNH LUẬN XỬ LÝ</th>
-                    <th style={{ padding: "16px", fontWeight: 800, textAlign: "right" }}>THAO TÁC</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {historyFilteredRequests.map((r) => (
-                    <tr key={r.id} style={{ borderBottom: "1px solid var(--border-soft)" }}>
-                      <td style={{ padding: "16px", fontWeight: 700, color: "var(--text-sub)", fontSize: "14px" }}>
-                        {r.historyAction?.actionDate || r.submittedAt}
-                      </td>
-                      <td style={{ padding: "16px" }}>
-                        <b style={{ fontSize: "15px", color: "var(--brand)", fontWeight: 900, display: "block" }}>
-                          {r.code}
-                        </b>
-                        <small style={{ fontSize: "13px", color: "var(--text-sub)", fontWeight: 600 }}>
-                          {r.typeLabel}
-                        </small>
-                      </td>
-                      <td style={{ padding: "16px", fontWeight: 800, color: "var(--text-main)" }}>
-                        {r.employeeName}
-                      </td>
-                      <td style={{ padding: "16px", fontWeight: 700, color: "#1e40af" }}>
-                        {r.historyAction?.actionBy || "Hệ thống Auto"}
-                      </td>
-                      <td style={{ padding: "16px" }}>
-                        <Status tone={r.status === "approved" ? "green" : r.status === "rejected" ? "red" : "blue"}>
-                          {r.statusText}
-                        </Status>
-                      </td>
-                      <td style={{ padding: "16px", color: "var(--text-main)", fontWeight: 600, fontSize: "14px", maxWidth: "260px" }}>
-                        {r.historyAction?.note || r.reason}
-                      </td>
-                      <td style={{ padding: "16px", textAlign: "right" }}>
-                        <button
-                          className="secondary"
-                          onClick={() => {
-                            setSelectedId(r.id);
-                            setActiveTab("processed");
-                          }}
-                          style={{ padding: "6px 12px", fontSize: "13px", fontWeight: 800, borderRadius: "8px" }}
-                        >
-                          Xem lại đơn
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </section>
-      ) : (
-        /* MASTER-DETAIL DUAL PANEL LAYOUT */
-        <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: "24px", alignItems: "start" }}>
-        {/* LEFT PANEL: REQUEST LIST */}
-        <section
-          className="panel"
-          style={{
-            background: "white",
-            borderRadius: "24px",
-            padding: "20px",
-            border: "1px solid var(--border-soft)",
-            display: "flex",
-            flexDirection: "column",
-            gap: "12px",
-            maxHeight: "750px",
-            overflowY: "auto",
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
-            <span style={{ fontSize: "13px", fontWeight: 800, color: "var(--text-sub)", textTransform: "uppercase" }}>
-              Danh sách ({filteredRequests.length})
-            </span>
-            {activeTab === "pending" && (
-              <small style={{ fontSize: "12px", color: "var(--text-sub)", fontWeight: 600 }}>
-                Tích chọn để duyệt nhanh
-              </small>
-            )}
-          </div>
-
-          {filteredRequests.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "40px 20px", color: "var(--text-sub)" }}>
-              <Icon name="check" size={32} />
-              <p style={{ marginTop: "12px", fontWeight: 700 }}>Không có yêu cầu nào trong danh mục này.</p>
-            </div>
-          ) : (
-            filteredRequests.map((r) => {
-              const isSelected = r.id === selectedRequest.id;
-              const isBulkChecked = selectedBulkIds.includes(r.id);
-
-              return (
-                <div
-                  key={r.id}
-                  onClick={() => setSelectedId(r.id)}
-                  style={{
-                    padding: "16px",
-                    borderRadius: "18px",
-                    border: isSelected ? "2px solid var(--brand)" : "1px solid var(--border-soft)",
-                    background: isSelected ? "#eff6ff" : "white",
-                    cursor: "pointer",
-                    transition: "all 0.18s ease",
-                    position: "relative",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
-                    {/* Checkbox for bulk approve */}
-                    {r.status === "pending" && (
-                      <input
-                        type="checkbox"
-                        checked={isBulkChecked}
-                        onChange={(e) => {
-                          e.stopPropagation();
-                          toggleBulkSelect(r.id);
-                        }}
-                        style={{ marginTop: "4px", width: "18px", height: "18px", cursor: "pointer" }}
-                      />
-                    )}
-
-                    {/* Employee Avatar */}
-                    <div
-                      style={{
-                        width: "44px",
-                        height: "44px",
-                        borderRadius: "14px",
-                        background: r.avatarColor === "cyan" ? "#06b6d4" : r.avatarColor === "blue" ? "#3b82f6" : r.avatarColor === "amber" ? "#f59e0b" : "#84cc16",
-                        color: "white",
-                        fontWeight: 900,
-                        fontSize: "16px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                      }}
-                    >
-                      {r.avatarInitials}
-                    </div>
-
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <b style={{ fontSize: "16px", fontWeight: 900, color: "var(--text-main)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                          {r.employeeName}
-                        </b>
-                        <Status tone={r.status === "pending" ? "amber" : r.status === "approved" ? "green" : r.status === "rejected" ? "red" : "blue"}>
-                          {r.statusText}
-                        </Status>
-                      </div>
-
-                      <div style={{ fontSize: "14px", fontWeight: 800, color: "var(--brand)", marginTop: "2px" }}>
-                        {r.typeLabel}
-                      </div>
-
-                      <p style={{ fontSize: "13px", color: "var(--text-sub)", margin: "4px 0 0 0", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                        {r.summary}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </section>
-
-        {/* RIGHT PANEL: REQUEST DETAIL VIEW */}
-        <section
-          className="panel"
-          style={{
-            background: "white",
-            borderRadius: "28px",
-            padding: "32px",
-            border: "1px solid var(--border-soft)",
-            boxShadow: "0 10px 30px rgba(0,0,0,0.03)",
-          }}
-        >
-          {selectedRequest ? (
-            <div>
-              {/* TOP PROFILE BANNER */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  borderBottom: "2px solid var(--border-soft)",
-                  paddingBottom: "20px",
-                  marginBottom: "24px",
-                  flexWrap: "wrap",
-                  gap: "16px",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "18px" }}>
-                  <div
-                    style={{
-                      width: "64px",
-                      height: "64px",
-                      borderRadius: "20px",
-                      background: "linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)",
-                      color: "white",
-                      fontSize: "24px",
-                      fontWeight: 900,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {selectedRequest.avatarInitials}
-                  </div>
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "4px" }}>
-                      <span style={{ fontSize: "13px", fontWeight: 800, color: "var(--brand)", background: "#eff6ff", padding: "3px 10px", borderRadius: "8px" }}>
-                        {selectedRequest.code}
-                      </span>
-                      <span style={{ fontSize: "13px", color: "var(--text-sub)", fontWeight: 600 }}>
-                        Gửi lúc: {selectedRequest.submittedAt}
-                      </span>
-                    </div>
-                    <h2 style={{ fontSize: "28px", fontWeight: 900, color: "var(--text-main)", margin: "2px 0" }}>
-                      {selectedRequest.employeeName}
-                    </h2>
-                    <p style={{ fontSize: "15px", color: "var(--text-sub)", fontWeight: 700, margin: 0 }}>
-                      {selectedRequest.role} · {selectedRequest.department}
-                    </p>
-                  </div>
-                </div>
-
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "6px" }}>
-                  <Status tone={selectedRequest.status === "pending" ? "amber" : selectedRequest.status === "approved" ? "green" : selectedRequest.status === "rejected" ? "red" : "blue"}>
-                    {selectedRequest.statusText}
-                  </Status>
-                  <span style={{ fontSize: "14px", fontWeight: 800, color: "var(--brand)" }}>
-                    {selectedRequest.typeLabel}
-                  </span>
-                </div>
-              </div>
-
-
-
-              {/* DYNAMIC FIELD GRID */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                  gap: "16px",
-                  marginBottom: "24px",
-                }}
-              >
-                {selectedRequest.fields.map((f) => (
-                  <div
-                    key={f.label}
-                    style={{
-                      background: "#f8fafc",
-                      padding: "16px 20px",
-                      borderRadius: "16px",
-                      border: "1px solid var(--border-soft)",
-                    }}
-                  >
-                    <span style={{ fontSize: "13px", color: "var(--text-sub)", fontWeight: 700, display: "block", marginBottom: "4px" }}>
-                      {f.label}
-                    </span>
-                    <b
-                      style={{
-                        fontSize: f.isHighlight ? "18px" : "16px",
-                        fontWeight: 900,
-                        color: f.isHighlight ? "var(--brand)" : f.isSuccess ? "#166534" : "var(--text-main)",
-                      }}
-                    >
-                      {f.value}
-                    </b>
-                  </div>
-                ))}
-              </div>
-
-              {/* REASON & ATTACHMENTS */}
-              <div
-                style={{
-                  background: "#f8fafc",
-                  padding: "20px",
-                  borderRadius: "18px",
-                  border: "1px solid var(--border-soft)",
-                  marginBottom: "24px",
-                }}
-              >
-                <span style={{ fontSize: "13px", color: "var(--text-sub)", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                  LÝ DO & NỘI DUNG ĐỀ XUẤT
-                </span>
-                <p style={{ fontSize: "16px", color: "var(--text-main)", margin: 0, fontWeight: 600, lineHeight: 1.5 }}>
-                  {selectedRequest.reason}
-                </p>
-
-                {selectedRequest.attachment && (
-                  <div
-                    style={{
-                      marginTop: "16px",
-                      paddingTop: "14px",
-                      borderTop: "1px dashed var(--border-soft)",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "12px",
-                    }}
-                  >
-                    <div style={{ width: "36px", height: "36px", borderRadius: "10px", background: "#eff6ff", color: "#2563eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Icon name="file" size={20} />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <b style={{ fontSize: "14px", color: "var(--text-main)", display: "block" }}>{selectedRequest.attachment.name}</b>
-                      <small style={{ fontSize: "12px", color: "var(--text-sub)" }}>{selectedRequest.attachment.type} · {selectedRequest.attachment.size}</small>
-                    </div>
-                    <button
-                      className="secondary"
-                      onClick={() => alert(`Đang tải tập tin "${selectedRequest.attachment?.name}"...`)}
-                      style={{ padding: "6px 14px", fontSize: "13px", fontWeight: 700 }}
-                    >
-                      Tải file
-                    </button>
-                  </div>
-                )}
-              </div>
-
-
-
-              {/* MULTI-LEVEL APPROVAL FLOW VISUALIZER */}
-              <div style={{ marginBottom: "28px" }}>
-                <span style={{ fontSize: "13px", fontWeight: 800, color: "var(--text-sub)", display: "block", marginBottom: "12px" }}>
-                  TIẾN TRÌNH LUỒNG PHÊ DUYỆT
-                </span>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px" }}>
-                  {selectedRequest.flow.map((step, idx) => (
-                    <div
-                      key={step.step}
-                      style={{
-                        background: step.status === "completed" ? "#f0fdf4" : step.status === "current" ? "#eff6ff" : "#f8fafc",
-                        border: `1px solid ${step.status === "completed" ? "#bbf7d0" : step.status === "current" ? "#bfdbfe" : "var(--border-soft)"}`,
-                        borderRadius: "14px",
-                        padding: "14px",
-                      }}
-                    >
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-                        <span style={{ fontSize: "12px", fontWeight: 900, color: step.status === "completed" ? "#166534" : step.status === "current" ? "#1e40af" : "var(--text-sub)" }}>
-                          Bước {idx + 1}: {step.step}
-                        </span>
-                      </div>
-                      <b style={{ fontSize: "14px", color: "var(--text-main)", display: "block" }}>
-                        {step.actor}
-                      </b>
-                      {step.time && <small style={{ fontSize: "12px", color: "var(--text-sub)" }}>{step.time}</small>}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* HISTORY ACTION NOTE IF PROCESSED */}
-              {selectedRequest.historyAction && (
-                <div
-                  style={{
-                    background: selectedRequest.status === "approved" ? "#f0fdf4" : selectedRequest.status === "rejected" ? "#fef2f2" : "#fefce8",
-                    padding: "16px 20px",
-                    borderRadius: "16px",
-                    border: `1px solid ${selectedRequest.status === "approved" ? "#bbf7d0" : selectedRequest.status === "rejected" ? "#fecaca" : "#fef08a"}`,
-                    marginBottom: "24px",
-                  }}
-                >
-                  <b style={{ fontSize: "15px", color: selectedRequest.status === "approved" ? "#166534" : "#991b1b", display: "block" }}>
-                    Nhật ký xử lý: {selectedRequest.historyAction.actionBy} ({selectedRequest.historyAction.actionDate})
-                  </b>
-                  <p style={{ fontSize: "14px", color: "var(--text-main)", margin: "4px 0 0 0", fontWeight: 600 }}>
-                    Ghi chú: {selectedRequest.historyAction.note}
-                  </p>
-                </div>
-              )}
-
-              {/* BOTTOM ACTION BUTTONS */}
-              {selectedRequest.status === "pending" ? (
-                <div style={{ display: "flex", justifyContent: "flex-end", gap: "14px", borderTop: "2px solid var(--border-soft)", paddingTop: "20px" }}>
-
-                  <button
-                    className="reject"
-                    onClick={() => setIsRejectModalOpen(true)}
-                    style={{
-                      padding: "14px 22px",
-                      fontSize: "15px",
-                      fontWeight: 800,
-                      borderRadius: "14px",
-                      color: "#dc2626",
-                      borderColor: "#fca5a5",
-                      background: "#fef2f2",
-                    }}
-                  >
-                    Từ chối
-                  </button>
-
-                  <button
-                    className="primary"
-                    onClick={() => handleApprove(selectedRequest.id)}
-                    style={{
-                      padding: "14px 28px",
-                      fontSize: "16px",
-                      fontWeight: 900,
-                      borderRadius: "14px",
-                      background: "#166534",
-                      borderColor: "#166534",
-                      boxShadow: "0 8px 20px rgba(22, 101, 52, 0.3)",
-                    }}
-                  >
-                    <Icon name="check" size={20} /> Phê duyệt ngay
-                  </button>
-                </div>
+        <ScrollArea>
+          <Table className="ohriise-table" verticalSpacing="md" horizontalSpacing="md" highlightOnHover striped={false}>
+            <Table.Thead>
+              <Table.Tr bg="transparent">
+                <Th columnKey="employeeName">Nhân viên</Th>
+                <Th columnKey="code">Mã đơn</Th>
+                <Th columnKey="typeLabel">Loại yêu cầu</Th>
+                <Th columnKey="summary">Chi tiết</Th>
+                <Th columnKey="submittedAt">Ngày gửi</Th>
+                <Th columnKey="status">Trạng thái</Th>
+                <Table.Th style={{ textAlign: "right" }}></Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {filteredRequests.length === 0 ? (
+                <Table.Tr>
+                  <Table.Td colSpan={7} ta="center" py="xl">
+                    <Text c="dimmed">Không tìm thấy yêu cầu nào phù hợp</Text>
+                  </Table.Td>
+                </Table.Tr>
               ) : (
-                <div style={{ textAlign: "right", borderTop: "2px solid var(--border-soft)", paddingTop: "16px", color: "var(--text-sub)", fontWeight: 700 }}>
-                  Yêu cầu đã hoàn tất xử lý.
-                </div>
+                filteredRequests.map(req => (
+                  <Table.Tr key={req.id}>
+                    <Table.Td>
+                      <Group gap="sm">
+                        <Avatar size="md" radius="xl" color={req.avatarColor}>{req.avatarInitials}</Avatar>
+                        <Box>
+                          <Text fw={600} fz="sm" c="dark.9">{req.employeeName}</Text>
+                          <Text fz="xs" c="dimmed">{req.role}</Text>
+                        </Box>
+                      </Group>
+                    </Table.Td>
+                    <Table.Td><Text fw={700} c="dark.9">{req.code}</Text></Table.Td>
+                    <Table.Td>
+                      <Badge variant="light" color={req.type === 'leave' ? 'orange' : req.type === 'wfh' ? 'blue' : req.type === 'expense' ? 'green' : 'gray'}>
+                        {req.typeLabel}
+                      </Badge>
+                    </Table.Td>
+                    <Table.Td><Text fz="sm" fw={500} lineClamp={2}>{req.summary}</Text></Table.Td>
+                    <Table.Td><Text fz="sm" c="dimmed">{req.submittedAt}</Text></Table.Td>
+                    <Table.Td>
+                      <StatusBadge status={req.status === 'pending' ? 'new' : req.status} statusText={req.statusText} />
+                    </Table.Td>
+                    <Table.Td ta="right">
+                      <Button variant="light" size="xs" color="blue" leftSection={<IconEye size={14} />} onClick={() => openDrawer(req)}>
+                        Xem chi tiết
+                      </Button>
+                    </Table.Td>
+                  </Table.Tr>
+                ))
               )}
-            </div>
-          ) : (
-            <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--text-sub)" }}>
-              Vui lòng chọn một yêu cầu để xem chi tiết.
-            </div>
-          )}
-        </section>
-      </div>
-    )}
+            </Table.Tbody>
+          </Table>
+        </ScrollArea>
+        <Box p="md">
+          <Group justify="space-between" align="center">
+            <Text fz="sm" c="dimmed">Hiển thị {filteredRequests.length} kết quả</Text>
+            <Pagination total={1} value={1} size="sm" radius="sm" color="blue" />
+          </Group>
+        </Box>
+      </Card>
 
-      {/* MODAL 1: REJECTION REASON */}
-      {isRejectModalOpen && selectedRequest && (
-        <div
-          className="modal-overlay"
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(15, 23, 42, 0.6)",
-            backdropFilter: "blur(6px)",
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "20px",
-          }}
-          onClick={() => setIsRejectModalOpen(false)}
-        >
-          <div
-            className="modal-card"
-            style={{
-              background: "white",
-              borderRadius: "24px",
-              padding: "32px",
-              width: "100%",
-              maxWidth: "520px",
-              boxShadow: "0 25px 50px -12px rgba(0,0,0,0.3)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ borderBottom: "2px solid var(--border-soft)", paddingBottom: "16px", marginBottom: "20px" }}>
-              <p style={{ fontSize: "13px", fontWeight: 800, color: "#dc2626" }}>XÁC NHẬN TỪ CHỐI</p>
-              <h3 style={{ fontSize: "22px", fontWeight: 900, margin: 0 }}>Từ chối yêu cầu {selectedRequest.code}</h3>
-            </div>
+      <Drawer
+        opened={drawerOpened}
+        onClose={() => setDrawerOpened(false)}
+        position="right"
+        size="lg"
+        title={<Text fw={700} fz="lg">Chi tiết yêu cầu</Text>}
+      >
+        {selectedReq && (
+          <Stack gap="md">
+            <Card withBorder bg="gray.0" radius="md">
+              <Group justify="space-between" mb="sm">
+                <Group gap="sm">
+                  <Avatar size="lg" radius="xl" color={selectedReq.avatarColor}>{selectedReq.avatarInitials}</Avatar>
+                  <Box>
+                    <Text fw={700} fz="md">{selectedReq.employeeName}</Text>
+                    <Text fz="sm" c="dimmed">{selectedReq.role}</Text>
+                  </Box>
+                </Group>
+                <Badge size="lg" color={selectedReq.type === 'leave' ? 'orange' : selectedReq.type === 'wfh' ? 'blue' : selectedReq.type === 'expense' ? 'green' : 'gray'}>
+                  {selectedReq.typeLabel}
+                </Badge>
+              </Group>
+              <Text fz="sm" c="dimmed">Mã đơn: <Text component="span" fw={600} c="dark.9">{selectedReq.code}</Text> • Gửi lúc: {selectedReq.submittedAt}</Text>
+            </Card>
 
-            <form onSubmit={handleRejectSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <div>
-                <label style={{ fontSize: "15px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                  Lý do từ chối (Gửi phản hồi cho {selectedRequest.employeeName}) <span style={{ color: "#dc2626" }}>*</span>
-                </label>
-                <textarea
-                  rows={4}
-                  value={rejectReasonText}
-                  onChange={(e) => setRejectReasonText(e.target.value)}
-                  placeholder="Nhập lý do không thể duyệt yêu cầu lần này..."
-                  style={{
-                    width: "100%",
-                    padding: "12px 14px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "15px",
-                  }}
-                />
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
-                <button type="button" className="secondary" onClick={() => setIsRejectModalOpen(false)}>
-                  Hủy
-                </button>
-                <button type="submit" className="reject" style={{ background: "#dc2626", color: "white", padding: "12px 24px" }}>
-                  Xác nhận từ chối
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 2: CLARIFICATION QUESTION */}
-      {isClarifyModalOpen && selectedRequest && (
-        <div
-          className="modal-overlay"
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(15, 23, 42, 0.6)",
-            backdropFilter: "blur(6px)",
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "20px",
-          }}
-          onClick={() => setIsClarifyModalOpen(false)}
-        >
-          <div
-            className="modal-card"
-            style={{
-              background: "white",
-              borderRadius: "24px",
-              padding: "32px",
-              width: "100%",
-              maxWidth: "520px",
-              boxShadow: "0 25px 50px -12px rgba(0,0,0,0.3)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ borderBottom: "2px solid var(--border-soft)", paddingBottom: "16px", marginBottom: "20px" }}>
-              <p style={{ fontSize: "13px", fontWeight: 800, color: "var(--brand)" }}>YÊU CẦU LÀM RÕ NỘI DUNG</p>
-              <h3 style={{ fontSize: "22px", fontWeight: 900, margin: 0 }}>Gửi câu hỏi cho {selectedRequest.employeeName}</h3>
-            </div>
-
-            <form onSubmit={handleClarifySubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <div>
-                <label style={{ fontSize: "15px", fontWeight: 800, display: "block", marginBottom: "6px" }}>
-                  Nội dung cần làm rõ / Bổ sung file <span style={{ color: "#dc2626" }}>*</span>
-                </label>
-                <textarea
-                  rows={4}
-                  value={clarifyQuestionText}
-                  onChange={(e) => setClarifyQuestionText(e.target.value)}
-                  placeholder="Ví dụ: Vui lòng đính kèm thêm biên bản họp hoặc lịch trình họp..."
-                  style={{
-                    width: "100%",
-                    padding: "12px 14px",
-                    borderRadius: "12px",
-                    border: "1px solid var(--border-soft)",
-                    fontSize: "15px",
-                  }}
-                />
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
-                <button type="button" className="secondary" onClick={() => setIsClarifyModalOpen(false)}>
-                  Hủy
-                </button>
-                <button type="submit" className="primary" style={{ padding: "12px 24px" }}>
-                  Gửi yêu cầu làm rõ
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 3: WORKFLOW RULES MATRIX */}
-      {isWorkflowModalOpen && (
-        <div
-          className="modal-overlay"
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(15, 23, 42, 0.6)",
-            backdropFilter: "blur(6px)",
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "20px",
-          }}
-          onClick={() => setIsWorkflowModalOpen(false)}
-        >
-          <div
-            className="modal-card"
-            style={{
-              background: "white",
-              borderRadius: "24px",
-              padding: "32px",
-              width: "100%",
-              maxWidth: "680px",
-              boxShadow: "0 25px 50px -12px rgba(0,0,0,0.3)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid var(--border-soft)", paddingBottom: "16px", marginBottom: "20px" }}>
-              <div>
-                <p style={{ fontSize: "13px", fontWeight: 800, color: "var(--brand)" }}>MA TRẬN QUY TRÌNH DUYỆT</p>
-                <h3 style={{ fontSize: "22px", fontWeight: 900, margin: 0 }}>Cấu hình luồng phê duyệt tự động</h3>
-              </div>
-              <button className="secondary" onClick={() => setIsWorkflowModalOpen(false)} style={{ padding: "8px" }}>
-                <Icon name="close" size={20} />
-              </button>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "14px", marginBottom: "24px" }}>
-              {[
-                ["Làm việc từ xa (WFH)", "Tối đa 2 ngày/tuần", "Quản lý trực tiếp (Lead) duyệt 1 cấp"],
-                ["Nghỉ phép năm", "1 - 3 ngày", "Lead duyệt -> Tự động trừ quỹ phép"],
-                ["Nghỉ phép dài hạn", "> 3 ngày", "Lead duyệt -> Trưởng phòng HR phê duyệt"],
-                ["Bồi hoàn chi phí", "< 5.000.000 ₫", "Lead duyệt -> Kế toán chi tiền"],
-                ["Bồi hoàn chi phí lớn", "≥ 5.000.000 ₫", "Lead -> Ban giám đốc -> Kế toán"],
-              ].map(([t, cond, rule]) => (
-                <div key={t} style={{ background: "#f8fafc", padding: "14px 18px", borderRadius: "14px", border: "1px solid var(--border-soft)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div>
-                    <b style={{ fontSize: "15px", color: "var(--text-main)", display: "block" }}>{t}</b>
-                    <small style={{ fontSize: "13px", color: "var(--text-sub)" }}>Điều kiện: {cond}</small>
-                  </div>
-                  <span style={{ fontSize: "14px", fontWeight: 800, color: "var(--brand)", background: "#eff6ff", padding: "6px 12px", borderRadius: "10px" }}>
-                    {rule}
-                  </span>
-                </div>
+            <SimpleGrid cols={2} spacing="sm">
+              {selectedReq.fields.map(f => (
+                <Card key={f.label} withBorder radius="md" padding="sm" bg={f.isHighlight ? "blue.0" : "white"}>
+                  <Text fz="xs" fw={700} c="dimmed">{f.label}</Text>
+                  <Text fz="sm" fw={600} c={f.isSuccess ? "teal.7" : "dark.9"}>{f.value}</Text>
+                </Card>
               ))}
-            </div>
+            </SimpleGrid>
 
-            <div style={{ textAlign: "right" }}>
-              <button className="primary" onClick={() => setIsWorkflowModalOpen(false)} style={{ padding: "12px 24px" }}>
-                Đã hiểu quy tắc
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+            <Card withBorder radius="md">
+              <Text fw={700} fz="sm" mb="xs">Lý do & Nội dung</Text>
+              <Text fz="sm">{selectedReq.reason}</Text>
+              
+              {selectedReq.attachment && (
+                <Group mt="md" gap="sm" p="sm" style={{ border: '1px solid var(--mantine-color-gray-3)', borderRadius: 8 }}>
+                   <ThemeIcon color="blue" variant="light"><IconFileText size={16} /></ThemeIcon>
+                   <Box style={{ flex: 1 }}>
+                     <Text fz="sm" fw={600}>{selectedReq.attachment.name}</Text>
+                     <Text fz="xs" c="dimmed">{selectedReq.attachment.size}</Text>
+                   </Box>
+                </Group>
+              )}
+            </Card>
+
+            {selectedReq.status === "pending" && (
+              <Group justify="flex-end" mt="xl">
+                <Button variant="outline" color="red" onClick={() => handleReject(selectedReq.id)}>Từ chối</Button>
+                <Button color="green" leftSection={<IconCheck size={16} />} onClick={() => handleApprove(selectedReq.id)}>Phê duyệt</Button>
+              </Group>
+            )}
+          </Stack>
+        )}
+      </Drawer>
+    </Box>
   );
 }
